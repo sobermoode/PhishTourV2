@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--Tour Map View Controller-->
+        <scene sceneID="ufC-wZ-h7g">
+            <objects>
+                <viewController storyboardIdentifier="TourMap" id="vXZ-lx-hvc" customClass="TourMapViewController" customModule="PhishTourV2" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
+                        <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="26h-hO-aOT">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                <items>
+                                    <navigationItem title="Phish Tour" id="fM4-wV-zew">
+                                        <barButtonItem key="leftBarButtonItem" title="Reset" id="psH-LW-4xV">
+                                            <color key="tintColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
+                                            <connections>
+                                                <action selector="resetMap:" destination="vXZ-lx-hvc" id="hMX-GK-bCb"/>
+                                            </connections>
+                                        </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" title="Select Tour" id="1Qe-WZ-Jre">
+                                            <connections>
+                                                <action selector="showTourPicker:" destination="vXZ-lx-hvc" id="NFv-PD-To0"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="O3a-uy-84O">
+                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                            </mapView>
+                            <visualEffectView hidden="YES" opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KOS-oh-7FV">
+                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="p53-yU-9aU">
+                                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <pickerView tag="1" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aXb-xx-wYz" userLabel="Year Picker">
+                                            <rect key="frame" x="0.0" y="-162" width="320" height="162"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="180" id="0yo-h4-17d"/>
+                                                <constraint firstAttribute="width" constant="200" id="E6q-f3-9CL"/>
+                                            </constraints>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="0yo-h4-17d"/>
+                                                    <exclude reference="E6q-f3-9CL"/>
+                                                </mask>
+                                            </variation>
+                                            <variation key="widthClass=compact">
+                                                <mask key="constraints">
+                                                    <include reference="0yo-h4-17d"/>
+                                                    <include reference="E6q-f3-9CL"/>
+                                                </mask>
+                                            </variation>
+                                        </pickerView>
+                                        <pickerView tag="2" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nhR-Tp-fuw" userLabel="Season Picker">
+                                            <rect key="frame" x="0.0" y="-162" width="320" height="162"/>
+                                        </pickerView>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dsN-hs-s4i">
+                                            <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="30" id="N8Y-9O-2gy"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" name="AppleSDGothicNeo-Bold" family="Apple SD Gothic Neo" pointSize="15"/>
+                                            <state key="normal" title="Select Tour">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="N8Y-9O-2gy"/>
+                                                </mask>
+                                            </variation>
+                                            <variation key="widthClass=compact">
+                                                <mask key="constraints">
+                                                    <include reference="N8Y-9O-2gy"/>
+                                                </mask>
+                                            </variation>
+                                            <connections>
+                                                <action selector="selectTour:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="RQN-YI-bQt"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="aXb-xx-wYz" firstAttribute="top" secondItem="p53-yU-9aU" secondAttribute="top" constant="149" id="JFd-aI-ych"/>
+                                        <constraint firstAttribute="trailing" secondItem="nhR-Tp-fuw" secondAttribute="trailing" id="LD3-Mr-gNT"/>
+                                        <constraint firstItem="nhR-Tp-fuw" firstAttribute="leading" secondItem="aXb-xx-wYz" secondAttribute="trailing" id="ag1-b0-0A9"/>
+                                        <constraint firstItem="dsN-hs-s4i" firstAttribute="top" secondItem="nhR-Tp-fuw" secondAttribute="bottom" constant="28" id="kCv-cO-7xM"/>
+                                        <constraint firstItem="dsN-hs-s4i" firstAttribute="centerX" secondItem="p53-yU-9aU" secondAttribute="centerX" id="obF-7a-SZ9"/>
+                                        <constraint firstItem="nhR-Tp-fuw" firstAttribute="top" secondItem="p53-yU-9aU" secondAttribute="top" constant="149" id="q9U-35-Uer"/>
+                                        <constraint firstAttribute="bottom" secondItem="dsN-hs-s4i" secondAttribute="bottom" constant="149" id="s7O-70-C9J"/>
+                                        <constraint firstItem="aXb-xx-wYz" firstAttribute="leading" secondItem="p53-yU-9aU" secondAttribute="leading" id="t4P-VY-raT"/>
+                                    </constraints>
+                                    <variation key="default">
+                                        <mask key="subviews">
+                                            <exclude reference="aXb-xx-wYz"/>
+                                            <exclude reference="nhR-Tp-fuw"/>
+                                            <exclude reference="dsN-hs-s4i"/>
+                                        </mask>
+                                        <mask key="constraints">
+                                            <exclude reference="JFd-aI-ych"/>
+                                            <exclude reference="t4P-VY-raT"/>
+                                            <exclude reference="LD3-Mr-gNT"/>
+                                            <exclude reference="ag1-b0-0A9"/>
+                                            <exclude reference="q9U-35-Uer"/>
+                                            <exclude reference="kCv-cO-7xM"/>
+                                            <exclude reference="obF-7a-SZ9"/>
+                                            <exclude reference="s7O-70-C9J"/>
+                                        </mask>
+                                    </variation>
+                                    <variation key="widthClass=compact">
+                                        <mask key="subviews">
+                                            <include reference="aXb-xx-wYz"/>
+                                            <include reference="nhR-Tp-fuw"/>
+                                            <include reference="dsN-hs-s4i"/>
+                                        </mask>
+                                        <mask key="constraints">
+                                            <include reference="JFd-aI-ych"/>
+                                            <include reference="t4P-VY-raT"/>
+                                            <include reference="LD3-Mr-gNT"/>
+                                            <include reference="ag1-b0-0A9"/>
+                                            <include reference="q9U-35-Uer"/>
+                                            <include reference="kCv-cO-7xM"/>
+                                            <include reference="obF-7a-SZ9"/>
+                                            <include reference="s7O-70-C9J"/>
+                                        </mask>
+                                    </variation>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="536" id="B2s-en-Hlg"/>
+                                </constraints>
+                                <blurEffect style="light"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="B2s-en-Hlg"/>
+                                    </mask>
+                                </variation>
+                                <variation key="widthClass=compact">
+                                    <mask key="constraints">
+                                        <exclude reference="B2s-en-Hlg"/>
+                                    </mask>
+                                </variation>
+                            </visualEffectView>
+                            <segmentedControl hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" segmentControlStyle="bar" momentary="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ukp-NQ-cz5" userLabel="Tour Navigation Controls">
+                                <rect key="frame" x="-61" y="-14" width="123" height="29"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="29" id="dd6-sb-6Ze">
+                                        <variation key="widthClass=compact" constant="28"/>
+                                    </constraint>
+                                </constraints>
+                                <segments>
+                                    <segment title="Start"/>
+                                    <segment title="⬆︎"/>
+                                    <segment title="⋮"/>
+                                    <segment title="➡︎"/>
+                                </segments>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="dd6-sb-6Ze"/>
+                                    </mask>
+                                </variation>
+                                <variation key="widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="dd6-sb-6Ze"/>
+                                    </mask>
+                                </variation>
+                            </segmentedControl>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="Ukp-NQ-cz5" secondAttribute="trailing" id="860-30-OTp"/>
+                            <constraint firstItem="26h-hO-aOT" firstAttribute="trailing" secondItem="O3a-uy-84O" secondAttribute="trailing" id="92T-ID-Bhd"/>
+                            <constraint firstItem="26h-hO-aOT" firstAttribute="leading" secondItem="O3a-uy-84O" secondAttribute="leading" id="EES-kx-IsN"/>
+                            <constraint firstItem="KOS-oh-7FV" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="44" id="EQB-Hu-2jD"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="KOS-oh-7FV" secondAttribute="bottom" id="Hhh-B7-v9w"/>
+                            <constraint firstItem="26h-hO-aOT" firstAttribute="centerX" secondItem="Ukp-NQ-cz5" secondAttribute="centerX" id="K2q-Ev-NhI"/>
+                            <constraint firstItem="O3a-uy-84O" firstAttribute="top" secondItem="26h-hO-aOT" secondAttribute="bottom" id="N6s-QO-XUX"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="Ukp-NQ-cz5" secondAttribute="bottom" id="N7F-tW-uUh"/>
+                            <constraint firstItem="O3a-uy-84O" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="Pvw-O0-Q4r"/>
+                            <constraint firstItem="KOS-oh-7FV" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="Rst-z2-pqr">
+                                <variation key="widthClass=compact" constant="-16"/>
+                            </constraint>
+                            <constraint firstItem="KOS-oh-7FV" firstAttribute="top" secondItem="O3a-uy-84O" secondAttribute="top" id="VZi-hT-DQf"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="KOS-oh-7FV" secondAttribute="trailing" id="Y9G-UI-gu5">
+                                <variation key="widthClass=compact" constant="-16"/>
+                            </constraint>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="KOS-oh-7FV" secondAttribute="bottom" id="aej-z7-9gd"/>
+                            <constraint firstItem="26h-hO-aOT" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="dNq-Kw-xg9"/>
+                            <constraint firstItem="KOS-oh-7FV" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="44" id="gI7-m1-PHu"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="KOS-oh-7FV" secondAttribute="bottom" id="ieh-gW-VV8"/>
+                            <constraint firstItem="Ukp-NQ-cz5" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="j8N-tI-NFH"/>
+                            <constraint firstItem="26h-hO-aOT" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="mpN-Co-bjh"/>
+                            <constraint firstItem="26h-hO-aOT" firstAttribute="bottom" secondItem="O3a-uy-84O" secondAttribute="top" id="rzt-YC-3cM"/>
+                            <constraint firstItem="26h-hO-aOT" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="tfV-uC-ofQ"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="26h-hO-aOT"/>
+                                <exclude reference="O3a-uy-84O"/>
+                                <exclude reference="KOS-oh-7FV"/>
+                                <exclude reference="Ukp-NQ-cz5"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="Hhh-B7-v9w"/>
+                                <exclude reference="N7F-tW-uUh"/>
+                                <exclude reference="aej-z7-9gd"/>
+                                <exclude reference="ieh-gW-VV8"/>
+                                <exclude reference="92T-ID-Bhd"/>
+                                <exclude reference="EES-kx-IsN"/>
+                                <exclude reference="K2q-Ev-NhI"/>
+                                <exclude reference="dNq-Kw-xg9"/>
+                                <exclude reference="mpN-Co-bjh"/>
+                                <exclude reference="rzt-YC-3cM"/>
+                                <exclude reference="tfV-uC-ofQ"/>
+                                <exclude reference="860-30-OTp"/>
+                                <exclude reference="j8N-tI-NFH"/>
+                                <exclude reference="EQB-Hu-2jD"/>
+                                <exclude reference="Rst-z2-pqr"/>
+                                <exclude reference="VZi-hT-DQf"/>
+                                <exclude reference="Y9G-UI-gu5"/>
+                                <exclude reference="gI7-m1-PHu"/>
+                                <exclude reference="N6s-QO-XUX"/>
+                                <exclude reference="Pvw-O0-Q4r"/>
+                            </mask>
+                        </variation>
+                        <variation key="widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="26h-hO-aOT"/>
+                                <include reference="O3a-uy-84O"/>
+                                <include reference="KOS-oh-7FV"/>
+                                <include reference="Ukp-NQ-cz5"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="Hhh-B7-v9w"/>
+                                <include reference="N7F-tW-uUh"/>
+                                <exclude reference="aej-z7-9gd"/>
+                                <include reference="ieh-gW-VV8"/>
+                                <include reference="92T-ID-Bhd"/>
+                                <include reference="EES-kx-IsN"/>
+                                <include reference="K2q-Ev-NhI"/>
+                                <exclude reference="dNq-Kw-xg9"/>
+                                <include reference="mpN-Co-bjh"/>
+                                <include reference="rzt-YC-3cM"/>
+                                <include reference="tfV-uC-ofQ"/>
+                                <include reference="860-30-OTp"/>
+                                <include reference="j8N-tI-NFH"/>
+                                <include reference="EQB-Hu-2jD"/>
+                                <include reference="Rst-z2-pqr"/>
+                                <exclude reference="VZi-hT-DQf"/>
+                                <include reference="Y9G-UI-gu5"/>
+                                <exclude reference="gI7-m1-PHu"/>
+                                <exclude reference="N6s-QO-XUX"/>
+                                <include reference="Pvw-O0-Q4r"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <connections>
+                        <outlet property="blurEffectView" destination="KOS-oh-7FV" id="3Fm-Vz-8ea"/>
+                        <outlet property="resetButton" destination="psH-LW-4xV" id="HFz-zc-FfN"/>
+                        <outlet property="seasonPicker" destination="nhR-Tp-fuw" id="Tkv-qw-XVa"/>
+                        <outlet property="selectTourButton" destination="1Qe-WZ-Jre" id="7ln-Pq-deu"/>
+                        <outlet property="tourMap" destination="O3a-uy-84O" id="HYF-LO-sBf"/>
+                        <outlet property="tourNavControls" destination="Ukp-NQ-cz5" id="rdd-ue-w9k"/>
+                        <outlet property="yearPicker" destination="aXb-xx-wYz" id="DZO-8Q-bO5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="334.5" y="450"/>
+        </scene>
+        <!--Tour Picker View Controller-->
+        <scene sceneID="7iv-xP-6MJ">
+            <objects>
+                <viewController storyboardIdentifier="TourPicker" id="nMD-yb-RjX" customClass="TourPickerViewController" customModule="PhishTourV2" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="f4Z-sF-sq2"/>
+                        <viewControllerLayoutGuide type="bottom" id="jiw-ye-EZA"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="nr2-vl-D1T">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <pickerView tag="1" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UgB-O0-LvC" userLabel="Year picker">
+                                <rect key="frame" x="0.0" y="-162" width="320" height="162"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="150" id="Sb4-b7-I5J"/>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="Sb4-b7-I5J"/>
+                                    </mask>
+                                </variation>
+                                <variation key="widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="Sb4-b7-I5J"/>
+                                    </mask>
+                                </variation>
+                            </pickerView>
+                            <pickerView tag="2" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qA1-Uw-1kJ" userLabel="Season picker">
+                                <rect key="frame" x="0.0" y="-162" width="320" height="162"/>
+                            </pickerView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="59f-KO-T3B">
+                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <fontDescription key="fontDescription" name="AppleSDGothicNeo-Bold" family="Apple SD Gothic Neo" pointSize="18"/>
+                                <state key="normal" title="Select Tour">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="selectTour:" destination="nMD-yb-RjX" eventType="touchUpInside" id="a6r-af-cYP"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="0.91764705879999997" green="0.72941176470000002" blue="0.36470588240000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="qA1-Uw-1kJ" firstAttribute="centerY" secondItem="nr2-vl-D1T" secondAttribute="centerY" id="6TC-00-waS"/>
+                            <constraint firstItem="jiw-ye-EZA" firstAttribute="top" secondItem="59f-KO-T3B" secondAttribute="bottom" constant="189" id="GKU-Mc-qXo"/>
+                            <constraint firstItem="qA1-Uw-1kJ" firstAttribute="leading" secondItem="UgB-O0-LvC" secondAttribute="trailing" constant="68" id="SIE-dw-u7l"/>
+                            <constraint firstItem="59f-KO-T3B" firstAttribute="centerX" secondItem="nr2-vl-D1T" secondAttribute="centerX" id="Zvx-0c-d2m"/>
+                            <constraint firstItem="qA1-Uw-1kJ" firstAttribute="trailing" secondItem="nr2-vl-D1T" secondAttribute="trailingMargin" id="l2k-dU-pR3"/>
+                            <constraint firstItem="59f-KO-T3B" firstAttribute="top" secondItem="qA1-Uw-1kJ" secondAttribute="bottom" constant="8" symbolic="YES" id="ps3-0J-6XA"/>
+                            <constraint firstItem="UgB-O0-LvC" firstAttribute="leading" secondItem="nr2-vl-D1T" secondAttribute="leadingMargin" id="vFg-WK-ymA"/>
+                            <constraint firstItem="UgB-O0-LvC" firstAttribute="top" secondItem="qA1-Uw-1kJ" secondAttribute="top" id="w0M-VA-67R"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="UgB-O0-LvC"/>
+                                <exclude reference="qA1-Uw-1kJ"/>
+                                <exclude reference="59f-KO-T3B"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="vFg-WK-ymA"/>
+                                <exclude reference="w0M-VA-67R"/>
+                                <exclude reference="GKU-Mc-qXo"/>
+                                <exclude reference="6TC-00-waS"/>
+                                <exclude reference="SIE-dw-u7l"/>
+                                <exclude reference="l2k-dU-pR3"/>
+                                <exclude reference="Zvx-0c-d2m"/>
+                                <exclude reference="ps3-0J-6XA"/>
+                            </mask>
+                        </variation>
+                        <variation key="widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="UgB-O0-LvC"/>
+                                <include reference="qA1-Uw-1kJ"/>
+                                <include reference="59f-KO-T3B"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="vFg-WK-ymA"/>
+                                <include reference="w0M-VA-67R"/>
+                                <include reference="GKU-Mc-qXo"/>
+                                <include reference="6TC-00-waS"/>
+                                <include reference="SIE-dw-u7l"/>
+                                <include reference="l2k-dU-pR3"/>
+                                <include reference="Zvx-0c-d2m"/>
+                                <include reference="ps3-0J-6XA"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <connections>
+                        <outlet property="seasonPicker" destination="qA1-Uw-1kJ" id="HkX-yz-kPE"/>
+                        <outlet property="selectTourButton" destination="59f-KO-T3B" id="yj1-2y-9d8"/>
+                        <outlet property="yearPicker" destination="UgB-O0-LvC" id="f0g-UG-z4D"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mzv-k9-aF1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1113" y="450"/>
+        </scene>
+    </scenes>
+</document>

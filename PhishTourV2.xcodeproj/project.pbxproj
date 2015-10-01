@@ -8,11 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		81755A401BBCDE5D00A16229 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A3F1BBCDE5D00A16229 /* AppDelegate.swift */; };
-		81755A421BBCDE5D00A16229 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A411BBCDE5D00A16229 /* ViewController.swift */; };
-		81755A451BBCDE5D00A16229 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81755A431BBCDE5D00A16229 /* Main.storyboard */; };
 		81755A471BBCDE5D00A16229 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 81755A461BBCDE5D00A16229 /* Images.xcassets */; };
 		81755A4A1BBCDE5D00A16229 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81755A481BBCDE5D00A16229 /* LaunchScreen.xib */; };
 		81755A561BBCDE5D00A16229 /* PhishTourV2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A551BBCDE5D00A16229 /* PhishTourV2Tests.swift */; };
+		81755A601BBCDECF00A16229 /* PhishTour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A5F1BBCDECF00A16229 /* PhishTour.swift */; };
+		81755A621BBCDF9E00A16229 /* PhishShow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A611BBCDF9E00A16229 /* PhishShow.swift */; };
+		81755A641BBCE13C00A16229 /* PhishSong.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A631BBCE13C00A16229 /* PhishSong.swift */; };
+		81755A661BBCE28D00A16229 /* PhishinClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A651BBCE28D00A16229 /* PhishinClient.swift */; };
+		81755A681BBCE82700A16229 /* TourMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A671BBCE82700A16229 /* TourMapViewController.swift */; };
+		81755A6A1BBCE85000A16229 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81755A691BBCE85000A16229 /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,13 +33,17 @@
 		81755A3A1BBCDE5D00A16229 /* PhishTourV2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhishTourV2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		81755A3E1BBCDE5D00A16229 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		81755A3F1BBCDE5D00A16229 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		81755A411BBCDE5D00A16229 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		81755A441BBCDE5D00A16229 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		81755A461BBCDE5D00A16229 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		81755A491BBCDE5D00A16229 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		81755A4F1BBCDE5D00A16229 /* PhishTourV2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhishTourV2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		81755A541BBCDE5D00A16229 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		81755A551BBCDE5D00A16229 /* PhishTourV2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishTourV2Tests.swift; sourceTree = "<group>"; };
+		81755A5F1BBCDECF00A16229 /* PhishTour.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhishTour.swift; sourceTree = "<group>"; };
+		81755A611BBCDF9E00A16229 /* PhishShow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhishShow.swift; sourceTree = "<group>"; };
+		81755A631BBCE13C00A16229 /* PhishSong.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhishSong.swift; sourceTree = "<group>"; };
+		81755A651BBCE28D00A16229 /* PhishinClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhishinClient.swift; sourceTree = "<group>"; };
+		81755A671BBCE82700A16229 /* TourMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TourMapViewController.swift; sourceTree = "<group>"; };
+		81755A691BBCE85000A16229 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,8 +86,12 @@
 			isa = PBXGroup;
 			children = (
 				81755A3F1BBCDE5D00A16229 /* AppDelegate.swift */,
-				81755A411BBCDE5D00A16229 /* ViewController.swift */,
-				81755A431BBCDE5D00A16229 /* Main.storyboard */,
+				81755A691BBCE85000A16229 /* Main.storyboard */,
+				81755A5F1BBCDECF00A16229 /* PhishTour.swift */,
+				81755A611BBCDF9E00A16229 /* PhishShow.swift */,
+				81755A631BBCE13C00A16229 /* PhishSong.swift */,
+				81755A651BBCE28D00A16229 /* PhishinClient.swift */,
+				81755A671BBCE82700A16229 /* TourMapViewController.swift */,
 				81755A461BBCDE5D00A16229 /* Images.xcassets */,
 				81755A481BBCDE5D00A16229 /* LaunchScreen.xib */,
 				81755A3D1BBCDE5D00A16229 /* Supporting Files */,
@@ -192,9 +204,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81755A451BBCDE5D00A16229 /* Main.storyboard in Resources */,
 				81755A4A1BBCDE5D00A16229 /* LaunchScreen.xib in Resources */,
 				81755A471BBCDE5D00A16229 /* Images.xcassets in Resources */,
+				81755A6A1BBCE85000A16229 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -212,7 +224,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81755A421BBCDE5D00A16229 /* ViewController.swift in Sources */,
+				81755A601BBCDECF00A16229 /* PhishTour.swift in Sources */,
+				81755A641BBCE13C00A16229 /* PhishSong.swift in Sources */,
+				81755A621BBCDF9E00A16229 /* PhishShow.swift in Sources */,
+				81755A681BBCE82700A16229 /* TourMapViewController.swift in Sources */,
+				81755A661BBCE28D00A16229 /* PhishinClient.swift in Sources */,
 				81755A401BBCDE5D00A16229 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -236,14 +252,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		81755A431BBCDE5D00A16229 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				81755A441BBCDE5D00A16229 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		81755A481BBCDE5D00A16229 /* LaunchScreen.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
