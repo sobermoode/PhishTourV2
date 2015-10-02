@@ -621,30 +621,44 @@ class TourMapViewController: UIViewController,
             case 1:
                 if let theYear = years?[ row ].toInt()!
                 {
-                    // requestToursForYear( theYear )
-                    PhishinClient.sharedInstance().requestTourInfoForYear( theYear )
+                    let documentsPath = NSSearchPathForDirectoriesInDomains(
+                        .DocumentDirectory,
+                        .UserDomainMask,
+                        true
+                        )[ 0 ] as! String
+                    let yearFilePath = documentsPath + years![ row ]
+                    println( "Attempting to get saved tours at \( yearFilePath )" )
+                    
+                    if let savedTours = NSKeyedUnarchiver.unarchiveObjectWithFile( yearFilePath ) as? PhishTour
                     {
-                        tourRequestError, tours in
-                        
-                        if tourRequestError != nil
+                        println( "savedTours: \( savedTours )" )
+                    }
+                    else
+                    {
+                        // requestToursForYear( theYear )
+                        PhishinClient.sharedInstance().requestTourInfoForYear( theYear )
                         {
-                            // TODO: create an alert for this
-                            println( "There was an error requesting the tours for \( theYear ): \( tourRequestError.localizedDescription )" )
-                        }
-                        else
-                        {
-                            println( "Finished the request: tours: \( tours )" )
-                            self.tours = tours
-                            if let firstTour = self.tours?.first!
+                            tourRequestError, tours in
+                            
+                            if tourRequestError != nil
                             {
-                                self.selectedTour = firstTour
+                                // TODO: create an alert for this
+                                println( "There was an error requesting the tours for \( theYear ): \( tourRequestError.localizedDescription )" )
                             }
-                            
-                            
-                            dispatch_async( dispatch_get_main_queue() )
+                            else
                             {
-                                println( "Reloading the season picker..." )
-                                self.seasonPicker.reloadAllComponents()
+                                println( "Finished the request: tours: \( tours )" )
+                                self.tours = tours
+                                if let firstTour = self.tours?.first!
+                                {
+                                    self.selectedTour = firstTour
+                                }
+                                
+                                dispatch_async( dispatch_get_main_queue() )
+                                {
+                                    println( "Reloading the season picker..." )
+                                    self.seasonPicker.reloadAllComponents()
+                                }
                             }
                         }
                     }

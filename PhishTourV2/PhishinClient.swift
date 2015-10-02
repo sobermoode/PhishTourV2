@@ -11,6 +11,7 @@ import UIKit
 class PhishinClient: NSObject
 {
     let session: NSURLSession = NSURLSession.sharedSession()
+    let fileManager: NSFileManager = NSFileManager.defaultManager()
     
     let endpoint: String = "http://phish.in/api/v1"
     let notPartOfATour: Int = 71
@@ -242,6 +243,7 @@ class PhishinClient: NSObject
                         // tourInfo.updateValue(tourName, forKey: tourID)
                         let newTour = PhishTour(year: year, name: tourName, tourID: tourID)
                         tours.append( newTour )
+                        self.saveTour( newTour )
                     }
                     else
                     {
@@ -259,6 +261,26 @@ class PhishinClient: NSObject
                 completionHandler(tourNamesRequestError: nil, tours: tours)
             }
             tourIDRequestTask.resume()
+        }
+    }
+    
+    func saveTour( tour: PhishTour )
+    {
+        let documentsPath = NSSearchPathForDirectoriesInDomains(
+            .DocumentDirectory,
+            .UserDomainMask,
+            true
+        )[ 0 ] as! String
+        let tourPath = documentsPath + tour.filePath
+        println( "tourPath: \( tourPath )" )
+        
+        if NSKeyedArchiver.archiveRootObject(tour, toFile: tourPath)
+        {
+            return
+        }
+        else
+        {
+            println( "There was an error saving the tour to the device." )
         }
     }
 }
