@@ -21,6 +21,7 @@ class TourMapViewController: UIViewController,
     @IBOutlet weak var tourNavControls: UISegmentedControl!
     
     // MARK: actually using these
+    var firstTime: Bool = true
     var years: [ String ]?
     var selectedYear: String?
     var tours: [ PhishTour ]?
@@ -82,51 +83,6 @@ class TourMapViewController: UIViewController,
         yearPicker.delegate = self
         seasonPicker.dataSource = self
         seasonPicker.delegate = self
-        
-        PhishinClient.sharedInstance().requestYears()
-        {
-            yearsRequestError, years in
-            
-            if yearsRequestError != nil
-            {
-                // TODO: use an alert for this
-                println( "There was an error requesting the years: \( yearsRequestError.localizedDescription )" )
-            }
-            else
-            {
-                self.years = years.reverse()
-                self.selectedYear = self.years?.first
-                
-                dispatch_async( dispatch_get_main_queue() )
-                {
-                    self.yearPicker.reloadAllComponents()
-                }
-                
-                PhishinClient.sharedInstance().requestToursForYear( self.selectedYear!.toInt()! )
-                {
-                    tourRequestError, tours in
-                    
-                    if tourRequestError != nil
-                    {
-                        println( "There was an error requesting the tours for \( self.selectedYear! ): \( tourRequestError.localizedDescription )" )
-                    }
-                    else
-                    {
-                        self.tours = tours
-                        if let firstTour = self.tours?.first!
-                        {
-                            self.selectedTour = firstTour
-                        }
-                        
-                        dispatch_async( dispatch_get_main_queue() )
-                        {
-                            println( "Reloading the season picker..." )
-                            self.seasonPicker.reloadAllComponents()
-                        }
-                    }
-                }
-            }
-        }
     }
     
     @IBAction func resetMap( sender: UIBarButtonItem )
@@ -199,6 +155,57 @@ class TourMapViewController: UIViewController,
         
         selectTourButton.title = blurEffectView.hidden ? "Select Tour" : "Cancel"
         selectTourButton.tintColor = blurEffectView.hidden ? UIColor.blueColor() : UIColor.redColor()
+        
+        if firstTime
+        {
+            PhishinClient.sharedInstance().requestYears()
+            {
+                yearsRequestError, years in
+                
+                if yearsRequestError != nil
+                {
+                    // TODO: use an alert for this
+                    println( "There was an error requesting the years: \( yearsRequestError.localizedDescription )" )
+                }
+                else
+                {
+                    self.years = years.reverse()
+                    self.selectedYear = self.years?.first
+                    
+                    dispatch_async( dispatch_get_main_queue() )
+                    {
+                        self.yearPicker.reloadAllComponents()
+                    }
+                    
+                    PhishinClient.sharedInstance().requestToursForYear( self.selectedYear!.toInt()! )
+                    {
+                        tourRequestError, tours in
+                        
+                        if tourRequestError != nil
+                        {
+                            println( "There was an error requesting the tours for \( self.selectedYear! ): \( tourRequestError.localizedDescription )" )
+                        }
+                        else
+                        {
+                            self.tours = tours
+                            if let firstTour = self.tours?.first!
+                            {
+                                self.selectedTour = firstTour
+                            }
+                            
+                            dispatch_async( dispatch_get_main_queue() )
+                            {
+                                println( "Reloading the season picker..." )
+                                self.seasonPicker.reloadAllComponents()
+                            }
+                        }
+                    }
+                }
+            }
+            
+            firstTime = false
+        }
+        
         
         if !blurEffectView.hidden
         {
