@@ -243,7 +243,7 @@ class PhishinClient: NSObject
                         // tourInfo.updateValue(tourName, forKey: tourID)
                         let newTour = PhishTour(year: year, name: tourName, tourID: tourID)
                         tours.append( newTour )
-                        self.saveTour( newTour )
+                        // self.saveTour( newTour )
                     }
                     else
                     {
@@ -257,6 +257,9 @@ class PhishinClient: NSObject
                     
                     tour1.tourID < tour2.tourID
                 }
+                
+                let newYear = PhishYear( year: year, tours: tours)
+                self.saveYearWithTours( newYear, tours: tours )
                 
                 completionHandler(tourNamesRequestError: nil, tours: tours)
             }
@@ -275,6 +278,26 @@ class PhishinClient: NSObject
         println( "tourPath: \( tourPath )" )
         
         if NSKeyedArchiver.archiveRootObject(tour, toFile: tourPath)
+        {
+            return
+        }
+        else
+        {
+            println( "There was an error saving the tour to the device." )
+        }
+    }
+    
+    func saveYearWithTours( year: PhishYear, tours: [ PhishTour ] )
+    {
+        let documentsPath = NSSearchPathForDirectoriesInDomains(
+            .DocumentDirectory,
+            .UserDomainMask,
+            true
+            )[ 0 ] as! String
+        let yearPath = documentsPath + "\( year.year )"
+        println( "yearPath: \( yearPath )" )
+        
+        if NSKeyedArchiver.archiveRootObject(year, toFile: yearPath)
         {
             return
         }

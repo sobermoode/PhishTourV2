@@ -627,11 +627,18 @@ class TourMapViewController: UIViewController,
                         true
                         )[ 0 ] as! String
                     let yearFilePath = documentsPath + years![ row ]
-                    println( "Attempting to get saved tours at \( yearFilePath )" )
+                    println( "Attempting to get saved year at \( yearFilePath )" )
                     
-                    if let savedTours = NSKeyedUnarchiver.unarchiveObjectWithFile( yearFilePath ) as? PhishTour
+                    if let savedYear = NSKeyedUnarchiver.unarchiveObjectWithFile( yearFilePath ) as? PhishYear
                     {
-                        println( "savedTours: \( savedTours )" )
+                        println( "savedTours: \( savedYear.tours )" )
+                        self.tours = savedYear.tours
+                        
+                        dispatch_async( dispatch_get_main_queue() )
+                        {
+                            println( "Reloading the season picker..." )
+                            self.seasonPicker.reloadAllComponents()
+                        }
                     }
                     else
                     {
