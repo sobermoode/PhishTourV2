@@ -641,6 +641,61 @@ class TourMapViewController: UIViewController,
         }
     }
     
+    // the trick for using this method came from http://stackoverflow.com/a/7185460
+    func pickerView(
+        pickerView: UIPickerView,
+        viewForRow row: Int,
+        forComponent component: Int,
+        reusingView view: UIView!
+    ) -> UIView
+    {
+        var label = view as? UILabel
+        
+        if label == nil
+        {
+            label = UILabel()
+            
+            // label?.font = UIFont(name: "Apple SD Gothic Neo", size: 14)
+            label?.textAlignment = .Center
+        }
+        
+        switch pickerView.tag
+        {
+            case 1:
+                if let theYears = years
+                {
+                    label?.font = UIFont(name: "Apple SD Gothic Neo", size: 20)
+                    label?.text = theYears[ row ]
+                }
+                else
+                {
+                    label?.text =  ". . ."
+                }
+                
+            case 2:
+                // return tourSelections[ row ]
+                if let theTours = tours
+                {
+                    label?.font = UIFont(name: "Apple SD Gothic Neo", size: 12)
+                    // TODO: FIX
+                    /*
+                    the problem here is that the row index are 0-n, while the dictionary is keys by the tourID, which is like,
+                    91, 97, or 24, etc. i think i should just consruct some Tour objects and then retrieve the names from it.
+                    */
+                    label?.text =  theTours[ row ].name
+                }
+                else
+                {
+                    label?.text =  ". . ."
+                }
+                
+            default:
+                label?.text =  ". . ."
+        }
+        
+        return label!
+    }
+    
     func pickerView(
         pickerView: UIPickerView,
         didSelectRow row: Int,

@@ -61,11 +61,16 @@ class PhishinClient: NSObject
                     error: yearsJSONificationError
                 ) as? [ String : AnyObject ]
                 {
-                    let theYears = yearsResults[ "data" ] as! [ String ]
+                    let theYears = yearsResults[ "data" ] as! NSArray
+                    
+                    let theYearsMutable: AnyObject = theYears.mutableCopy()
+                    theYearsMutable.removeObjectAtIndex( 14 )
+                    
+                    let years = NSArray( array: theYearsMutable as! [ AnyObject ] ) as! [ String ]
                     
                     completionHandler(
                         yearsRequestError: nil,
-                        years: theYears
+                        years: years
                     )
                 }
                 else
