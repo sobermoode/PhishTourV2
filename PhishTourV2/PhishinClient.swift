@@ -12,6 +12,11 @@ class PhishinClient: NSObject
 {
     let session: NSURLSession = NSURLSession.sharedSession()
     let fileManager: NSFileManager = NSFileManager.defaultManager()
+    let documentsPath = NSSearchPathForDirectoriesInDomains(
+        .DocumentDirectory,
+        .UserDomainMask,
+        true
+    )[ 0 ] as! String
     
     let endpoint: String = "http://phish.in/api/v1"
     let notPartOfATour: Int = 71
@@ -72,118 +77,78 @@ class PhishinClient: NSObject
         yearsRequestTask.resume()
     }
     
-    func requestTourInfoForYear(
+    func requestToursForYear(
         year: Int,
         completionHandler: ( toursRequestError: NSError!, tours: [ PhishTour ]! ) -> Void
     )
     {
-        let toursRequestString = endpoint + Routes.Years + "/\( year )"
-        let toursRequestURL = NSURL( string: toursRequestString )!
-        let toursRequestTask = session.dataTaskWithURL( toursRequestURL )
+        let yearFilePath = documentsPath + "\( year )"
+        println( "Attempting to get saved year at \( yearFilePath )" )
+        
+        if let savedYear = NSKeyedUnarchiver.unarchiveObjectWithFile( yearFilePath ) as? PhishYear
         {
-            toursData, toursResponse, toursError in
-            
-            if toursError != nil
+            println( "savedTours: \( savedYear.tours )" )
+            completionHandler(toursRequestError: nil, tours: savedYear.tours)
+        }
+        else
+        {
+            let toursRequestString = endpoint + Routes.Years + "/\( year )"
+            let toursRequestURL = NSURL( string: toursRequestString )!
+            let toursRequestTask = session.dataTaskWithURL( toursRequestURL )
             {
-                completionHandler(
-                    toursRequestError: toursError,
-                    tours: nil
-                )
-            }
-            else
-            {
-                var toursJSONificationError: NSErrorPointer = nil
-                if let toursResults = NSJSONSerialization.JSONObjectWithData(
-                    toursData,
-                    options: nil,
-                    error: toursJSONificationError
-                ) as? [ String : AnyObject ]
+                toursData, toursResponse, toursError in
+                
+                if toursError != nil
                 {
-                    let showsForTheYear = toursResults[ "data" ] as! [[ String : AnyObject ]]
-                    
-                    // self.tourIDs.removeAll( keepCapacity: false )
-                    // self.tourSelections.removeAll( keepCapacity: false )
-                    
-                    var tourIDs = [ Int ]()
-                    var tourInfo = [ Int : String ]()
-                    for show in showsForTheYear
-                    {
-                        let tourID = show[ "tour_id" ] as! Int
-                        if !contains( tourIDs, tourID ) && tourID != self.notPartOfATour
-                        {
-                            tourIDs.append( tourID )
-                            /*
-                            self.requestTourNameForID( tourID )
-                            {
-                                tourNameRequestError, tourName in
-                                
-                                if tourNameRequestError != nil
-                                {
-                                    completionHandler(
-                                        toursRequestError: tourNameRequestError,
-                                        tourInfo: nil
-                                    )
-                                }
-                                else
-                                {
-                                    println( "tourID \( tourID ): \( tourName )" )
-                                    tourInfo.updateValue( tourName, forKey: tourID )
-                                }
-                            }
-                            */
-                        }
-                    }
-                    
-                    self.requestTourNamesForIDs( tourIDs, year: year )
-                    {
-                        tourNamesRequestError, tours in
-                        
-                        if tourNamesRequestError != nil
-                        {
-                            completionHandler(toursRequestError: tourNamesRequestError, tours: nil)
-                        }
-                        else
-                        {
-                            completionHandler(toursRequestError: nil, tours: tours)
-                        }
-                    }
-                    
-                    /*
                     completionHandler(
-                        toursRequestError: nil,
-                        tourInfo: tourInfo
+                        toursRequestError: toursError,
+                        tours: nil
                     )
-                    */
-                    
-                    /*
-                    self.requestToursForTourIDs( tourIDs )
-                    {
-                        tourIDRequestError, tourNames in
-                        
-                        if tourIDRequestError != nil
-                        {
-                            completionHandler(
-                                toursRequestError: tourIDRequestError,
-                                tourInfo: nil
-                            )
-                        }
-                        else
-                        {
-                            completionHandler(
-                                toursRequestError: nil,
-                                tours: tourNames
-                            )
-                        }
-                    }
-                    */
                 }
                 else
                 {
-                    println( "There was a problem processing the tours results: \( toursJSONificationError )" )
+                    var toursJSONificationError: NSErrorPointer = nil
+                    if let toursResults = NSJSONSerialization.JSONObjectWithData(
+                        toursData,
+                        options: nil,
+                        error: toursJSONificationError
+                    ) as? [ String : AnyObject ]
+                    {
+                        let showsForTheYear = toursResults[ "data" ] as! [[ String : AnyObject ]]
+                        
+                        var tourIDs = [ Int ]()
+                        var tourInfo = [ Int : String ]()
+                        for show in showsForTheYear
+                        {
+                            let tourID = show[ "tour_id" ] as! Int
+                            if !contains( tourIDs, tourID ) && tourID != self.notPartOfATour
+                            {
+                                tourIDs.append( tourID )
+                            }
+                        }
+                        
+                        self.requestTourNamesForIDs( tourIDs, year: year )
+                        {
+                            tourNamesRequestError, tours in
+                            
+                            if tourNamesRequestError != nil
+                            {
+                                completionHandler(toursRequestError: tourNamesRequestError, tours: nil)
+                            }
+                            else
+                            {
+                                completionHandler(toursRequestError: nil, tours: tours)
+                            }
+                        }
+                    }
+                    else
+                    {
+                        println( "There was a problem processing the tours results: \( toursJSONificationError )" )
+                    }
                 }
             }
+            toursRequestTask.resume()
         }
-        toursRequestTask.resume()
     }
     
     func requestTourNamesForIDs(
