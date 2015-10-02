@@ -650,20 +650,21 @@ class TourMapViewController: UIViewController,
         switch pickerView.tag
         {
             case 1:
-                if let theYear = years?[ row ].toInt()!
+                if row == ( years!.count ) - 1
                 {
-                    PhishinClient.sharedInstance().requestToursForYear( theYear )
+                    let years = [ 1983, 1984, 1985, 1986, 1987 ]
+                    PhishinClient.sharedInstance().requestToursForYears( years )
                     {
-                        tourRequestError, tours in
+                        toursRequestError, tours in
                         
-                        if tourRequestError != nil
+                        println( "requestToursForYears was successful..." )
+                        if toursRequestError != nil
                         {
-                            // TODO: create an alert for this
-                            println( "There was an error requesting the tours for \( theYear ): \( tourRequestError.localizedDescription )" )
+                            println( "There was an error requesting the tours for \( years ): \( toursRequestError.localizedDescription )" )
                         }
                         else
                         {
-                            println( "Finished the request: tours: \( tours )" )
+                            println( "tours: \( tours )" )
                             self.selectedYear = self.years?[ row ]
                             self.tours = tours
                             if let firstTour = self.tours?.first!
@@ -681,12 +682,45 @@ class TourMapViewController: UIViewController,
                 }
                 else
                 {
-                    return
+                    if let theYear = years?[ row ].toInt()!
+                    {
+                        PhishinClient.sharedInstance().requestToursForYear( theYear )
+                        {
+                            toursRequestError, tours in
+                            
+                            if toursRequestError != nil
+                            {
+                                // TODO: create an alert for this
+                                println( "There was an error requesting the tours for \( theYear ): \( toursRequestError.localizedDescription )" )
+                            }
+                            else
+                            {
+                                println( "Finished the request: tours: \( tours )" )
+                                self.selectedYear = self.years?[ row ]
+                                self.tours = tours
+                                if let firstTour = self.tours?.first!
+                                {
+                                    self.selectedTour = firstTour
+                                }
+                                
+                                dispatch_async( dispatch_get_main_queue() )
+                                {
+                                    println( "Reloading the season picker..." )
+                                    self.seasonPicker.reloadAllComponents()
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return
+                    }
                 }
                 
             case 2:
                 // selectedTour = tourIDs[ row ]
-                selectedTour = tours?[ row ]
+                // selectedTour = tours?[ row ]
+                return
                 
             default:
                 selectedYear = nil

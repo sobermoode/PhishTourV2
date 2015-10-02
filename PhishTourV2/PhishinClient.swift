@@ -151,6 +151,48 @@ class PhishinClient: NSObject
         }
     }
     
+    func requestToursForYears(
+        years: [ Int ],
+        completionHandler: ( toursRequestError: NSError!, tours: [ PhishTour ]! ) -> Void
+    )
+    {
+        println( "requestToursForYears..." )
+        var allTours = [ PhishTour ]()
+        
+        for year in years
+        {
+            requestToursForYear( year )
+            {
+                toursRequestError, tours in
+                
+                if toursRequestError != nil
+                {
+                    completionHandler(toursRequestError: toursRequestError, tours: nil)
+                }
+                else
+                {
+                    println( "Got tour \( tours )" )
+                    allTours += tours
+                }
+            }
+        }
+        
+        do
+        {
+            if allTours.count < 5
+            {
+                continue
+            }
+            else
+            {
+                completionHandler(toursRequestError: nil, tours: allTours)
+            }
+        }
+        while allTours.count < 5
+        
+        // completionHandler(toursRequestError: nil, tours: allTours)
+    }
+    
     func requestTourNamesForIDs(
         tourIDs: [ Int ],
         year: Int,
