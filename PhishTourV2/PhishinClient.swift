@@ -299,6 +299,7 @@ class PhishinClient: NSObject
         
         if NSKeyedArchiver.archiveRootObject(year, toFile: yearPath)
         {
+            println( "Writing a new file..." )
             return
         }
         else
