@@ -10,14 +10,14 @@ import UIKit
 import MapKit
 
 class PhishShow: NSObject,
-    MKAnnotation
+    NSCoding, MKAnnotation
 {
     var date: String
     var year: Int
     var venue: String
     var city: String
     var showID: Int
-    var tour: PhishTour!
+    var tour: PhishTour!  // not set yet; need to do it in the PhishTour init
     var setlist: [ PhishSong ]!
     
     var showLatitude, showLongitude: Double!
@@ -27,6 +27,14 @@ class PhishShow: NSObject,
             latitude: showLatitude,
             longitude: showLongitude
         )
+    }
+    var title: String
+    {
+        return date
+    }
+    var subtitle: String
+    {
+        return "\( venue )  --  \( city )"
     }
     
     init(
@@ -49,8 +57,26 @@ class PhishShow: NSObject,
     {
         self.date = showInfo[ "date" ] as! String
         self.year = year
-        self.venue = showInfo[ "venue" ] as! String
-        self.city = showInfo[ "city" ] as! String
-        self.showID = showInfo[ "showID" ] as! Int
+        self.venue = showInfo[ "venue_name" ] as! String
+        self.city = showInfo[ "location" ] as! String
+        self.showID = showInfo[ "id" ] as! Int
+    }
+    
+    required init( coder aDecoder: NSCoder )
+    {
+        self.date = aDecoder.decodeObjectForKey( "date" ) as! String
+        self.year = aDecoder.decodeIntegerForKey( "year" )
+        self.venue = aDecoder.decodeObjectForKey( "venue" ) as! String
+        self.city = aDecoder.decodeObjectForKey( "city" ) as! String
+        self.showID = aDecoder.decodeIntegerForKey( "showID" )
+    }
+    
+    func encodeWithCoder( aCoder: NSCoder )
+    {
+        aCoder.encodeObject( self.date, forKey: "date" )
+        aCoder.encodeInteger( self.year, forKey: "year" )
+        aCoder.encodeObject( self.venue, forKey: "venue" )
+        aCoder.encodeObject( self.city, forKey: "city" )
+        aCoder.encodeInteger( self.showID, forKey: "showID" )
     }
 }

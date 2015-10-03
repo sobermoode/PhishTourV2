@@ -29,7 +29,7 @@ class TourMapViewController: UIViewController,
     
     // MARK: everything else
     // var selectedTour: String?
-    var geocoder = CLGeocoder()
+    // var geocoder = CLGeocoder()
     var shows: [[ String : AnyObject ]]?
     var coordinates = [ CLLocationCoordinate2D ]()
     var locations = [ String ]()
@@ -336,130 +336,102 @@ class TourMapViewController: UIViewController,
         if let theTour = selectedTour
         {
             // at this point i should already have all the shows for a tour in the PhishTour object
-            let tourRequestURLString = "http://phish.in/api/v1/tours/\( theTour )"
-            let tourRequestURL = NSURL( string: tourRequestURLString )!
-            let tourRequestTask = NSURLSession.sharedSession().dataTaskWithURL( tourRequestURL )
+            let shows = theTour.shows
+            
+            let mapquestBaseURL = "http://www.mapquestapi.com/geocoding/v1/batch?key=sFvGlJbu43uE3lAkJFxj5gEAE1nUpjhM&maxResults=1&thumbMaps=false"
+            var mapquestRequestString = mapquestBaseURL
+            
+            var cities = [ String ]()
+            var dates = [ String ]()
+            var venueNames = [ String ]()
+            for show in shows
             {
-                tourData, requestResponse, requestError in
+                var location = show.city
+                // cities.append( location )
                 
-                if requestError != nil
+                location = location.stringByReplacingOccurrencesOfString(" ", withString: "")
+                mapquestRequestString += "&location=\( location )"
+                
+                // let date = show[ "date" ] as! String
+                // dates.append( date )
+                
+                // let venueName = show[ "venue_name" ] as! String
+                // venueNames.append( venueName )
+            }
+            
+            let mapquestRequestURL = NSURL( string: mapquestRequestString )!
+            let mapquestGeocodeRequest = NSURLSession.sharedSession().dataTaskWithURL( mapquestRequestURL )
+            {
+                mapquestData, mapquestResponse, mapquestError in
+                
+                if mapquestError != nil
                 {
-                    println( "There was an error requesting the tour data." )
+                    println( "There was an error geocoding the location with Mapquest." )
                 }
                 else
                 {
-                    var jsonificationError: NSErrorPointer = nil
-                    if let jsonTourData = NSJSONSerialization.JSONObjectWithData(
-                        tourData,
+                    var mapquestJSONificationError: NSErrorPointer = nil
+                    if let jsonMapquestData = NSJSONSerialization.JSONObjectWithData(
+                        mapquestData,
                         options: nil,
-                        error: jsonificationError
+                        error: mapquestJSONificationError
                     ) as? [ String : AnyObject ]
                     {
-                        if let data = jsonTourData[ "data" ] as? [ String : AnyObject ]
+                        let geocodeResults = jsonMapquestData[ "results" ] as! [[ String : AnyObject ]]
+                        
+                        // self.currentTour.removeAll( keepCapacity: false ) // TODO: Re-instate?
+                        var counter = 0
+                        for result in geocodeResults
                         {
-                            let shows = data[ "shows" ] as! [[ String : AnyObject ]]
+                            let locations = result[ "locations" ] as! [ AnyObject ]
+                            let innerLocations = locations[ 0 ] as! [ String : AnyObject ]
+                            let latLong = innerLocations[ "latLng" ] as! [ String : Double ]
+                            let geocodedLatitude = latLong[ "lat" ]!
+                            let geocodedLongitude = latLong[ "lng" ]!
                             
-                            let mapquestBaseURL = "http://www.mapquestapi.com/geocoding/v1/batch?key=sFvGlJbu43uE3lAkJFxj5gEAE1nUpjhM&maxResults=1&thumbMaps=false"
-                            var mapquestRequestString = mapquestBaseURL
+                            theTour.shows[ counter ].showLatitude = geocodedLatitude
+                            theTour.shows[ counter ].showLongitude = geocodedLongitude
                             
-                            var cities = [ String ]()
-                            var dates = [ String ]()
-                            var venueNames = [ String ]()
-                            for show in shows
-                            {
-                                var location = show[ "location" ] as! String
-                                cities.append( location )
-                                
-                                location = location.stringByReplacingOccurrencesOfString(" ", withString: "")
-                                mapquestRequestString += "&location=\( location )"
-                                
-                                let date = show[ "date" ] as! String
-                                dates.append( date )
-                                
-                                let venueName = show[ "venue_name" ] as! String
-                                venueNames.append( venueName )
-                            }
+                            /*
+                            let showCoordinate = CLLocationCoordinate2D(
+                                latitude: geocodedLatitude,
+                                longitude: geocodedLongitude
+                            )
+                            self.showCoordinates.append( showCoordinate )
+                            */
                             
-                            let mapquestRequestURL = NSURL( string: mapquestRequestString )!
-                            let mapquestGeocodeRequest = NSURLSession.sharedSession().dataTaskWithURL( mapquestRequestURL )
-                            {
-                                mapquestData, mapquestResponse, mapquestError in
-                                
-                                if mapquestError != nil
-                                {
-                                    println( "There was an error geocoding the location with Mapquest." )
-                                }
-                                else
-                                {
-                                    if let jsonMapquestData = NSJSONSerialization.JSONObjectWithData(
-                                        mapquestData,
-                                        options: nil,
-                                        error: jsonificationError
-                                    ) as? [ String : AnyObject ]
-                                    {
-                                        let geocodeResults = jsonMapquestData[ "results" ] as! [[ String : AnyObject ]]
-                                        
-                                        // self.currentTour.removeAll( keepCapacity: false ) // TODO: Re-instate?
-                                        var counter = 0
-                                        for result in geocodeResults
-                                        {
-                                            let locations = result[ "locations" ] as! [ AnyObject ]
-                                            let innerLocations = locations[ 0 ] as! [ String : AnyObject ]
-                                            let latLong = innerLocations[ "latLng" ] as! [ String : Double ]
-                                            let geocodedLatitude = latLong[ "lat" ]!
-                                            let geocodedLongitude = latLong[ "lng" ]!
-                                            
-                                            let showCoordinate = CLLocationCoordinate2D(
-                                                latitude: geocodedLatitude,
-                                                longitude: geocodedLongitude
-                                            )
-                                            self.showCoordinates.append( showCoordinate )
-                                            
-                                            // TODO: Re-instate?
-                                            /*
-                                            let newShowAnnotation = ShowAnnotation(
-                                                coordinate: showCoordinate,
-                                                city: cities[ counter ],
-                                                date: dates[ counter ],
-                                                venue: venueNames[ counter ]
-                                            )
-                                            */
-                                            
-                                            // self.currentTour.append( newShowAnnotation ) // TODO: Re-instate?
-                                            
-                                            counter++
-                                        }
-                                        
-                                        dispatch_async( dispatch_get_main_queue() )
-                                        {
-                                            // self.tourMap.addAnnotations( self.currentTour ) // TODO: Re-instate?
-                                            self.makeTourTrail()
-                                            self.centerOnFirstShow()
-                                            self.tourNavControls.hidden = false
-                                        }
-                                    }
-                                    else
-                                    {
-                                        println( "There was a problem parsing the geocoding data from mapquest.com" )
-                                    }
-                                }
-                            }
-                            mapquestGeocodeRequest.resume()
+                            // TODO: Re-instate?
+                            /*
+                            let newShowAnnotation = ShowAnnotation(
+                                coordinate: showCoordinate,
+                                city: cities[ counter ],
+                                date: dates[ counter ],
+                                venue: venueNames[ counter ]
+                            )
+                            */
                             
-                            self.didDropPins = true
+                            // self.currentTour.append( newShowAnnotation ) // TODO: Re-instate?
+                            
+                            counter++
                         }
-                        else
+                        
+                        dispatch_async( dispatch_get_main_queue() )
                         {
-                            println( "That tour doesn't exist." )
+                            self.tourMap.addAnnotations( theTour.shows ) // TODO: Re-instate?
+                            // self.makeTourTrail()
+                            // self.centerOnFirstShow()
+                            // self.tourNavControls.hidden = false
                         }
                     }
                     else
                     {
-                        println( "There was a problem parsing the data from phish.in." )
+                        println( "There was a problem parsing the geocoding data from mapquest.com" )
                     }
                 }
             }
-            tourRequestTask.resume()
+            mapquestGeocodeRequest.resume()
+            
+            self.didDropPins = true
         }
         else
         {

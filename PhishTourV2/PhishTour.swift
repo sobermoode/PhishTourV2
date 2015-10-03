@@ -46,6 +46,7 @@ class PhishTour: NSObject,
     
     func encodeWithCoder( aCoder: NSCoder )
     {
+        // TODO: add self. to the properties
         aCoder.encodeInteger( year, forKey: "year" )
         aCoder.encodeObject( name, forKey: "name" )
         aCoder.encodeInteger( tourID, forKey: "tourID" )
