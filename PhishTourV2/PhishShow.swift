@@ -34,8 +34,7 @@ class PhishShow: NSObject,
         year: Int,
         venue: String,
         city: String,
-        showID: Int,
-        tour: PhishTour
+        showID: Int
     )
     {
         self.date = date
@@ -43,6 +42,15 @@ class PhishShow: NSObject,
         self.venue = venue
         self.city = city
         self.showID = showID
-        self.tour = tour
+        // self.tour = tour
+    }
+    
+    init( showInfo: [ String : AnyObject ], andYear year: Int )
+    {
+        self.date = showInfo[ "date" ] as! String
+        self.year = year
+        self.venue = showInfo[ "venue" ] as! String
+        self.city = showInfo[ "city" ] as! String
+        self.showID = showInfo[ "showID" ] as! Int
     }
 }

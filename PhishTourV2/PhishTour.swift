@@ -14,23 +14,24 @@ class PhishTour: NSObject,
     var year: Int
     var name: String
     var tourID: Int
+    var shows: [ PhishShow ]
     
     var filePath: String
     {
         return "\( year )"
     }
     
-    var shows: [ PhishShow ]!
-    
     init(
         year: Int,
         name: String,
-        tourID: Int
+        tourID: Int,
+        shows: [ PhishShow ]
     )
     {
         self.year = year
         self.name = name
         self.tourID = tourID
+        self.shows = shows
     }
     
     required init( coder aDecoder: NSCoder )
@@ -40,6 +41,7 @@ class PhishTour: NSObject,
         self.year = aDecoder.decodeIntegerForKey( "year" )
         self.name = aDecoder.decodeObjectForKey( "name" ) as! String
         self.tourID = aDecoder.decodeIntegerForKey( "tourID" )
+        self.shows = aDecoder.decodeObjectForKey( "shows" ) as! [ PhishShow ]
     }
     
     func encodeWithCoder( aCoder: NSCoder )
@@ -47,5 +49,6 @@ class PhishTour: NSObject,
         aCoder.encodeInteger( year, forKey: "year" )
         aCoder.encodeObject( name, forKey: "name" )
         aCoder.encodeInteger( tourID, forKey: "tourID" )
+        aCoder.encodeObject( shows, forKey: "shows" )
     }
 }

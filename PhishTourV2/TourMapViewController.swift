@@ -335,6 +335,7 @@ class TourMapViewController: UIViewController,
         
         if let theTour = selectedTour
         {
+            // at this point i should already have all the shows for a tour in the PhishTour object
             let tourRequestURLString = "http://phish.in/api/v1/tours/\( theTour )"
             let tourRequestURL = NSURL( string: tourRequestURLString )!
             let tourRequestTask = NSURLSession.sharedSession().dataTaskWithURL( tourRequestURL )
@@ -774,7 +775,7 @@ class TourMapViewController: UIViewController,
                 
             case 2:
                 // selectedTour = tourIDs[ row ]
-                // selectedTour = tours?[ row ]
+                selectedTour = tours?[ row ]
                 return
                 
             default:
