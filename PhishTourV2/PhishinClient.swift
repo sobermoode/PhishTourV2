@@ -122,12 +122,14 @@ class PhishinClient: NSObject
                         let showsForTheYear = toursResults[ "data" ] as! [[ String : AnyObject ]]
                         
                         var tourIDs = [ Int ]()
+                        var showsForID = [ Int : [ PhishShow ] ]()
                         var shows = [ PhishShow ]()
                         // var tourInfo = [ Int : String ]()
                         for show in showsForTheYear
                         {
-                            shows.append( PhishShow( showInfo: show, andYear: year ) )
-                            // let newShow = PhishShow( showInfo: show, andYear: year )
+                            // shows.append( PhishShow( showInfo: show, andYear: year ) )
+                            
+                            let newShow = PhishShow( showInfo: show, andYear: year )
                             
                             /*
                             let showID = show[ "id "] as! Int
@@ -151,10 +153,14 @@ class PhishinClient: NSObject
                             if !contains( tourIDs, tourID ) && tourID != self.notPartOfATour
                             {
                                 tourIDs.append( tourID )
+                                showsForID.updateValue( [ PhishShow ](), forKey: tourID )
                             }
+                            
+                            showsForID[ tourID ]?.append( newShow )
                         }
                         
-                        self.requestTourNamesForIDs( tourIDs, year: year, shows: shows )
+                        // self.requestTourNamesForIDs( tourIDs, year: year, shows: shows )
+                        self.requestTourNamesForIDs( tourIDs, year: year, showsForID: showsForID )
                         {
                             tourNamesRequestError, tours in
                             
@@ -223,7 +229,7 @@ class PhishinClient: NSObject
     func requestTourNamesForIDs(
         tourIDs: [ Int ],
         year: Int,
-        shows: [ PhishShow ],
+        showsForID: [ Int : [ PhishShow ] ],
         completionHandler: ( tourNamesRequestError: NSError!, tours: [ PhishTour ]! ) -> Void
     )
     {
@@ -281,7 +287,7 @@ class PhishinClient: NSObject
                             year: year,
                             name: tourName,
                             tourID: tourID,
-                            shows: shows )
+                            shows: showsForID[ tourID ]! )
                         )
                         // self.saveTour( newTour )
                     }

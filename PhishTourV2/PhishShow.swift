@@ -37,6 +37,7 @@ class PhishShow: NSObject,
         return "\( venue )  --  \( city )"
     }
     
+    /*
     init(
         date: String,
         year: Int,
@@ -52,8 +53,12 @@ class PhishShow: NSObject,
         self.showID = showID
         // self.tour = tour
     }
+    */
     
-    init( showInfo: [ String : AnyObject ], andYear year: Int )
+    init(
+        showInfo: [ String : AnyObject ],
+        andYear year: Int
+    )
     {
         self.date = showInfo[ "date" ] as! String
         self.year = year

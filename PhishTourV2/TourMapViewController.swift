@@ -341,9 +341,9 @@ class TourMapViewController: UIViewController,
             let mapquestBaseURL = "http://www.mapquestapi.com/geocoding/v1/batch?key=sFvGlJbu43uE3lAkJFxj5gEAE1nUpjhM&maxResults=1&thumbMaps=false"
             var mapquestRequestString = mapquestBaseURL
             
-            var cities = [ String ]()
-            var dates = [ String ]()
-            var venueNames = [ String ]()
+            // var cities = [ String ]()
+            // var dates = [ String ]()
+            // var venueNames = [ String ]()
             for show in shows
             {
                 var location = show.city
@@ -358,6 +358,8 @@ class TourMapViewController: UIViewController,
                 // let venueName = show[ "venue_name" ] as! String
                 // venueNames.append( venueName )
             }
+            
+            println( "Mapquest request string: \( mapquestRequestString )" )
             
             let mapquestRequestURL = NSURL( string: mapquestRequestString )!
             let mapquestGeocodeRequest = NSURLSession.sharedSession().dataTaskWithURL( mapquestRequestURL )
@@ -748,6 +750,7 @@ class TourMapViewController: UIViewController,
             case 2:
                 // selectedTour = tourIDs[ row ]
                 selectedTour = tours?[ row ]
+                println( "Selected \( selectedTour )" )
                 return
                 
             default:
