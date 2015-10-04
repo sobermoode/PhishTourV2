@@ -61,6 +61,7 @@ class PhishinClient: NSObject
                     error: yearsJSONificationError
                 ) as? [ String : AnyObject ]
                 {
+                    // TODO: this was the fix for removing 2002 from the list?
                     let theYears = yearsResults[ "data" ] as! NSArray
                     
                     let theYearsMutable: AnyObject = theYears.mutableCopy()

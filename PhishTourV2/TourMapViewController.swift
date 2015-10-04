@@ -344,12 +344,33 @@ class TourMapViewController: UIViewController,
             // var cities = [ String ]()
             // var dates = [ String ]()
             // var venueNames = [ String ]()
-            for show in shows
+            
+            // i might need to enumerate a ( index, show ) here, so i can get the indices of nuremberg and lyon, to delete them from the shows array,
+            // so that this doesnt crash later, when assigning the geocoded coordinates to the shows in the array
+            let showsArray = shows as NSArray
+            let mutableShows: AnyObject = showsArray.mutableCopy()
+            for ( index, show ) in enumerate( mutableShows as! [ PhishShow ] )
             {
+                // let theShow = show as PhishShow
                 var location = show.city
                 // cities.append( location )
                 
                 location = location.stringByReplacingOccurrencesOfString(" ", withString: "")
+                
+                if location == "Nüremberg,Germany" || location == "Lyon/Villeurbanne,France" || location == "Montréal,Québec,Canada" || location == "Düsseldorf,Germany"
+                {
+                    mutableShows.removeObjectAtIndex( index )
+                    continue
+                }
+                println( "location: \( location )" )
+                
+//                let tempURLString = mapquestRequestString + "&location=\( location )"
+//                let tempURL = NSURL( string: tempURLString )!
+//                if isValidURL( tempURL )
+//                {
+//                    mapquestRequestString += "&location=\( location )"
+//                }
+                
                 mapquestRequestString += "&location=\( location )"
                 
                 // let date = show[ "date" ] as! String
@@ -358,6 +379,8 @@ class TourMapViewController: UIViewController,
                 // let venueName = show[ "venue_name" ] as! String
                 // venueNames.append( venueName )
             }
+            
+            theTour.shows = mutableShows as! [ PhishShow ]
             
             println( "Mapquest request string: \( mapquestRequestString )" )
             
@@ -393,6 +416,8 @@ class TourMapViewController: UIViewController,
                             
                             theTour.shows[ counter ].showLatitude = geocodedLatitude
                             theTour.shows[ counter ].showLongitude = geocodedLongitude
+                            
+                            println( "\( theTour.shows[ counter ].city ): \( geocodedLatitude ), \( geocodedLongitude )" )
                             
                             /*
                             let showCoordinate = CLLocationCoordinate2D(
@@ -439,6 +464,13 @@ class TourMapViewController: UIViewController,
         {
             println( "One of the parameters wasn't set." )
         }
+    }
+    
+    func isValidURL( url: NSURL ) -> Bool
+    {
+        let request = NSURLRequest( URL: url )
+        
+        return NSURLConnection.canHandleRequest( request )
     }
     
     func makeTourTrail()
