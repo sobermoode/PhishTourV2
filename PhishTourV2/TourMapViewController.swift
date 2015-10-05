@@ -166,9 +166,9 @@ class TourMapViewController: UIViewController,
         selectTourButton.title = blurEffectView.hidden ? "Select Tour" : "Cancel"
         selectTourButton.tintColor = blurEffectView.hidden ? UIColor.blueColor() : UIColor.redColor()
         
-        if let theTourLabel = view.viewWithTag( 100 )
+        if let tourTitleLable = view.viewWithTag( 100 )
         {
-            theTourLabel.hidden = !theTourLabel.hidden
+            tourTitleLable.hidden = !tourTitleLable.hidden
         }
         
         if firstTime
@@ -404,26 +404,40 @@ class TourMapViewController: UIViewController,
     
     func showTourTitle()
     {
-        if let theLabel = view.viewWithTag( 100 )
+        // remove the old label if one is already onscreen
+        if let tourTitleLable = view.viewWithTag( 100 )
         {
-            theLabel.removeFromSuperview()
+            tourTitleLable.removeFromSuperview()
         }
         
         if let theTour = selectedTour
         {
+            // create the label with a particular look
             let tourTitleLabelWidth: CGFloat = view.bounds.width - 50
             let tourTitleLabelHeight: CGFloat = 25
-            let tourTitleLabel = UILabel(frame: CGRect(x: CGRectGetMidX(view.bounds) - (tourTitleLabelWidth / 2), y: 64, width: tourTitleLabelWidth, height: tourTitleLabelHeight))
+            let tourTitleLabel = UILabel(
+                frame: CGRect(
+                    x: CGRectGetMidX( view.bounds ) - ( tourTitleLabelWidth / 2 ), y: 64,
+                    width: tourTitleLabelWidth, height: tourTitleLabelHeight
+                )
+            )
             tourTitleLabel.backgroundColor = UIColor.orangeColor()
-            tourTitleLabel.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 16)
+            tourTitleLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 16 )
             tourTitleLabel.textColor = UIColor.whiteColor()
             tourTitleLabel.textAlignment = .Center
             tourTitleLabel.text = theTour.name
             tourTitleLabel.tag = 100
+            
+            // resize the label, because the names of tours are sometimes long, or short;
+            // center the label at the top of the screen
             tourTitleLabel.sizeToFit()
             tourTitleLabel.frame.size.width += 20
-            tourTitleLabel.frame.origin = CGPoint(x: CGRectGetMidX(view.bounds) - (tourTitleLabel.frame.size.width / 2), y: 64)
+            tourTitleLabel.frame.origin = CGPoint(
+                x: CGRectGetMidX( view.bounds ) - ( tourTitleLabel.frame.size.width / 2 ),
+                y: 64
+            )
             
+            // add the label to the view
             view.addSubview( tourTitleLabel )
         }
     }
