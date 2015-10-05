@@ -161,6 +161,11 @@ class TourMapViewController: UIViewController,
         selectTourButton.title = blurEffectView.hidden ? "Select Tour" : "Cancel"
         selectTourButton.tintColor = blurEffectView.hidden ? UIColor.blueColor() : UIColor.redColor()
         
+        if let theTourLabel = view.viewWithTag( 100 )
+        {
+            theTourLabel.hidden = !theTourLabel.hidden
+        }
+        
         if firstTime
         {
             PhishinClient.sharedInstance().requestYears()
@@ -359,6 +364,7 @@ class TourMapViewController: UIViewController,
                     dispatch_async( dispatch_get_main_queue() )
                     {
                         // self.zoomOut()
+                        self.showTourTitle()
                         self.centerOnFirstShow()
                         
                         // NOTE: dispatch_after trick cribbed from http://stackoverflow.com/a/24034838
@@ -390,6 +396,32 @@ class TourMapViewController: UIViewController,
 //        
 //        return NSURLConnection.canHandleRequest( request )
 //    }
+    
+    func showTourTitle()
+    {
+        if let theLabel = view.viewWithTag( 100 )
+        {
+            theLabel.removeFromSuperview()
+        }
+        
+        if let theTour = selectedTour
+        {
+            let tourTitleLabelWidth: CGFloat = view.bounds.width - 50
+            let tourTitleLabelHeight: CGFloat = 25
+            let tourTitleLabel = UILabel(frame: CGRect(x: CGRectGetMidX(view.bounds) - (tourTitleLabelWidth / 2), y: 64, width: tourTitleLabelWidth, height: tourTitleLabelHeight))
+            tourTitleLabel.backgroundColor = UIColor.orangeColor()
+            tourTitleLabel.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 16)
+            tourTitleLabel.textColor = UIColor.whiteColor()
+            tourTitleLabel.textAlignment = .Center
+            tourTitleLabel.text = theTour.name
+            tourTitleLabel.tag = 100
+            tourTitleLabel.sizeToFit()
+            tourTitleLabel.frame.size.width += 20
+            tourTitleLabel.frame.origin = CGPoint(x: CGRectGetMidX(view.bounds) - (tourTitleLabel.frame.size.width / 2), y: 64)
+            
+            view.addSubview( tourTitleLabel )
+        }
+    }
     
     func makeTourTrail()
     {
