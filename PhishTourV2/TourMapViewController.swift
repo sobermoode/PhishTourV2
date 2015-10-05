@@ -358,7 +358,8 @@ class TourMapViewController: UIViewController,
                 {
                     dispatch_async( dispatch_get_main_queue() )
                     {
-                        self.zoomOut()
+                        // self.zoomOut()
+                        self.centerOnFirstShow()
                         
                         // NOTE: dispatch_after trick cribbed from http://stackoverflow.com/a/24034838
                         let delayTime = dispatch_time(
@@ -422,11 +423,13 @@ class TourMapViewController: UIViewController,
             let firstShowRegion = MKCoordinateRegion(
                 center: theTour.showCoordinates.first!,
                 span: MKCoordinateSpan(
-                    latitudeDelta: 20.0,
-                    longitudeDelta: 20.0
+                    latitudeDelta: 50.0,
+                    longitudeDelta: 50.0
                 )
             )
             tourMap.setRegion( firstShowRegion, animated: true )
+            
+            isZoomedOut = true
         }
     }
     

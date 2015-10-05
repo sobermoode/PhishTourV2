@@ -10,6 +10,8 @@ import UIKit
 
 class MapquestClient: NSObject
 {
+    let session: NSURLSession = NSURLSession.sharedSession()
+    
     let mapquestBaseURL: String = "http://www.mapquestapi.com/"
     let apiKey: String = "sFvGlJbu43uE3lAkJFxj5gEAE1nUpjhM"
     
@@ -89,7 +91,7 @@ class MapquestClient: NSObject
         
         // create the URL and start the task
         let mapquestRequestURL = NSURL( string: mapquestRequestString )!
-        let mapquestGeocodeRequest = NSURLSession.sharedSession().dataTaskWithURL( mapquestRequestURL )
+        let mapquestGeocodeRequest = session.dataTaskWithURL( mapquestRequestURL )
         {
             mapquestData, mapquestResponse, mapquestError in
             
