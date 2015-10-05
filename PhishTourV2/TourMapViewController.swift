@@ -523,6 +523,7 @@ class TourMapViewController: UIViewController,
         }
     }
     
+    /*
     func mapView(
         mapView: MKMapView!,
         didAddOverlayRenderers renderers: [AnyObject]!
@@ -538,6 +539,7 @@ class TourMapViewController: UIViewController,
             self.centerOnFirstShow()
         }
     }
+    */
     
     // MARK: UIPickerViewDataSource, UIPIckerViewDelegate methods
     
