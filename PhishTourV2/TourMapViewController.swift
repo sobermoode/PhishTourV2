@@ -26,10 +26,14 @@ class TourMapViewController: UIViewController,
     var selectedYear: String?
     var tours: [ PhishTour ]?
     var selectedTour: PhishTour?
+    var didDropPins: Bool = false
+    var isZoomedOut: Bool = true
+    var didStartTour: Bool = false
     
     // MARK: everything else
     // var selectedTour: String?
     // var geocoder = CLGeocoder()
+    // var showCoordinates = [ CLLocationCoordinate2D ]()
     var shows: [[ String : AnyObject ]]?
     var coordinates = [ CLLocationCoordinate2D ]()
     var locations = [ String ]()
@@ -44,7 +48,6 @@ class TourMapViewController: UIViewController,
     var selectedSeason: String? // = "winter"
     let tour: String = "tour"
     var tourIDs = [ Int ]()
-    var showCoordinates = [ CLLocationCoordinate2D ]()
     // var currentTour = [ ShowAnnotation ]() // TODO: Re-instate?
     let defaultRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(
@@ -52,13 +55,10 @@ class TourMapViewController: UIViewController,
             longitude: -98.5795
         ),
         span: MKCoordinateSpan(
-            latitudeDelta: 25.0,
-            longitudeDelta: 25.0
+            latitudeDelta: 35.0,
+            longitudeDelta: 35.0
         )
     )
-    
-    var didDropPins = false
-    var didStartTour = false
     
     override func viewDidLoad()
     {
@@ -102,7 +102,7 @@ class TourMapViewController: UIViewController,
         {
             tourMap.removeAnnotations( tourMap.annotations )
             tourMap.removeOverlays( tourMap.overlays )
-            showCoordinates.removeAll( keepCapacity: false )
+            // showCoordinates.removeAll( keepCapacity: false )
             didDropPins = false
         }
         
@@ -319,7 +319,7 @@ class TourMapViewController: UIViewController,
         {
             tourMap.removeAnnotations( tourMap.annotations )
             tourMap.removeOverlays( tourMap.overlays )
-            showCoordinates.removeAll( keepCapacity: false )
+            // showCoordinates.removeAll( keepCapacity: false )
             
             didDropPins = false
         }
@@ -464,9 +464,45 @@ class TourMapViewController: UIViewController,
                         
                         dispatch_async( dispatch_get_main_queue() )
                         {
-                            self.tourMap.addAnnotations( theTour.shows ) // TODO: Re-instate?
-                            self.makeTourTrail()
-                            // self.centerOnFirstShow()
+                            var delayTime: dispatch_time_t
+                            
+                            self.zoomOut()
+                            
+                            delayTime = dispatch_time( DISPATCH_TIME_NOW, Int64( 2 * Double( NSEC_PER_SEC ) ) )
+                            dispatch_after( delayTime, dispatch_get_main_queue() )
+                            {
+                                self.tourMap.addAnnotations( theTour.shows ) // TODO: Re-instate?
+                                // self.makeTourTrail()
+                            }
+                            
+                            delayTime = dispatch_time( DISPATCH_TIME_NOW, Int64( 2.5 * Double( NSEC_PER_SEC ) ) )
+                            dispatch_after( delayTime, dispatch_get_main_queue() )
+                                {
+                                    // self.tourMap.addAnnotations( theTour.shows ) // TODO: Re-instate?
+                                    self.makeTourTrail()
+                            }
+                            
+//                            if !self.isZoomedOut
+//                            {
+//                                self.zoomOut()
+//                                
+//                                let delayTime = dispatch_time( DISPATCH_TIME_NOW, Int64( 2 * Double( NSEC_PER_SEC ) ) )
+//                                dispatch_after( delayTime, dispatch_get_main_queue() )
+//                                {
+//                                    self.centerOnFirstShow()
+//                                }
+//                            }
+//                            else
+//                            {
+//                                self.tourMap.addAnnotations( theTour.shows ) // TODO: Re-instate?
+//                                self.makeTourTrail()
+//                            }
+                            
+                            delayTime = dispatch_time( DISPATCH_TIME_NOW, Int64( 3 * Double( NSEC_PER_SEC ) ) )
+                            dispatch_after( delayTime, dispatch_get_main_queue() )
+                            {
+                                self.centerOnFirstShow()
+                            }
                             // self.tourNavControls.hidden = false
                         }
                     }
@@ -511,16 +547,25 @@ class TourMapViewController: UIViewController,
         }
     }
     
+    func zoomOut()
+    {
+        tourMap.setRegion(defaultRegion, animated: true)
+        isZoomedOut = true
+    }
+    
     func centerOnFirstShow()
     {
-        let firstShowRegion = MKCoordinateRegion(
-            center: showCoordinates.first!,
-            span: MKCoordinateSpan(
-                latitudeDelta: 20.0,
-                longitudeDelta: 20.0
+        if let theTour = selectedTour
+        {
+            let firstShowRegion = MKCoordinateRegion(
+                center: theTour.showCoordinates.first!,
+                span: MKCoordinateSpan(
+                    latitudeDelta: 20.0,
+                    longitudeDelta: 20.0
+                )
             )
-        )
-        tourMap.setRegion( firstShowRegion, animated: true )
+            tourMap.setRegion( firstShowRegion, animated: true )
+        }
     }
     
     func startTour()
@@ -530,10 +575,11 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
         
-        zoomInOnFirstShow()
+        // zoomInOnFirstShow()
         didStartTour = true
     }
     
+    /*
     func zoomInOnFirstShow()
     {
         let zoomedRegion = MKCoordinateRegion(
@@ -545,6 +591,7 @@ class TourMapViewController: UIViewController,
         )
         tourMap.setRegion( zoomedRegion, animated: true )
     }
+    */
     
     func mapView(
         mapView: MKMapView!,
