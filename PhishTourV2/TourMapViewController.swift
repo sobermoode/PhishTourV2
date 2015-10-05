@@ -343,135 +343,37 @@ class TourMapViewController: UIViewController,
         
         if let theTour = selectedTour
         {
-            // at this point i should already have all the shows for a tour in the PhishTour object
-            let shows = theTour.shows
-            
-            let mapquestBaseURL = "http://www.mapquestapi.com/geocoding/v1/batch?key=sFvGlJbu43uE3lAkJFxj5gEAE1nUpjhM&maxResults=1&thumbMaps=false"
-            var mapquestRequestString = mapquestBaseURL
-            
-            // var cities = [ String ]()
-            // var dates = [ String ]()
-            // var venueNames = [ String ]()
-            
-            // i might need to enumerate a ( index, show ) here, so i can get the indices of nuremberg and lyon, to delete them from the shows array,
-            // so that this doesnt crash later, when assigning the geocoded coordinates to the shows in the array
-            let showsArray = shows as NSArray
-            let mutableShows: AnyObject = showsArray.mutableCopy()
-            for ( index, show ) in enumerate( mutableShows as! [ PhishShow ] )
+            MapquestClient.sharedInstance().geocodeShowsForTour(
+                theTour,
+                withType: .Batch
+            )
             {
-                var location = show.city
+                geocodingError, success in
                 
-                location = location.stringByReplacingOccurrencesOfString(" ", withString: "")
-                
-                switch location
+                if geocodingError != nil
                 {
-                    case "Nüremberg,Germany":
-                        location = "Nuremberg,Germany"
-                    
-                    case "Lyon/Villeurbanne,France":
-                        location = "Lyon,France"
-                    
-                    case "Montréal,Québec,Canada":
-                        location = "Montreal,Quebec,Canada"
-                    
-                    case "Düsseldorf,Germany":
-                        location = "Dusseldorf,Germany"
-                    
-                    case "OrangeBeach,ALUS":
-                        location = "OrangeBeach,AL"
-                    
-                    default:
-                        break
+                    println( "There was an error geocoding the tour locations: \( geocodingError.localizedDescription )" )
                 }
-                
-                /*
-                if location == "Nüremberg,Germany" || location == "Lyon/Villeurbanne,France" || location == "Montréal,Québec,Canada" || location == "Düsseldorf,Germany"
+                else if success!
                 {
-                    mutableShows.removeObjectAtIndex( index )
-                    continue
-                }
-                println( "location: \( location )" )
-                */
-                
-//                let tempURLString = mapquestRequestString + "&location=\( location )"
-//                let tempURL = NSURL( string: tempURLString )!
-//                if isValidURL( tempURL )
-//                {
-//                    mapquestRequestString += "&location=\( location )"
-//                }
-                
-                mapquestRequestString += "&location=\( location )"
-                
-                // let date = show[ "date" ] as! String
-                // dates.append( date )
-                
-                // let venueName = show[ "venue_name" ] as! String
-                // venueNames.append( venueName )
-            }
-            
-            // theTour.shows = mutableShows as! [ PhishShow ]
-            
-            println( "Mapquest request string: \( mapquestRequestString )" )
-            
-            let mapquestRequestURL = NSURL( string: mapquestRequestString )!
-            let mapquestGeocodeRequest = NSURLSession.sharedSession().dataTaskWithURL( mapquestRequestURL )
-            {
-                mapquestData, mapquestResponse, mapquestError in
-                
-                if mapquestError != nil
-                {
-                    println( "There was an error geocoding the location with Mapquest." )
-                }
-                else
-                {
-                    var mapquestJSONificationError: NSErrorPointer = nil
-                    if let jsonMapquestData = NSJSONSerialization.JSONObjectWithData(
-                        mapquestData,
-                        options: nil,
-                        error: mapquestJSONificationError
-                    ) as? [ String : AnyObject ]
+                    dispatch_async( dispatch_get_main_queue() )
                     {
-                        let geocodeResults = jsonMapquestData[ "results" ] as! [[ String : AnyObject ]]
+                        self.zoomOut()
                         
-                        // self.currentTour.removeAll( keepCapacity: false ) // TODO: Re-instate?
-                        var counter = 0
-                        for result in geocodeResults
+                        // NOTE: dispatch_after trick cribbed from http://stackoverflow.com/a/24034838
+                        let delayTime = dispatch_time(
+                            DISPATCH_TIME_NOW,
+                            Int64( 2 * Double( NSEC_PER_SEC ) )
+                        )
+                        dispatch_after( delayTime, dispatch_get_main_queue() )
                         {
-                            let locations = result[ "locations" ] as! [ AnyObject ]
-                            let innerLocations = locations[ 0 ] as! [ String : AnyObject ]
-                            let latLong = innerLocations[ "latLng" ] as! [ String : Double ]
-                            let geocodedLatitude = latLong[ "lat" ]!
-                            let geocodedLongitude = latLong[ "lng" ]!
-                            
-                            theTour.shows[ counter ].showLatitude = geocodedLatitude
-                            theTour.shows[ counter ].showLongitude = geocodedLongitude
-                            
-                            println( "\( theTour.shows[ counter ].city ): \( geocodedLatitude ), \( geocodedLongitude )" )
-                            
-                            counter++
+                            self.tourMap.addAnnotations( theTour.shows )
                         }
                         
-                        dispatch_async( dispatch_get_main_queue() )
-                        {
-                            self.zoomOut()
-                            
-                            // NOTE: dispatch_after trick cribbed from http://stackoverflow.com/a/24034838
-                            let delayTime = dispatch_time( DISPATCH_TIME_NOW, Int64( 2 * Double( NSEC_PER_SEC ) ) )
-                            dispatch_after( delayTime, dispatch_get_main_queue() )
-                            {
-                                self.tourMap.addAnnotations( theTour.shows )
-                            }
-                            
-                            // self.tourNavControls.hidden = false
-                        }
-                    }
-                    else
-                    {
-                        println( "There was a problem parsing the geocoding data from mapquest.com" )
+                        // self.tourNavControls.hidden = false
                     }
                 }
             }
-            mapquestGeocodeRequest.resume()
             
             self.didDropPins = true
         }
@@ -508,7 +410,8 @@ class TourMapViewController: UIViewController,
     
     func zoomOut()
     {
-        tourMap.setRegion(defaultRegion, animated: true)
+        tourMap.setRegion( defaultRegion, animated: true )
+        
         isZoomedOut = true
     }
     
