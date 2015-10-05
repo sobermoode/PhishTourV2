@@ -111,6 +111,11 @@ class TourMapViewController: UIViewController,
             dontGoBack = false
         }
         
+        if let tourTitleLable = view.viewWithTag( 100 )
+        {
+            tourTitleLable.removeFromSuperview()
+        }
+        
         tourMap.setRegion( defaultRegion, animated: true )
         
         resetButton.enabled = false
