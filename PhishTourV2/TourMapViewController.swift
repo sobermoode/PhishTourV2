@@ -28,7 +28,19 @@ class TourMapViewController: UIViewController,
     var selectedTour: PhishTour?
     var didDropPins: Bool = false
     var isZoomedOut: Bool = true
+    var didAddAnnotations: Bool = false
+    var didMakeTourTrail: Bool = false
     var didStartTour: Bool = false
+    let defaultRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(
+            latitude: 39.8282,
+            longitude: -98.5795
+        ),
+        span: MKCoordinateSpan(
+            latitudeDelta: 50.0,
+            longitudeDelta: 50.0
+        )
+    )
     
     // MARK: everything else
     // var selectedTour: String?
@@ -49,16 +61,7 @@ class TourMapViewController: UIViewController,
     let tour: String = "tour"
     var tourIDs = [ Int ]()
     // var currentTour = [ ShowAnnotation ]() // TODO: Re-instate?
-    let defaultRegion = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(
-            latitude: 39.8282,
-            longitude: -98.5795
-        ),
-        span: MKCoordinateSpan(
-            latitudeDelta: 35.0,
-            longitudeDelta: 35.0
-        )
-    )
+    
     
     override func viewDidLoad()
     {
@@ -321,6 +324,8 @@ class TourMapViewController: UIViewController,
             tourMap.removeOverlays( tourMap.overlays )
             // showCoordinates.removeAll( keepCapacity: false )
             
+            didAddAnnotations = false
+            didMakeTourTrail = false
             didDropPins = false
         }
         
@@ -439,70 +444,20 @@ class TourMapViewController: UIViewController,
                             
                             println( "\( theTour.shows[ counter ].city ): \( geocodedLatitude ), \( geocodedLongitude )" )
                             
-                            /*
-                            let showCoordinate = CLLocationCoordinate2D(
-                                latitude: geocodedLatitude,
-                                longitude: geocodedLongitude
-                            )
-                            self.showCoordinates.append( showCoordinate )
-                            */
-                            
-                            // TODO: Re-instate?
-                            /*
-                            let newShowAnnotation = ShowAnnotation(
-                                coordinate: showCoordinate,
-                                city: cities[ counter ],
-                                date: dates[ counter ],
-                                venue: venueNames[ counter ]
-                            )
-                            */
-                            
-                            // self.currentTour.append( newShowAnnotation ) // TODO: Re-instate?
-                            
                             counter++
                         }
                         
                         dispatch_async( dispatch_get_main_queue() )
                         {
-                            var delayTime: dispatch_time_t
-                            
                             self.zoomOut()
                             
-                            delayTime = dispatch_time( DISPATCH_TIME_NOW, Int64( 2 * Double( NSEC_PER_SEC ) ) )
+                            // NOTE: dispatch_after trick cribbed from http://stackoverflow.com/a/24034838
+                            let delayTime = dispatch_time( DISPATCH_TIME_NOW, Int64( 2 * Double( NSEC_PER_SEC ) ) )
                             dispatch_after( delayTime, dispatch_get_main_queue() )
                             {
-                                self.tourMap.addAnnotations( theTour.shows ) // TODO: Re-instate?
-                                // self.makeTourTrail()
+                                self.tourMap.addAnnotations( theTour.shows )
                             }
                             
-                            delayTime = dispatch_time( DISPATCH_TIME_NOW, Int64( 2.5 * Double( NSEC_PER_SEC ) ) )
-                            dispatch_after( delayTime, dispatch_get_main_queue() )
-                                {
-                                    // self.tourMap.addAnnotations( theTour.shows ) // TODO: Re-instate?
-                                    self.makeTourTrail()
-                            }
-                            
-//                            if !self.isZoomedOut
-//                            {
-//                                self.zoomOut()
-//                                
-//                                let delayTime = dispatch_time( DISPATCH_TIME_NOW, Int64( 2 * Double( NSEC_PER_SEC ) ) )
-//                                dispatch_after( delayTime, dispatch_get_main_queue() )
-//                                {
-//                                    self.centerOnFirstShow()
-//                                }
-//                            }
-//                            else
-//                            {
-//                                self.tourMap.addAnnotations( theTour.shows ) // TODO: Re-instate?
-//                                self.makeTourTrail()
-//                            }
-                            
-                            delayTime = dispatch_time( DISPATCH_TIME_NOW, Int64( 3 * Double( NSEC_PER_SEC ) ) )
-                            dispatch_after( delayTime, dispatch_get_main_queue() )
-                            {
-                                self.centerOnFirstShow()
-                            }
                             // self.tourNavControls.hidden = false
                         }
                     }
@@ -593,6 +548,8 @@ class TourMapViewController: UIViewController,
     }
     */
     
+    // MARK: MKMapViewDelegate methods
+    
     func mapView(
         mapView: MKMapView!,
         rendererForOverlay overlay: MKOverlay!
@@ -634,6 +591,38 @@ class TourMapViewController: UIViewController,
             return newAnnotationView
         }
     }
+    
+    func mapView(
+        mapView: MKMapView!,
+        didAddAnnotationViews views: [AnyObject]!
+    )
+    {
+        let delayTime = dispatch_time(
+            DISPATCH_TIME_NOW,
+            Int64( 1.5 * Double( NSEC_PER_SEC ) )
+        )
+        dispatch_after( delayTime, dispatch_get_main_queue() )
+        {
+            self.makeTourTrail()
+        }
+    }
+    
+    func mapView(
+        mapView: MKMapView!,
+        didAddOverlayRenderers renderers: [AnyObject]!
+    )
+    {
+        let delayTime = dispatch_time(
+            DISPATCH_TIME_NOW,
+            Int64( 1 * Double( NSEC_PER_SEC ) )
+        )
+        dispatch_after( delayTime, dispatch_get_main_queue() )
+        {
+            self.centerOnFirstShow()
+        }
+    }
+    
+    // MARK: UIPickerViewDataSource, UIPIckerViewDelegate methods
     
     func numberOfComponentsInPickerView( pickerView: UIPickerView ) -> Int
     {
