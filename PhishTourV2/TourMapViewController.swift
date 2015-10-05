@@ -30,6 +30,7 @@ class TourMapViewController: UIViewController,
     var isZoomedOut: Bool = true
     var didAddAnnotations: Bool = false
     var didMakeTourTrail: Bool = false
+    var dontGoBack: Bool = false
     var didStartTour: Bool = false
     let defaultRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(
@@ -107,6 +108,7 @@ class TourMapViewController: UIViewController,
             tourMap.removeOverlays( tourMap.overlays )
             // showCoordinates.removeAll( keepCapacity: false )
             didDropPins = false
+            dontGoBack = false
         }
         
         tourMap.setRegion( defaultRegion, animated: true )
@@ -327,6 +329,7 @@ class TourMapViewController: UIViewController,
             didAddAnnotations = false
             didMakeTourTrail = false
             didDropPins = false
+            dontGoBack = false
         }
         
         if didStartTour
@@ -356,9 +359,7 @@ class TourMapViewController: UIViewController,
             let mutableShows: AnyObject = showsArray.mutableCopy()
             for ( index, show ) in enumerate( mutableShows as! [ PhishShow ] )
             {
-                // let theShow = show as PhishShow
                 var location = show.city
-                // cities.append( location )
                 
                 location = location.stringByReplacingOccurrencesOfString(" ", withString: "")
                 
@@ -375,6 +376,9 @@ class TourMapViewController: UIViewController,
                     
                     case "Düsseldorf,Germany":
                         location = "Dusseldorf,Germany"
+                    
+                    case "OrangeBeach,ALUS":
+                        location = "OrangeBeach,AL"
                     
                     default:
                         break
@@ -597,13 +601,19 @@ class TourMapViewController: UIViewController,
         didAddAnnotationViews views: [AnyObject]!
     )
     {
-        let delayTime = dispatch_time(
-            DISPATCH_TIME_NOW,
-            Int64( 1.5 * Double( NSEC_PER_SEC ) )
-        )
-        dispatch_after( delayTime, dispatch_get_main_queue() )
+        if !dontGoBack
         {
-            self.makeTourTrail()
+            dontGoBack = true
+            
+            println( "didAddAnnotationViews..." )
+            let delayTime = dispatch_time(
+                DISPATCH_TIME_NOW,
+                Int64( 1.5 * Double( NSEC_PER_SEC ) )
+            )
+            dispatch_after( delayTime, dispatch_get_main_queue() )
+            {
+                self.makeTourTrail()
+            }
         }
     }
     
@@ -612,6 +622,7 @@ class TourMapViewController: UIViewController,
         didAddOverlayRenderers renderers: [AnyObject]!
     )
     {
+        println( "didAddOverlayRenderers..." )
         let delayTime = dispatch_time(
             DISPATCH_TIME_NOW,
             Int64( 1 * Double( NSEC_PER_SEC ) )
