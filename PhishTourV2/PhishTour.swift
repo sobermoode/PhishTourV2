@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 class PhishTour: NSObject,
     NSCoding
@@ -16,6 +17,16 @@ class PhishTour: NSObject,
     var tourID: Int
     var shows: [ PhishShow ]
     
+    var showCoordinates: [ CLLocationCoordinate2D ]
+    {
+        var coordinates = [ CLLocationCoordinate2D ]()
+        for show in shows
+        {
+            coordinates.append( show.coordinate )
+        }
+        
+        return coordinates
+    }
     var filePath: String
     {
         return "\( year )"

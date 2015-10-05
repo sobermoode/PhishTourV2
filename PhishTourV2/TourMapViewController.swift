@@ -357,12 +357,32 @@ class TourMapViewController: UIViewController,
                 
                 location = location.stringByReplacingOccurrencesOfString(" ", withString: "")
                 
+                switch location
+                {
+                    case "Nüremberg,Germany":
+                        location = "Nuremberg,Germany"
+                    
+                    case "Lyon/Villeurbanne,France":
+                        location = "Lyon,France"
+                    
+                    case "Montréal,Québec,Canada":
+                        location = "Montreal,Quebec,Canada"
+                    
+                    case "Düsseldorf,Germany":
+                        location = "Dusseldorf,Germany"
+                    
+                    default:
+                        break
+                }
+                
+                /*
                 if location == "Nüremberg,Germany" || location == "Lyon/Villeurbanne,France" || location == "Montréal,Québec,Canada" || location == "Düsseldorf,Germany"
                 {
                     mutableShows.removeObjectAtIndex( index )
                     continue
                 }
                 println( "location: \( location )" )
+                */
                 
 //                let tempURLString = mapquestRequestString + "&location=\( location )"
 //                let tempURL = NSURL( string: tempURLString )!
@@ -380,7 +400,7 @@ class TourMapViewController: UIViewController,
                 // venueNames.append( venueName )
             }
             
-            theTour.shows = mutableShows as! [ PhishShow ]
+            // theTour.shows = mutableShows as! [ PhishShow ]
             
             println( "Mapquest request string: \( mapquestRequestString )" )
             
@@ -445,7 +465,7 @@ class TourMapViewController: UIViewController,
                         dispatch_async( dispatch_get_main_queue() )
                         {
                             self.tourMap.addAnnotations( theTour.shows ) // TODO: Re-instate?
-                            // self.makeTourTrail()
+                            self.makeTourTrail()
                             // self.centerOnFirstShow()
                             // self.tourNavControls.hidden = false
                         }
@@ -466,21 +486,29 @@ class TourMapViewController: UIViewController,
         }
     }
     
-    func isValidURL( url: NSURL ) -> Bool
-    {
-        let request = NSURLRequest( URL: url )
-        
-        return NSURLConnection.canHandleRequest( request )
-    }
+//    func isValidURL( url: NSURL ) -> Bool
+//    {
+//        let request = NSURLRequest( URL: url )
+//        
+//        return NSURLConnection.canHandleRequest( request )
+//    }
     
     func makeTourTrail()
     {
-        let tourTrail = MKPolyline(
-            coordinates: &showCoordinates,
-            count: showCoordinates.count
-        )
-        
-        tourMap.addOverlay( tourTrail )
+        if let theTour = selectedTour
+        {
+            var showCoordinates = [ CLLocationCoordinate2D ]()
+            for index in indices( theTour.showCoordinates )
+            {
+                showCoordinates.append( theTour.showCoordinates[ index ] )
+            }
+            
+            var tourTrail = MKPolyline(
+                coordinates: &showCoordinates,
+                count: showCoordinates.count
+            )
+            tourMap.addOverlay( tourTrail )
+        }
     }
     
     func centerOnFirstShow()
