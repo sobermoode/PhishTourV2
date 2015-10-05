@@ -382,7 +382,7 @@ class TourMapViewController: UIViewController,
                             self.tourMap.addAnnotations( theTour.shows )
                         }
                         
-                        // self.tourNavControls.hidden = false
+                        self.tourNavControls.hidden = false
                     }
                 }
             }
@@ -484,6 +484,8 @@ class TourMapViewController: UIViewController,
         }
     }
     
+    // MARK: Tour navigation controls
+    
     func startTour()
     {
         tourNavControls.setTitle( "⬅︎", forSegmentAtIndex: 0 )
@@ -491,23 +493,40 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
         
-        // zoomInOnFirstShow()
+        zoomInOnFirstShow()
+        bringUpInfoPane()
         didStartTour = true
     }
     
-    /*
     func zoomInOnFirstShow()
     {
-        let zoomedRegion = MKCoordinateRegion(
-            center: showCoordinates.first!,
-            span: MKCoordinateSpan(
-                latitudeDelta: 0.2,
-                longitudeDelta: 0.2
+        if let theTour = selectedTour
+        {
+            let zoomedRegion = MKCoordinateRegion(
+                center: theTour.showCoordinates.first!,
+                span: MKCoordinateSpan(
+                    latitudeDelta: 0.2,
+                    longitudeDelta: 0.2
+                )
             )
-        )
-        tourMap.setRegion( zoomedRegion, animated: true )
+            tourMap.setRegion( zoomedRegion, animated: true )
+        }
     }
-    */
+    
+    func bringUpInfoPane()
+    {
+        let blurEffect = UIBlurEffect( style: .Dark )
+        let vibrancyEffect = UIVibrancyEffect( forBlurEffect: blurEffect )
+        let infoPane = UIVisualEffectView( effect: blurEffect )
+        let vibrancyView = UIVisualEffectView(effect: vibrancyEffect)
+        
+        infoPane.frame = CGRect(x: 0, y: CGRectGetMaxY(view.bounds) + 75, width: view.bounds.size.width - 25, height: 225)
+        infoPane.frame.origin = CGPoint(x: CGRectGetMidX(view.bounds) - infoPane.frame.size.width / 2, y: infoPane.frame.origin.y)
+        vibrancyView.frame = CGRect(x: 0, y: 0, width: infoPane.frame.size.width, height: infoPane.frame.size.height)
+        
+        infoPane.addSubview( vibrancyView )
+        view.addSubview( infoPane )
+    }
     
     // MARK: MKMapViewDelegate methods
     
