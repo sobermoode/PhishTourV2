@@ -570,7 +570,7 @@ class TourMapViewController: UIViewController,
             {
                 finished in
                 
-                println( "completion..." )
+                // println( "completion..." )
             }
         )
     }
@@ -592,7 +592,7 @@ class TourMapViewController: UIViewController,
             {
                 finished in
                 
-                println( "completion..." )
+                // println( "completion..." )
             }
         )
         
@@ -612,6 +612,15 @@ class TourMapViewController: UIViewController,
             {
                 println( "Pressed the PreviousShow button." )
                 goBackToPreviousShow()
+                if find( selectedTour!.shows, currentShow! ) == 0
+                {
+                    tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
+                }
+                
+                if !tourNavControls.isEnabledForSegmentAtIndex( 3 )
+                {
+                    tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
+                }
             }
             
         case 1:
@@ -628,6 +637,10 @@ class TourMapViewController: UIViewController,
         case 3:
             println( "Pressed the NextShow button." )
             goToNextShow()
+            if find( selectedTour!.shows, currentShow! ) == selectedTour!.shows.count - 1
+            {
+                tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+            }
             
         default:
             println( "I don't know what button was pressed!!!" )
