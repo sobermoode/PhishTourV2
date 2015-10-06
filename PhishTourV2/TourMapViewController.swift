@@ -433,12 +433,12 @@ class TourMapViewController: UIViewController,
         }
     }
     
-    func zoomOut()
-    {
-        tourMap.setRegion( defaultRegion, animated: true )
-        
-        isZoomedOut = true
-    }
+//    func zoomOut()
+//    {
+//        tourMap.setRegion( defaultRegion, animated: true )
+//        
+//        isZoomedOut = true
+//    }
     
     func centerOnFirstShow()
     {
@@ -473,6 +473,7 @@ class TourMapViewController: UIViewController,
         didStartTour = true
     }
     
+    // TODO: change this to zoomInOnShow() and use the currentShow to set the center. then you can use this with the goToPreviousShow and goToNextShow methods
     func zoomInOnFirstShow()
     {
         if let theTour = selectedTour
@@ -578,6 +579,9 @@ class TourMapViewController: UIViewController,
             
         case 1:
             println( "Pressed the ZoomOut button." )
+            tourMap.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: currentShow!.showLatitude, longitude: currentShow!.showLongitude), span: MKCoordinateSpan(latitudeDelta: 50.0, longitudeDelta: 50.0)), animated: true)
+            tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+            isZoomedOut = true
             
         case 2:
             println( "Pressed the List button." )
@@ -607,8 +611,14 @@ class TourMapViewController: UIViewController,
         let cityLabel = infoPane.viewWithTag( 203 )! as! UILabel
         
         dateLabel.text = currentShow?.date
+        dateLabel.sizeToFit()
         venueLabel.text = currentShow?.venue
+        venueLabel.sizeToFit()
         cityLabel.text = currentShow?.city
+        cityLabel.sizeToFit()
+        cityLabel.frame.origin = CGPoint( x: venueLabel.frame.size.width + 5, y: venueLabel.frame.origin.y )
+        
+        // infoPane.setNeedsDisplay()
     }
     
     func goToNextShow()
@@ -629,8 +639,20 @@ class TourMapViewController: UIViewController,
         let cityLabel = infoPane.viewWithTag( 203 )! as! UILabel
         
         dateLabel.text = currentShow?.date
+        dateLabel.sizeToFit()
         venueLabel.text = currentShow?.venue
+        venueLabel.sizeToFit()
         cityLabel.text = currentShow?.city
+        cityLabel.sizeToFit()
+        cityLabel.frame.origin = CGPoint( x: venueLabel.frame.size.width + 5, y: venueLabel.frame.origin.y )
+        
+        if isZoomedOut
+        {
+            isZoomedOut = false
+            tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
+        }
+        
+        // infoPane.setNeedsDisplay()
     }
     
     // MARK: MKMapViewDelegate methods
