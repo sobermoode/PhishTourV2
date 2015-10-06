@@ -60,7 +60,11 @@ class PhishShow: NSObject,
         andYear year: Int
     )
     {
-        self.date = showInfo[ "date" ] as! String
+        let date = showInfo[ "date" ] as! String
+        let pieces = date.componentsSeparatedByString( "-" )
+        let newDate = pieces[ 1 ] + "-" + pieces[ 2 ] + "-" + pieces[ 0 ]
+        
+        self.date = newDate
         self.year = year
         self.venue = showInfo[ "venue_name" ] as! String
         self.city = showInfo[ "location" ] as! String
@@ -84,4 +88,18 @@ class PhishShow: NSObject,
         aCoder.encodeObject( self.city, forKey: "city" )
         aCoder.encodeInteger( self.showID, forKey: "showID" )
     }
+    
+//    func reformatDate( date: String ) -> String
+//    {
+//        var newDate: String = ""
+//        
+//        let pieces = date.componentsSeparatedByString( "-" )
+//        var pieceCounter = pieces.count
+//        while ( pieceCounter-- >= 0 )
+//        {
+//            newDate += pieces[ pieceCounter ]
+//        }
+//        
+//        return newDate
+//    }
 }
