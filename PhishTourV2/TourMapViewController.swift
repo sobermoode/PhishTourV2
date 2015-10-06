@@ -125,6 +125,7 @@ class TourMapViewController: UIViewController,
     func resetTourNavControls()
     {
         tourNavControls.setTitle( "Start", forSegmentAtIndex: 0 )
+        tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
@@ -467,26 +468,38 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
         
-        zoomInOnFirstShow()
-        bringUpInfoPane()
         currentShow = selectedTour!.shows.first!
+        // zoomInOnFirstShow()
+        zoomInOnCurrentShow()
+        bringUpInfoPane()
         didStartTour = true
     }
     
     // TODO: change this to zoomInOnShow() and use the currentShow to set the center. then you can use this with the goToPreviousShow and goToNextShow methods
-    func zoomInOnFirstShow()
+//    func zoomInOnFirstShow()
+//    {
+//        if let theTour = selectedTour
+//        {
+//            let zoomedRegion = MKCoordinateRegion(
+//                center: theTour.showCoordinates.first!,
+//                span: MKCoordinateSpan(
+//                    latitudeDelta: 0.2,
+//                    longitudeDelta: 0.2
+//                )
+//            )
+//            tourMap.setRegion( zoomedRegion, animated: true )
+//        }
+//    }
+    func zoomInOnCurrentShow()
     {
-        if let theTour = selectedTour
-        {
-            let zoomedRegion = MKCoordinateRegion(
-                center: theTour.showCoordinates.first!,
-                span: MKCoordinateSpan(
-                    latitudeDelta: 0.2,
-                    longitudeDelta: 0.2
-                )
+        let zoomedRegion = MKCoordinateRegion(
+            center: currentShow!.coordinate,
+            span: MKCoordinateSpan(
+                latitudeDelta: 0.2,
+                longitudeDelta: 0.2
             )
-            tourMap.setRegion( zoomedRegion, animated: true )
-        }
+        )
+        tourMap.setRegion( zoomedRegion, animated: true )
     }
     
     func bringUpInfoPane()
@@ -562,6 +575,30 @@ class TourMapViewController: UIViewController,
         )
     }
     
+    func dropInfoPane()
+    {
+        let infoPane = view.viewWithTag( 200 ) as! UIVisualEffectView
+        
+        UIView.animateWithDuration(
+            0.4,
+            delay: 0.5,
+            options: UIViewAnimationOptions.CurveLinear,
+            animations:
+            {
+                // println( "animations..." )
+                infoPane.frame.origin.y += 275
+            },
+            completion:
+            {
+                finished in
+                
+                println( "completion..." )
+            }
+        )
+        
+        infoPane.removeFromSuperview()
+    }
+    
     func selectTourNavigationOption( sender: UISegmentedControl )
     {
         switch sender.selectedSegmentIndex
@@ -580,7 +617,9 @@ class TourMapViewController: UIViewController,
         case 1:
             println( "Pressed the ZoomOut button." )
             tourMap.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: currentShow!.showLatitude, longitude: currentShow!.showLongitude), span: MKCoordinateSpan(latitudeDelta: 50.0, longitudeDelta: 50.0)), animated: true)
-            tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+            // tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+            dropInfoPane()
+            resetTourNavControls()
             isZoomedOut = true
             
         case 2:
