@@ -117,6 +117,11 @@ class TourMapViewController: UIViewController,
             tourTitleLable.removeFromSuperview()
         }
         
+        if let infoPane = view.viewWithTag( 200 )
+        {
+            dropInfoPane()
+        }
+        
         tourMap.setRegion( defaultRegion, animated: true )
         
         resetButton.enabled = false
@@ -206,6 +211,7 @@ class TourMapViewController: UIViewController,
         }
     }
     
+    /*
     func requestToursForYear( year: Int )
     {
         let yearRequestString = "http://phish.in/api/v1/years/\( year )"
@@ -297,6 +303,7 @@ class TourMapViewController: UIViewController,
         }
         yearRequestTask.resume()
     }
+    */
     
     @IBAction func selectTour( sender: UIButton )
     {
@@ -530,27 +537,33 @@ class TourMapViewController: UIViewController,
         let dateLabel = UILabel()
         dateLabel.tag = 201
         dateLabel.textColor = UIColor.whiteColor()
-        dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 18 )
+        dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
         dateLabel.text = firstShow.date
         dateLabel.sizeToFit()
         
         let venueLabel = UILabel()
         venueLabel.tag = 202
         venueLabel.textColor = UIColor.whiteColor()
-        venueLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+        venueLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
         venueLabel.text = firstShow.venue
         venueLabel.sizeToFit()
         
         let cityLabel = UILabel()
         cityLabel.tag = 203
         cityLabel.textColor = UIColor.whiteColor()
-        cityLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+        cityLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
         cityLabel.text = firstShow.city
         cityLabel.sizeToFit()
         
+        /*
         dateLabel.frame.origin = CGPoint( x: 0, y: 0 )
         venueLabel.frame.origin = CGPoint( x: 0, y: dateLabel.frame.size.height + 5 )
         cityLabel.frame.origin = CGPoint( x: venueLabel.frame.size.width + 5, y: venueLabel.frame.origin.y )
+        */
+        
+        dateLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (dateLabel.frame.size.width / 2), y: 5)
+        venueLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (venueLabel.frame.size.width / 2), y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5)
+        cityLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (cityLabel.frame.size.width / 2), y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5)
         
         infoPane.contentView.addSubview( dateLabel )
         infoPane.contentView.addSubview( venueLabel )
@@ -657,7 +670,7 @@ class TourMapViewController: UIViewController,
         let previousShowCoordinate = currentShow!.coordinate
         tourMap.setCenterCoordinate( previousShowCoordinate, animated: true )
         
-        let infoPane = view.viewWithTag( 200 )!
+        let infoPane = view.viewWithTag( 200 )! as! UIVisualEffectView
         let dateLabel = infoPane.viewWithTag( 201 )! as! UILabel
         let venueLabel = infoPane.viewWithTag( 202 )! as! UILabel
         let cityLabel = infoPane.viewWithTag( 203 )! as! UILabel
@@ -668,7 +681,9 @@ class TourMapViewController: UIViewController,
         venueLabel.sizeToFit()
         cityLabel.text = currentShow?.city
         cityLabel.sizeToFit()
-        cityLabel.frame.origin = CGPoint( x: venueLabel.frame.size.width + 5, y: venueLabel.frame.origin.y )
+        // cityLabel.frame.origin = CGPoint( x: venueLabel.frame.size.width + 5, y: venueLabel.frame.origin.y )
+        venueLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (venueLabel.frame.size.width / 2), y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5)
+        cityLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (cityLabel.frame.size.width / 2), y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5)
         
         // infoPane.setNeedsDisplay()
     }
@@ -685,7 +700,7 @@ class TourMapViewController: UIViewController,
         let nextShowCoordinate = currentShow!.coordinate
         tourMap.setCenterCoordinate( nextShowCoordinate, animated: true )
         
-        let infoPane = view.viewWithTag( 200 )!
+        let infoPane = view.viewWithTag( 200 )! as! UIVisualEffectView
         let dateLabel = infoPane.viewWithTag( 201 )! as! UILabel
         let venueLabel = infoPane.viewWithTag( 202 )! as! UILabel
         let cityLabel = infoPane.viewWithTag( 203 )! as! UILabel
@@ -696,7 +711,9 @@ class TourMapViewController: UIViewController,
         venueLabel.sizeToFit()
         cityLabel.text = currentShow?.city
         cityLabel.sizeToFit()
-        cityLabel.frame.origin = CGPoint( x: venueLabel.frame.size.width + 5, y: venueLabel.frame.origin.y )
+        // cityLabel.frame.origin = CGPoint( x: venueLabel.frame.size.width + 5, y: venueLabel.frame.origin.y )
+        venueLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (venueLabel.frame.size.width / 2), y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5)
+        cityLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (cityLabel.frame.size.width / 2), y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5)
         
         if isZoomedOut
         {
