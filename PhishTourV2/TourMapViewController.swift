@@ -520,12 +520,29 @@ class TourMapViewController: UIViewController,
         let infoPane = UIVisualEffectView( effect: blurEffect )
         let vibrancyView = UIVisualEffectView(effect: vibrancyEffect)
         
-        infoPane.frame = CGRect(x: 0, y: CGRectGetMaxY(view.bounds) + 75, width: view.bounds.size.width - 25, height: 225)
+        infoPane.frame = CGRect(x: 0, y: CGRectGetMaxY(view.bounds) + 1, width: view.bounds.size.width - 25, height: 225)
         infoPane.frame.origin = CGPoint(x: CGRectGetMidX(view.bounds) - infoPane.frame.size.width / 2, y: infoPane.frame.origin.y)
         vibrancyView.frame = CGRect(x: 0, y: 0, width: infoPane.frame.size.width, height: infoPane.frame.size.height)
         
         infoPane.addSubview( vibrancyView )
         view.addSubview( infoPane )
+        
+        UIView.animateWithDuration(
+            0.4,
+            delay: 0.5,
+            options: UIViewAnimationOptions.CurveLinear,
+            animations:
+            {
+                // println( "animations..." )
+                infoPane.frame.origin.y -= 275
+            },
+            completion:
+            {
+                finished in
+                
+                println( "completion..." )
+            }
+        )
     }
     
     // MARK: MKMapViewDelegate methods
