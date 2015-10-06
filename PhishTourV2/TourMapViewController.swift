@@ -26,6 +26,7 @@ class TourMapViewController: UIViewController,
     var selectedYear: String?
     var tours: [ PhishTour ]?
     var selectedTour: PhishTour?
+    var currentShow: PhishShow?
     var didDropPins: Bool = false
     var isZoomedOut: Bool = true
     var didAddAnnotations: Bool = false
@@ -129,34 +130,6 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
         
         didStartTour = false
-    }
-    
-    func selectTourNavigationOption( sender: UISegmentedControl )
-    {
-        switch sender.selectedSegmentIndex
-        {
-            case 0:
-                if !didStartTour
-                {
-                    startTour()
-                }
-                else
-                {
-                    println( "Pressed the PreviousShow button." )
-                }
-                
-            case 1:
-                println( "Pressed the ZoomOut button." )
-                
-            case 2:
-                println( "Pressed the List button." )
-                
-            case 3:
-                println( "Pressed the NextShow button." )
-                
-            default:
-                println( "I don't know what button was pressed!!!" )
-        }
     }
     
     @IBAction func showTourPicker( sender: UIBarButtonItem? )
@@ -489,12 +462,14 @@ class TourMapViewController: UIViewController,
     func startTour()
     {
         tourNavControls.setTitle( "⬅︎", forSegmentAtIndex: 0 )
+        tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
         
         zoomInOnFirstShow()
         bringUpInfoPane()
+        currentShow = selectedTour!.shows.first!
         didStartTour = true
     }
     
@@ -518,13 +493,54 @@ class TourMapViewController: UIViewController,
         let blurEffect = UIBlurEffect( style: .Dark )
         let vibrancyEffect = UIVibrancyEffect( forBlurEffect: blurEffect )
         let infoPane = UIVisualEffectView( effect: blurEffect )
-        let vibrancyView = UIVisualEffectView(effect: vibrancyEffect)
+        let vibrancyView = UIVisualEffectView( effect: vibrancyEffect )
         
-        infoPane.frame = CGRect(x: 0, y: CGRectGetMaxY(view.bounds) + 1, width: view.bounds.size.width - 25, height: 225)
-        infoPane.frame.origin = CGPoint(x: CGRectGetMidX(view.bounds) - infoPane.frame.size.width / 2, y: infoPane.frame.origin.y)
-        vibrancyView.frame = CGRect(x: 0, y: 0, width: infoPane.frame.size.width, height: infoPane.frame.size.height)
+        infoPane.tag = 200
+        infoPane.frame = CGRect(
+            x: 0, y: CGRectGetMaxY( view.bounds ) + 1,
+            width: view.bounds.size.width - 25, height: 225
+        )
+        infoPane.frame.origin = CGPoint(
+            x: CGRectGetMidX( view.bounds ) - infoPane.frame.size.width / 2,
+            y: infoPane.frame.origin.y
+        )
+        vibrancyView.frame = CGRect(
+            x: 0, y: 0,
+            width: infoPane.frame.size.width, height: infoPane.frame.size.height
+        )
         
         infoPane.addSubview( vibrancyView )
+        
+        let firstShow = selectedTour!.shows.first!
+        
+        let dateLabel = UILabel()
+        dateLabel.tag = 201
+        dateLabel.textColor = UIColor.whiteColor()
+        dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 18 )
+        dateLabel.text = firstShow.date
+        dateLabel.sizeToFit()
+        
+        let venueLabel = UILabel()
+        venueLabel.tag = 202
+        venueLabel.textColor = UIColor.whiteColor()
+        venueLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+        venueLabel.text = firstShow.venue
+        venueLabel.sizeToFit()
+        
+        let cityLabel = UILabel()
+        cityLabel.tag = 203
+        cityLabel.textColor = UIColor.whiteColor()
+        cityLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+        cityLabel.text = firstShow.city
+        cityLabel.sizeToFit()
+        
+        dateLabel.frame.origin = CGPoint( x: 0, y: 0 )
+        venueLabel.frame.origin = CGPoint( x: 0, y: dateLabel.frame.size.height + 5 )
+        cityLabel.frame.origin = CGPoint( x: venueLabel.frame.size.width + 5, y: venueLabel.frame.origin.y )
+        
+        infoPane.contentView.addSubview( dateLabel )
+        infoPane.contentView.addSubview( venueLabel )
+        infoPane.contentView.addSubview( cityLabel )
         view.addSubview( infoPane )
         
         UIView.animateWithDuration(
@@ -543,6 +559,78 @@ class TourMapViewController: UIViewController,
                 println( "completion..." )
             }
         )
+    }
+    
+    func selectTourNavigationOption( sender: UISegmentedControl )
+    {
+        switch sender.selectedSegmentIndex
+        {
+        case 0:
+            if !didStartTour
+            {
+                startTour()
+            }
+            else
+            {
+                println( "Pressed the PreviousShow button." )
+                goBackToPreviousShow()
+            }
+            
+        case 1:
+            println( "Pressed the ZoomOut button." )
+            
+        case 2:
+            println( "Pressed the List button." )
+            
+        case 3:
+            println( "Pressed the NextShow button." )
+            goToNextShow()
+            
+        default:
+            println( "I don't know what button was pressed!!!" )
+        }
+    }
+    
+    func goBackToPreviousShow()
+    {
+        var showIndex = find( selectedTour!.shows, currentShow! )!
+        showIndex--
+        
+        currentShow = selectedTour!.shows[ showIndex ]
+        
+        let previousShowCoordinate = currentShow!.coordinate
+        tourMap.setCenterCoordinate( previousShowCoordinate, animated: true )
+        
+        let infoPane = view.viewWithTag( 200 )!
+        let dateLabel = infoPane.viewWithTag( 201 )! as! UILabel
+        let venueLabel = infoPane.viewWithTag( 202 )! as! UILabel
+        let cityLabel = infoPane.viewWithTag( 203 )! as! UILabel
+        
+        dateLabel.text = currentShow?.date
+        venueLabel.text = currentShow?.venue
+        cityLabel.text = currentShow?.city
+    }
+    
+    func goToNextShow()
+    {
+        tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+        
+        var showIndex = find( selectedTour!.shows, currentShow! )!
+        showIndex++
+        
+        currentShow = selectedTour!.shows[ showIndex ]
+        
+        let nextShowCoordinate = currentShow!.coordinate
+        tourMap.setCenterCoordinate( nextShowCoordinate, animated: true )
+        
+        let infoPane = view.viewWithTag( 200 )!
+        let dateLabel = infoPane.viewWithTag( 201 )! as! UILabel
+        let venueLabel = infoPane.viewWithTag( 202 )! as! UILabel
+        let cityLabel = infoPane.viewWithTag( 203 )! as! UILabel
+        
+        dateLabel.text = currentShow?.date
+        venueLabel.text = currentShow?.venue
+        cityLabel.text = currentShow?.city
     }
     
     // MARK: MKMapViewDelegate methods
