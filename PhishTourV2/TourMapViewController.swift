@@ -108,7 +108,7 @@ class TourMapViewController: UIViewController,
         {
             tourMap.removeAnnotations( tourMap.annotations )
             tourMap.removeOverlays( tourMap.overlays )
-            // showCoordinates.removeAll( keepCapacity: false )
+            
             didDropPins = false
             dontGoBack = false
         }
@@ -132,20 +132,8 @@ class TourMapViewController: UIViewController,
     {
         let titleOption: String = ( resume ) ? "Resume" : "Start"
         isResuming = resume
-        // let buttonAction: Selector = ( resume ) ? "resumeTour" : "startTour"
         
         tourNavControls.setTitle( titleOption, forSegmentAtIndex: 0 )
-//        if resume
-//        {
-//            tourNavControls.removeTarget(self, action: "startTour", forControlEvents: .ValueChanged)
-//            tourNavControls.addTarget(self, action: "resumeTour", forControlEvents: .ValueChanged)
-//        }
-//        else
-//        {
-//            tourNavControls.removeTarget(self, action: "resumeTour", forControlEvents: .ValueChanged)
-//            tourNavControls.addTarget(self, action: "startTour", forControlEvents: .ValueChanged)
-//        }
-        
         tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 2 )
@@ -205,7 +193,6 @@ class TourMapViewController: UIViewController,
                             
                             dispatch_async( dispatch_get_main_queue() )
                             {
-                                println( "Reloading the season picker..." )
                                 self.seasonPicker.reloadAllComponents()
                             }
                         }
@@ -227,100 +214,6 @@ class TourMapViewController: UIViewController,
         }
     }
     
-    /*
-    func requestToursForYear( year: Int )
-    {
-        let yearRequestString = "http://phish.in/api/v1/years/\( year )"
-        let yearRequestURL = NSURL( string: yearRequestString )!
-        let yearRequestTask = NSURLSession.sharedSession().dataTaskWithURL( yearRequestURL )
-        {
-            yearData, yearResponse, yearError in
-            
-            if yearError != nil
-            {
-                println( "There was an error requesting tours for \( year ): \( yearError.localizedDescription )" )
-            }
-            else
-            {
-                var jsonificationError: NSErrorPointer = nil
-                if let yearResults = NSJSONSerialization.JSONObjectWithData(
-                    yearData,
-                    options: nil,
-                    error: jsonificationError
-                ) as? [ String : AnyObject ]
-                {
-                    let yearData = yearResults[ "data" ] as! [[ String : AnyObject ]]
-                    
-                    self.tourIDs.removeAll( keepCapacity: false )
-                    self.tourSelections.removeAll( keepCapacity: false )
-                    
-                    for show in yearData
-                    {
-                        let tourID = show[ "tour_id" ] as! Int
-                        if !contains( self.tourIDs, tourID ) && tourID != 71
-                        {
-                            self.tourIDs.append( tourID )
-                        }
-                    }
-                    
-                    println( "\( self.selectedYear ): \( self.tourIDs )" )
-                    
-                    for tourID in self.tourIDs
-                    {
-                        let tourIDRequestString = "http://phish.in/api/v1/tours/\( tourID )"
-                        let tourIDRequestURL = NSURL( string: tourIDRequestString )!
-                        let tourIDRequestTask = NSURLSession.sharedSession().dataTaskWithURL( tourIDRequestURL )
-                        {
-                            tourData, tourResponse, tourError in
-                            
-                            if tourError != nil
-                            {
-                                println( "There was an error requesting detailed info for tour ID \( tourID )" )
-                            }
-                            else
-                            {
-                                if let tourResults = NSJSONSerialization.JSONObjectWithData(
-                                    tourData,
-                                    options: nil,
-                                    error: jsonificationError
-                                ) as? [ String : AnyObject ]
-                                {
-                                    let theTourData = tourResults[ "data" ] as! [ String : AnyObject ]
-                                    let tourName = theTourData[ "name" ] as! String
-                                    if !contains( self.tourSelections, tourName )
-                                    {
-                                        self.tourSelections.append( tourName )
-                                    }
-                                    
-                                    dispatch_async( dispatch_get_main_queue() )
-                                    {
-                                        self.seasonPicker.reloadAllComponents()
-                                        if !self.tourIDs.isEmpty
-                                        {
-                                            // self.selectedTour = self.tourIDs.first
-                                        }
-                                        
-                                    }
-                                }
-                                else
-                                {
-                                    println( "There was an error parsing the data for \( year ): \( jsonificationError )" )
-                                }
-                            }
-                        }
-                        tourIDRequestTask.resume()
-                    }
-                }
-                else
-                {
-                    println( "There was an error parsing the data for \( year ): \( jsonificationError )" )
-                }
-            }
-        }
-        yearRequestTask.resume()
-    }
-    */
-    
     @IBAction func selectTour( sender: UIButton )
     {
         resetButton.enabled = true
@@ -331,7 +224,6 @@ class TourMapViewController: UIViewController,
         {
             tourMap.removeAnnotations( tourMap.annotations )
             tourMap.removeOverlays( tourMap.overlays )
-            // showCoordinates.removeAll( keepCapacity: false )
             
             didAddAnnotations = false
             didMakeTourTrail = false
@@ -368,7 +260,7 @@ class TourMapViewController: UIViewController,
                     dispatch_async( dispatch_get_main_queue() )
                     {
                         self.currentShow = theTour.shows.first
-                        // self.zoomOut()
+                        
                         self.showTourTitle()
                         self.centerOnFirstShow()
                         
@@ -394,13 +286,6 @@ class TourMapViewController: UIViewController,
             println( "One of the parameters wasn't set." )
         }
     }
-    
-//    func isValidURL( url: NSURL ) -> Bool
-//    {
-//        let request = NSURLRequest( URL: url )
-//        
-//        return NSURLConnection.canHandleRequest( request )
-//    }
     
     func showTourTitle()
     {
@@ -460,13 +345,6 @@ class TourMapViewController: UIViewController,
         }
     }
     
-//    func zoomOut()
-//    {
-//        tourMap.setRegion( defaultRegion, animated: true )
-//        
-//        isZoomedOut = true
-//    }
-    
     func centerOnFirstShow()
     {
         if let theTour = selectedTour
@@ -488,7 +366,6 @@ class TourMapViewController: UIViewController,
     
     func startTour()
     {
-        println( "startTour..." )
         tourNavControls.setTitle( "⬅︎", forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
@@ -500,17 +377,16 @@ class TourMapViewController: UIViewController,
             tourMap.deselectAnnotation( currentShow!, animated: true )
         }
         
-        // currentShow = selectedTour!.shows.first!
         currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
-        // zoomInOnFirstShow()
+        
         zoomInOnCurrentShow()
         bringUpInfoPane()
+        
         didStartTour = true
     }
     
     func resumeTour()
     {
-        println( "resumeTour..." )
         tourNavControls.setTitle( "⬅︎", forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
@@ -522,30 +398,15 @@ class TourMapViewController: UIViewController,
             tourMap.deselectAnnotation( currentShow!, animated: true )
         }
         
-        // currentShow = selectedTour!.shows.first!
         currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
-        // zoomInOnFirstShow()
+        
         zoomInOnCurrentShow()
         bringUpInfoPane()
+        
         didStartTour = true
         isResuming = false
     }
     
-    // TODO: change this to zoomInOnShow() and use the currentShow to set the center. then you can use this with the goToPreviousShow and goToNextShow methods
-//    func zoomInOnFirstShow()
-//    {
-//        if let theTour = selectedTour
-//        {
-//            let zoomedRegion = MKCoordinateRegion(
-//                center: theTour.showCoordinates.first!,
-//                span: MKCoordinateSpan(
-//                    latitudeDelta: 0.2,
-//                    longitudeDelta: 0.2
-//                )
-//            )
-//            tourMap.setRegion( zoomedRegion, animated: true )
-//        }
-//    }
     func zoomInOnCurrentShow()
     {
         let zoomedRegion = MKCoordinateRegion(
@@ -581,44 +442,44 @@ class TourMapViewController: UIViewController,
         
         infoPane.addSubview( vibrancyView )
         
-        // let firstShow = selectedTour!.shows.first!
-        
         let dateLabel = UILabel()
         dateLabel.tag = 201
         dateLabel.textColor = UIColor.whiteColor()
         dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
-        dateLabel.text = currentShow?.date // firstShow.date
+        dateLabel.text = currentShow?.date
         dateLabel.sizeToFit()
         
         let venueLabel = UILabel()
         venueLabel.tag = 202
         venueLabel.textColor = UIColor.whiteColor()
         venueLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
-        venueLabel.text = currentShow?.venue // firstShow.venue
+        venueLabel.text = currentShow?.venue
         venueLabel.sizeToFit()
         
         let cityLabel = UILabel()
         cityLabel.tag = 203
         cityLabel.textColor = UIColor.whiteColor()
         cityLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
-        cityLabel.text = currentShow?.city // firstShow.city
+        cityLabel.text = currentShow?.city
         cityLabel.sizeToFit()
         
-        /*
-        dateLabel.frame.origin = CGPoint( x: 0, y: 0 )
-        venueLabel.frame.origin = CGPoint( x: 0, y: dateLabel.frame.size.height + 5 )
-        cityLabel.frame.origin = CGPoint( x: venueLabel.frame.size.width + 5, y: venueLabel.frame.origin.y )
-        */
-        
-        dateLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (dateLabel.frame.size.width / 2), y: 5)
-        venueLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (venueLabel.frame.size.width / 2), y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5)
-        cityLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (cityLabel.frame.size.width / 2), y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5)
+        dateLabel.frame.origin = CGPoint(
+            x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
+            y: 5
+        )
+        venueLabel.frame.origin = CGPoint(
+            x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
+            y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5
+        )
+        cityLabel.frame.origin = CGPoint(
+            x: CGRectGetMidX( infoPane.contentView.bounds ) - ( cityLabel.frame.size.width / 2 ),
+            y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
+        )
         
         infoPane.contentView.addSubview( dateLabel )
         infoPane.contentView.addSubview( venueLabel )
         infoPane.contentView.addSubview( cityLabel )
         view.insertSubview( infoPane, belowSubview: blurEffectView )
-        // view.addSubview( infoPane )
         
         UIView.animateWithDuration(
             0.4,
@@ -626,15 +487,9 @@ class TourMapViewController: UIViewController,
             options: UIViewAnimationOptions.CurveLinear,
             animations:
             {
-                // println( "animations..." )
                 infoPane.frame.origin.y -= 275
             },
-            completion:
-            {
-                finished in
-                
-                // println( "completion..." )
-            }
+            completion: nil
         )
     }
     
@@ -648,15 +503,9 @@ class TourMapViewController: UIViewController,
             options: UIViewAnimationOptions.CurveLinear,
             animations:
             {
-                // println( "animations..." )
                 infoPane.frame.origin.y += 275
             },
-            completion:
-            {
-                finished in
-                
-                // println( "completion..." )
-            }
+            completion: nil
         )
         
         infoPane.removeFromSuperview()
@@ -678,7 +527,9 @@ class TourMapViewController: UIViewController,
             else
             {
                 println( "Pressed the PreviousShow button." )
+                
                 goBackToPreviousShow()
+                
                 if find( selectedTour!.shows, currentShow! ) == 0
                 {
                     tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
@@ -692,9 +543,22 @@ class TourMapViewController: UIViewController,
             
         case 1:
             println( "Pressed the ZoomOut button." )
-            tourMap.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: currentShow!.showLatitude, longitude: currentShow!.showLongitude), span: MKCoordinateSpan(latitudeDelta: 50.0, longitudeDelta: 50.0)), animated: true)
+            
+            tourMap.setRegion(
+                MKCoordinateRegion(
+                    center: CLLocationCoordinate2D(
+                        latitude: currentShow!.showLatitude,
+                        longitude: currentShow!.showLongitude
+                    ),
+                    span: MKCoordinateSpan(
+                        latitudeDelta: 50.0,
+                        longitudeDelta: 50.0
+                    )
+                ),
+                animated: true
+            )
             tourMap.selectAnnotation( currentShow, animated: true )
-            // tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+            
             dropInfoPane()
             
             if find( selectedTour!.shows, currentShow! ) != 0
@@ -706,7 +570,7 @@ class TourMapViewController: UIViewController,
             {
                 resetTourNavControls()
             }
-            // resetTourNavControls( resume: true )
+            
             isZoomedOut = true
             
         case 2:
@@ -714,7 +578,9 @@ class TourMapViewController: UIViewController,
             
         case 3:
             println( "Pressed the NextShow button." )
+            
             goToNextShow()
+            
             if find( selectedTour!.shows, currentShow! ) == selectedTour!.shows.count - 1
             {
                 tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
@@ -848,7 +714,6 @@ class TourMapViewController: UIViewController,
         {
             dontGoBack = true
             
-            println( "didAddAnnotationViews..." )
             let delayTime = dispatch_time(
                 DISPATCH_TIME_NOW,
                 Int64( 1.5 * Double( NSEC_PER_SEC ) )

@@ -128,7 +128,7 @@ class MapquestClient: NSObject
                         tour.shows[ counter ].showLatitude = geocodedLatitude
                         tour.shows[ counter ].showLongitude = geocodedLongitude
                         
-                        println( "\( tour.shows[ counter ].city ): \( geocodedLatitude ), \( geocodedLongitude )" )
+                        // println( "\( tour.shows[ counter ].city ): \( geocodedLatitude ), \( geocodedLongitude )" )
                         
                         counter++
                     }
