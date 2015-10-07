@@ -696,7 +696,17 @@ class TourMapViewController: UIViewController,
             tourMap.selectAnnotation( currentShow, animated: true )
             // tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
             dropInfoPane()
-            resetTourNavControls( resume: true )
+            
+            if find( selectedTour!.shows, currentShow! ) != 0
+            {
+                // tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
+                resetTourNavControls( resume: true )
+            }
+            else
+            {
+                resetTourNavControls()
+            }
+            // resetTourNavControls( resume: true )
             isZoomedOut = true
             
         case 2:
@@ -736,11 +746,15 @@ class TourMapViewController: UIViewController,
         venueLabel.sizeToFit()
         cityLabel.text = currentShow?.city
         cityLabel.sizeToFit()
-        // cityLabel.frame.origin = CGPoint( x: venueLabel.frame.size.width + 5, y: venueLabel.frame.origin.y )
-        venueLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (venueLabel.frame.size.width / 2), y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5)
-        cityLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (cityLabel.frame.size.width / 2), y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5)
         
-        // infoPane.setNeedsDisplay()
+        venueLabel.frame.origin = CGPoint(
+            x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
+            y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5
+        )
+        cityLabel.frame.origin = CGPoint(
+            x: CGRectGetMidX( infoPane.contentView.bounds ) - ( cityLabel.frame.size.width / 2 ),
+            y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
+        )
     }
     
     func goToNextShow()
@@ -766,17 +780,21 @@ class TourMapViewController: UIViewController,
         venueLabel.sizeToFit()
         cityLabel.text = currentShow?.city
         cityLabel.sizeToFit()
-        // cityLabel.frame.origin = CGPoint( x: venueLabel.frame.size.width + 5, y: venueLabel.frame.origin.y )
-        venueLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (venueLabel.frame.size.width / 2), y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5)
-        cityLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (cityLabel.frame.size.width / 2), y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5)
+        
+        venueLabel.frame.origin = CGPoint(
+            x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
+            y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5
+        )
+        cityLabel.frame.origin = CGPoint(
+            x: CGRectGetMidX( infoPane.contentView.bounds ) - ( cityLabel.frame.size.width / 2 ),
+            y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
+        )
         
         if isZoomedOut
         {
             isZoomedOut = false
             tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
         }
-        
-        // infoPane.setNeedsDisplay()
     }
     
     // MARK: MKMapViewDelegate methods
@@ -800,8 +818,6 @@ class TourMapViewController: UIViewController,
         viewForAnnotation annotation: MKAnnotation!
     ) -> MKAnnotationView!
     {
-        // let theAnnotation = annotation as! ShowAnnotation // TODO: Re-instate?
-        
         if let reusedAnnotationView = mapView.dequeueReusableAnnotationViewWithIdentifier( "mapPin" ) as? MKPinAnnotationView
         {
             reusedAnnotationView.annotation = annotation
@@ -857,25 +873,11 @@ class TourMapViewController: UIViewController,
             // tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
             resetTourNavControls( resume: true )
         }
-    }
-    
-    /*
-    func mapView(
-        mapView: MKMapView!,
-        didAddOverlayRenderers renderers: [AnyObject]!
-    )
-    {
-        println( "didAddOverlayRenderers..." )
-        let delayTime = dispatch_time(
-            DISPATCH_TIME_NOW,
-            Int64( 1 * Double( NSEC_PER_SEC ) )
-        )
-        dispatch_after( delayTime, dispatch_get_main_queue() )
+        else
         {
-            self.centerOnFirstShow()
+            resetTourNavControls()
         }
     }
-    */
     
     // MARK: UIPickerViewDataSource, UIPIckerViewDelegate methods
     
@@ -928,45 +930,6 @@ class TourMapViewController: UIViewController,
         }
     }
     
-    func pickerView(
-        pickerView: UIPickerView,
-        titleForRow row: Int,
-        forComponent component: Int
-    ) -> String!
-    {
-        switch pickerView.tag
-        {
-            case 1:
-                if let theYears = years
-                {
-                    return theYears[ row ]
-                }
-                else
-                {
-                    return ". . ."
-                }
-            
-            case 2:
-                // return tourSelections[ row ]
-                if let theTours = tours
-                {
-                    // TODO: FIX
-                    /*
-                    the problem here is that the row index are 0-n, while the dictionary is keys by the tourID, which is like,
-                    91, 97, or 24, etc. i think i should just consruct some Tour objects and then retrieve the names from it.
-                    */
-                    return theTours[ row ].name
-                }
-                else
-                {
-                    return ". . ."
-                }
-                
-            default:
-                return ". . ."
-        }
-    }
-    
     // the trick for using this method came from http://stackoverflow.com/a/7185460
     func pickerView(
         pickerView: UIPickerView,
@@ -1002,12 +965,7 @@ class TourMapViewController: UIViewController,
                 // return tourSelections[ row ]
                 if let theTours = tours
                 {
-                    label?.font = UIFont(name: "Apple SD Gothic Neo", size: 12)
-                    // TODO: FIX
-                    /*
-                    the problem here is that the row index are 0-n, while the dictionary is keys by the tourID, which is like,
-                    91, 97, or 24, etc. i think i should just consruct some Tour objects and then retrieve the names from it.
-                    */
+                    label?.font = UIFont( name: "Apple SD Gothic Neo", size: 12 )
                     label?.text =  theTours[ row ].name
                 }
                 else
