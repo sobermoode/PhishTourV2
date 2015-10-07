@@ -73,7 +73,8 @@ class PhishShow: NSObject,
         // step 3:
         // set the output date format;
         // create a new string with the reformatted date
-        dateFormatter.dateFormat = "MMM dd, yyyy"
+        // dateFormatter.dateFormat = "MMM dd, yyyy"
+        dateFormatter.dateFormat = "MMM dd,"
         let formattedString = dateFormatter.stringFromDate( formattedDate )
         
         self.date = formattedString

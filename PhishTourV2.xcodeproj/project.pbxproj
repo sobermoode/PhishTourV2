@@ -19,6 +19,8 @@
 		81755A661BBCE28D00A16229 /* PhishinClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A651BBCE28D00A16229 /* PhishinClient.swift */; };
 		81755A681BBCE82700A16229 /* TourMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A671BBCE82700A16229 /* TourMapViewController.swift */; };
 		81755A6A1BBCE85000A16229 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81755A691BBCE85000A16229 /* Main.storyboard */; };
+		81B219D11BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B219CF1BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift */; };
+		81B219D21BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81B219D01BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +50,8 @@
 		81755A651BBCE28D00A16229 /* PhishinClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhishinClient.swift; sourceTree = "<group>"; };
 		81755A671BBCE82700A16229 /* TourMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TourMapViewController.swift; sourceTree = "<group>"; };
 		81755A691BBCE85000A16229 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		81B219CF1BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiRowCalloutCell2.swift; sourceTree = "<group>"; };
+		81B219D01BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultiRowCalloutCell2.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +102,8 @@
 				81755A651BBCE28D00A16229 /* PhishinClient.swift */,
 				81101E7F1BC241FF00D0449C /* MapquestClient.swift */,
 				81755A671BBCE82700A16229 /* TourMapViewController.swift */,
+				81B219CF1BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift */,
+				81B219D01BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib */,
 				81755A461BBCDE5D00A16229 /* Images.xcassets */,
 				81755A481BBCDE5D00A16229 /* LaunchScreen.xib */,
 				81755A3D1BBCDE5D00A16229 /* Supporting Files */,
@@ -212,6 +218,7 @@
 			files = (
 				81755A4A1BBCDE5D00A16229 /* LaunchScreen.xib in Resources */,
 				81755A471BBCDE5D00A16229 /* Images.xcassets in Resources */,
+				81B219D21BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib in Resources */,
 				81755A6A1BBCE85000A16229 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -230,6 +237,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81B219D11BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift in Sources */,
 				81755A601BBCDECF00A16229 /* PhishTour.swift in Sources */,
 				816655051BBE262A0028911E /* PhishYear.swift in Sources */,
 				81755A641BBCE13C00A16229 /* PhishSong.swift in Sources */,

@@ -684,6 +684,9 @@ class TourMapViewController: UIViewController,
         showListTable.dataSource = self
         showListTable.delegate = self
         
+        let multiRowCalloutCell2Nib = UINib(nibName: "MultiRowCalloutCell2", bundle: nil)
+        showListTable.registerNib( multiRowCalloutCell2Nib, forCellReuseIdentifier: "multiRowCalloutCell2" )
+        
         showList.contentView.addSubview( showListTable )
         view.insertSubview( showList, belowSubview: blurEffectView )
         
@@ -991,9 +994,14 @@ class TourMapViewController: UIViewController,
         cellForRowAtIndexPath indexPath: NSIndexPath
     ) -> UITableViewCell
     {
-        let cell = UITableViewCell(style: .Default, reuseIdentifier: "showListCell")
+        // let cell = UITableViewCell(style: .Default, reuseIdentifier: "showListCell")
+        let cell = tableView.dequeueReusableCellWithIdentifier( "multiRowCalloutCell2", forIndexPath: indexPath ) as! MultiRowCalloutCell2
         
-        cell.textLabel?.text = "SHOW"
+        // cell.textLabel?.text = "SHOW"
+        cell.dateLabel.text = selectedTour?.shows[ indexPath.row ].date
+        cell.yearLabel.text = selectedTour?.shows[ indexPath.row ].year.description
+        cell.venueLabel.text = selectedTour?.shows[ indexPath.row ].venue
+        cell.cityLabel.text = selectedTour?.shows[ indexPath.row ].city
         
         // cell.contentView.sizeToFit()
         // cell.sizeToFit()
