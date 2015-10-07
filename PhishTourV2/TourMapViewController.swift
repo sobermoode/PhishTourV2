@@ -33,6 +33,7 @@ class TourMapViewController: UIViewController,
     var didMakeTourTrail: Bool = false
     var dontGoBack: Bool = false
     var didStartTour: Bool = false
+    var isResuming: Bool = false
     let defaultRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(
             latitude: 39.8282,
@@ -127,9 +128,24 @@ class TourMapViewController: UIViewController,
         resetButton.enabled = false
     }
     
-    func resetTourNavControls()
+    func resetTourNavControls( resume: Bool = false )
     {
-        tourNavControls.setTitle( "Start", forSegmentAtIndex: 0 )
+        let titleOption: String = ( resume ) ? "Resume" : "Start"
+        isResuming = resume
+        // let buttonAction: Selector = ( resume ) ? "resumeTour" : "startTour"
+        
+        tourNavControls.setTitle( titleOption, forSegmentAtIndex: 0 )
+//        if resume
+//        {
+//            tourNavControls.removeTarget(self, action: "startTour", forControlEvents: .ValueChanged)
+//            tourNavControls.addTarget(self, action: "resumeTour", forControlEvents: .ValueChanged)
+//        }
+//        else
+//        {
+//            tourNavControls.removeTarget(self, action: "resumeTour", forControlEvents: .ValueChanged)
+//            tourNavControls.addTarget(self, action: "startTour", forControlEvents: .ValueChanged)
+//        }
+        
         tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 2 )
@@ -329,6 +345,8 @@ class TourMapViewController: UIViewController,
             
             resetTourNavControls()
             
+            dropInfoPane()
+            
             didStartTour = false
         }
         
@@ -349,6 +367,7 @@ class TourMapViewController: UIViewController,
                 {
                     dispatch_async( dispatch_get_main_queue() )
                     {
+                        self.currentShow = theTour.shows.first
                         // self.zoomOut()
                         self.showTourTitle()
                         self.centerOnFirstShow()
@@ -469,17 +488,47 @@ class TourMapViewController: UIViewController,
     
     func startTour()
     {
+        println( "startTour..." )
         tourNavControls.setTitle( "⬅︎", forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
         
-        currentShow = selectedTour!.shows.first!
+        if currentShow != nil
+        {
+            tourMap.deselectAnnotation( currentShow!, animated: true )
+        }
+        
+        // currentShow = selectedTour!.shows.first!
+        currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
         // zoomInOnFirstShow()
         zoomInOnCurrentShow()
         bringUpInfoPane()
         didStartTour = true
+    }
+    
+    func resumeTour()
+    {
+        println( "resumeTour..." )
+        tourNavControls.setTitle( "⬅︎", forSegmentAtIndex: 0 )
+        tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+        tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
+        tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+        tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
+        
+        if currentShow != nil
+        {
+            tourMap.deselectAnnotation( currentShow!, animated: true )
+        }
+        
+        // currentShow = selectedTour!.shows.first!
+        currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
+        // zoomInOnFirstShow()
+        zoomInOnCurrentShow()
+        bringUpInfoPane()
+        didStartTour = true
+        isResuming = false
     }
     
     // TODO: change this to zoomInOnShow() and use the currentShow to set the center. then you can use this with the goToPreviousShow and goToNextShow methods
@@ -532,27 +581,27 @@ class TourMapViewController: UIViewController,
         
         infoPane.addSubview( vibrancyView )
         
-        let firstShow = selectedTour!.shows.first!
+        // let firstShow = selectedTour!.shows.first!
         
         let dateLabel = UILabel()
         dateLabel.tag = 201
         dateLabel.textColor = UIColor.whiteColor()
         dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
-        dateLabel.text = firstShow.date
+        dateLabel.text = currentShow?.date // firstShow.date
         dateLabel.sizeToFit()
         
         let venueLabel = UILabel()
         venueLabel.tag = 202
         venueLabel.textColor = UIColor.whiteColor()
         venueLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
-        venueLabel.text = firstShow.venue
+        venueLabel.text = currentShow?.venue // firstShow.venue
         venueLabel.sizeToFit()
         
         let cityLabel = UILabel()
         cityLabel.tag = 203
         cityLabel.textColor = UIColor.whiteColor()
         cityLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
-        cityLabel.text = firstShow.city
+        cityLabel.text = currentShow?.city // firstShow.city
         cityLabel.sizeToFit()
         
         /*
@@ -568,7 +617,8 @@ class TourMapViewController: UIViewController,
         infoPane.contentView.addSubview( dateLabel )
         infoPane.contentView.addSubview( venueLabel )
         infoPane.contentView.addSubview( cityLabel )
-        view.addSubview( infoPane )
+        view.insertSubview( infoPane, belowSubview: blurEffectView )
+        // view.addSubview( infoPane )
         
         UIView.animateWithDuration(
             0.4,
@@ -594,7 +644,7 @@ class TourMapViewController: UIViewController,
         
         UIView.animateWithDuration(
             0.4,
-            delay: 0.5,
+            delay: 0.0,
             options: UIViewAnimationOptions.CurveLinear,
             animations:
             {
@@ -617,7 +667,11 @@ class TourMapViewController: UIViewController,
         switch sender.selectedSegmentIndex
         {
         case 0:
-            if !didStartTour
+            if isResuming
+            {
+                resumeTour()
+            }
+            else if !didStartTour
             {
                 startTour()
             }
@@ -639,9 +693,10 @@ class TourMapViewController: UIViewController,
         case 1:
             println( "Pressed the ZoomOut button." )
             tourMap.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: currentShow!.showLatitude, longitude: currentShow!.showLongitude), span: MKCoordinateSpan(latitudeDelta: 50.0, longitudeDelta: 50.0)), animated: true)
+            tourMap.selectAnnotation( currentShow, animated: true )
             // tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
             dropInfoPane()
-            resetTourNavControls()
+            resetTourNavControls( resume: true )
             isZoomedOut = true
             
         case 2:
@@ -786,6 +841,21 @@ class TourMapViewController: UIViewController,
             {
                 self.makeTourTrail()
             }
+        }
+    }
+    
+    func mapView(
+        mapView: MKMapView!,
+        didSelectAnnotationView view: MKAnnotationView!
+    )
+    {
+        let selectedShow = view.annotation as! PhishShow
+        currentShow = selectedShow
+        
+        if find( selectedTour!.shows, selectedShow ) != 0
+        {
+            // tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
+            resetTourNavControls( resume: true )
         }
     }
     
