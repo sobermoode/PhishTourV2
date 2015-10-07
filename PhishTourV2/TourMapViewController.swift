@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 
 class TourMapViewController: UIViewController,
-    MKMapViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate
+    MKMapViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITableViewDataSource, UITableViewDelegate
 {
     @IBOutlet weak var resetButton: UIBarButtonItem!
     @IBOutlet weak var selectTourButton: UIBarButtonItem!
@@ -63,7 +63,7 @@ class TourMapViewController: UIViewController,
     var selectedSeason: String? // = "winter"
     let tour: String = "tour"
     var tourIDs = [ Int ]()
-    // var currentTour = [ ShowAnnotation ]() // TODO: Re-instate?
+    // var currentTour = [ ShowAnnotation ]() // Re-instate? prolly not
     
     
     override func viewDidLoad()
@@ -80,7 +80,7 @@ class TourMapViewController: UIViewController,
             forControlEvents: UIControlEvents.ValueChanged
         )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
-        tourNavControls.setEnabled( false, forSegmentAtIndex: 2 )
+        tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
         
         tourMap.delegate = self
@@ -136,7 +136,7 @@ class TourMapViewController: UIViewController,
         tourNavControls.setTitle( titleOption, forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
-        tourNavControls.setEnabled( false, forSegmentAtIndex: 2 )
+        tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
         
         didStartTour = false
@@ -576,6 +576,8 @@ class TourMapViewController: UIViewController,
         case 2:
             println( "Pressed the List button." )
             
+            bringInShowList()
+            
         case 3:
             println( "Pressed the NextShow button." )
             
@@ -661,6 +663,41 @@ class TourMapViewController: UIViewController,
             isZoomedOut = false
             tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
         }
+    }
+    
+    func bringInShowList()
+    {
+        let blurEffect = UIBlurEffect( style: .Dark )
+        let showList = UIVisualEffectView( effect: blurEffect )
+        
+        showList.tag = 300
+        showList.frame = CGRect(
+            x: 1, y: 100,
+            width: view.bounds.size.width - 25, height: view.bounds.size.height - 148
+        )
+        showList.frame.origin = CGPoint(
+            x: CGRectGetMinX( view.bounds ) - ( showList.frame.size.width + 1 ),
+            y: showList.frame.origin.y
+        )
+        
+        let showListTable = UITableView(frame: CGRect(x: 10, y: 10, width: showList.frame.size.width - 20, height: showList.frame.size.height - 20), style: .Plain)
+        showListTable.dataSource = self
+        showListTable.delegate = self
+        
+        showList.contentView.addSubview( showListTable )
+        view.insertSubview( showList, belowSubview: blurEffectView )
+        
+        UIView.animateWithDuration(
+            0.4,
+            delay: 0.5,
+            options: UIViewAnimationOptions.CurveLinear,
+            animations:
+            {
+                let stoppingPoint: CGFloat = CGRectGetMidX( self.view.bounds ) - ( showList.frame.size.width / 2 )
+                showList.frame.origin.x = stoppingPoint
+            },
+            completion: nil
+        )
     }
     
     // MARK: MKMapViewDelegate methods
@@ -932,5 +969,35 @@ class TourMapViewController: UIViewController,
                 selectedTour = nil
                 // selectedSeason = nil
         }
+    }
+    
+    // MARK: UITableViewDataSource, UITableViewDelegate methods
+    
+    func numberOfSectionsInTableView( tableView: UITableView ) -> Int
+    {
+        return 1
+    }
+    
+    func tableView(
+        tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int
+    {
+        return selectedTour!.shows.count
+    }
+    
+    func tableView(
+        tableView: UITableView,
+        cellForRowAtIndexPath indexPath: NSIndexPath
+    ) -> UITableViewCell
+    {
+        let cell = UITableViewCell(style: .Default, reuseIdentifier: "showListCell")
+        
+        cell.textLabel?.text = "SHOW"
+        
+        // cell.contentView.sizeToFit()
+        // cell.sizeToFit()
+        
+        return cell
     }
 }
