@@ -60,11 +60,23 @@ class PhishShow: NSObject,
         andYear year: Int
     )
     {
+        // need to convert the date to a more pleasing form;
+        // step 1: get the date, as returned from phish.in
         let date = showInfo[ "date" ] as! String
-        let pieces = date.componentsSeparatedByString( "-" )
-        let newDate = pieces[ 1 ] + "-" + pieces[ 2 ] + "-" + pieces[ 0 ]
         
-        self.date = newDate
+        // step 2: create a date formatter and set the input format;
+        // create an NSDate object with the input format
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let formattedDate = dateFormatter.dateFromString( date )!
+        
+        // step 3:
+        // set the output date format;
+        // create a new string with the reformatted date
+        dateFormatter.dateFormat = "MMM dd, yyyy"
+        let formattedString = dateFormatter.stringFromDate( formattedDate )
+        
+        self.date = formattedString
         self.year = year
         self.venue = showInfo[ "venue_name" ] as! String
         self.city = showInfo[ "location" ] as! String
