@@ -86,7 +86,7 @@ class MultiRowCalloutCell2: UITableViewCell
     
     override func layoutSubviews()
     {
-        // println( "layoutSubviews..." )
+        println( "layoutSubviews..." )
         // var cellBecameTaller: Bool = false
         // var extraHeight: CGFloat = 0
         
@@ -121,8 +121,10 @@ class MultiRowCalloutCell2: UITableViewCell
         */
         venueLabel.frame.origin = CGPoint(x: dateLabel.frame.origin.x, y: dateLabel.frame.size.height + 7)
         
-        cityLabel.sizeToFit()
-        cityLabel.frame.size.width = ( cityLabel.frame.size.width > 145 ) ? 145 : cityLabel.frame.size.width
+        // TODO: re-instate for SMCalloutView?
+        // cityLabel.sizeToFit()
+        // cityLabel.frame.size.width = ( cityLabel.frame.size.width > 145 ) ? 145 : cityLabel.frame.size.width
+        
         // cityLabel.frame.size.width = ( cityLabel.frame.size.width > 145 ) ? 145 : cityLabel.frame.size.width
         /*
         if cityLabelIsTooLarge
@@ -146,13 +148,14 @@ class MultiRowCalloutCell2: UITableViewCell
         */
         cityLabel.frame.origin = CGPoint(x: 7 + venueLabel.frame.size.width + 15, y: venueLabel.frame.origin.y)
         
-        seeSetlistButton.sizeToFit()
+        // TODO: re-instate for SMCalloutView?
+        // seeSetlistButton.sizeToFit()
         // seeSetlistButton.frame.origin = CGPoint(x: cityLabel.frame.origin.x + cityLabel.frame.size.width + 10, y: CGRectGetMidY(self.bounds) - 17)
         seeSetlistButton.frame.origin = CGPoint(x: CGRectGetMaxX(self.bounds) - seeSetlistButton.frame.size.width, y: CGRectGetMidY(self.bounds) - 17)
         
         // self.sizeToFit()
         
-        println( "extraHeight: \( extraHeight )" )
+        // println( "extraHeight: \( extraHeight )" )
         cellWidth = self.frame.size.width
         cellHeight = self.frame.size.height
         // cellHeight = self.frame.size.height + extraHeight
@@ -196,11 +199,15 @@ class MultiRowCalloutCell2: UITableViewCell
         
         // let width = self.frame.size.width
         // let width: CGFloat = ( venueLabel.frame.origin.x + venueLabel.frame.size.width ) + ( cityLabel.frame.origin.x + cityLabel.frame.size.width ) + ( seeSetlistButton.frame.origin.x + seeSetlistButton.frame.size.width ) + 28
-        let width: CGFloat = venueLabel.frame.size.width + cityLabel.frame.size.width + seeSetlistButton.frame.size.width + 30
         // let height = self.frame.size.height
-        let height: CGFloat = 45
         
+        /* PREVIOUS CODE
+        let width: CGFloat = venueLabel.frame.size.width + cityLabel.frame.size.width + seeSetlistButton.frame.size.width + 30
+        let height: CGFloat = 45
         return CGSize(width: width, height: height)
+        */
+        
+        return CGSize(width: superview!.frame.size.width, height: cellHeight)
     }
     
     func updateWithNewWidth( newWidth: CGFloat )
@@ -228,7 +235,12 @@ class MultiRowCalloutCell2: UITableViewCell
         super.awakeFromNib()
         // Initialization code
         
+        println( "awakeFromNib..." )
         self.cellNumber = 0
+//        self.layer.borderColor = UIColor.blueColor().CGColor
+//        self.layer.borderWidth = 1
+//        self.cityLabel.layer.borderColor = UIColor.redColor().CGColor
+//        self.cityLabel.layer.borderWidth = 1
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

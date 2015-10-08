@@ -684,6 +684,9 @@ class TourMapViewController: UIViewController,
         showListTable.dataSource = self
         showListTable.delegate = self
         
+        // showListTable.reloadData()
+        showListTable.sizeToFit()
+        
         let multiRowCalloutCell2Nib = UINib(nibName: "MultiRowCalloutCell2", bundle: nil)
         showListTable.registerNib( multiRowCalloutCell2Nib, forCellReuseIdentifier: "multiRowCalloutCell2" )
         
@@ -1002,6 +1005,7 @@ class TourMapViewController: UIViewController,
         cell.yearLabel.text = selectedTour?.shows[ indexPath.row ].year.description
         cell.venueLabel.text = selectedTour?.shows[ indexPath.row ].venue
         cell.cityLabel.text = selectedTour?.shows[ indexPath.row ].city
+        println( "cell \( indexPath.row ) width: \( cell.cityLabel.frame.size.width )" )
         
         // cell.contentView.sizeToFit()
         // cell.sizeToFit()
