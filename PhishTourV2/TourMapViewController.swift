@@ -667,43 +667,69 @@ class TourMapViewController: UIViewController,
     
     func bringInShowList()
     {
-        let blurEffect = UIBlurEffect( style: .Dark )
-        let showList = UIVisualEffectView( effect: blurEffect )
-        
-        showList.tag = 300
-        showList.frame = CGRect(
-            x: 1, y: 100,
-            width: view.bounds.size.width - 25, height: view.bounds.size.height - 148
-        )
-        showList.frame.origin = CGPoint(
-            x: CGRectGetMinX( view.bounds ) - ( showList.frame.size.width + 1 ),
-            y: showList.frame.origin.y
-        )
-        
-        let showListTable = UITableView(frame: CGRect(x: 10, y: 10, width: showList.frame.size.width - 20, height: showList.frame.size.height - 20), style: .Plain)
-        showListTable.dataSource = self
-        showListTable.delegate = self
-        
-        // showListTable.reloadData()
-        showListTable.sizeToFit()
-        
-        let multiRowCalloutCell2Nib = UINib(nibName: "MultiRowCalloutCell2", bundle: nil)
-        showListTable.registerNib( multiRowCalloutCell2Nib, forCellReuseIdentifier: "multiRowCalloutCell2" )
-        
-        showList.contentView.addSubview( showListTable )
-        view.insertSubview( showList, belowSubview: blurEffectView )
-        
-        UIView.animateWithDuration(
-            0.4,
-            delay: 0.5,
-            options: UIViewAnimationOptions.CurveLinear,
-            animations:
-            {
-                let stoppingPoint: CGFloat = CGRectGetMidX( self.view.bounds ) - ( showList.frame.size.width / 2 )
-                showList.frame.origin.x = stoppingPoint
-            },
-            completion: nil
-        )
+        if let showList = view.viewWithTag( 300 ) as? UIVisualEffectView
+        {
+            UIView.animateWithDuration(
+                0.4,
+                delay: 0.5,
+                options: UIViewAnimationOptions.CurveLinear,
+                animations:
+                {
+                    let stoppingPoint: CGFloat = CGRectGetMinX( self.view.bounds ) - ( showList.frame.size.width )
+                    showList.frame.origin.x = stoppingPoint
+                },
+                completion:
+                {
+                    finished in
+                    
+                    if finished
+                    {
+                        showList.removeFromSuperview()
+                    }
+                }
+            )
+        }
+        else
+        {
+            let blurEffect = UIBlurEffect( style: .Dark )
+            let showList = UIVisualEffectView( effect: blurEffect )
+            
+            showList.tag = 300
+            showList.frame = CGRect(
+                x: 1, y: 100,
+                width: view.bounds.size.width - 25, height: view.bounds.size.height - 148
+            )
+            showList.frame.origin = CGPoint(
+                x: CGRectGetMinX( view.bounds ) - ( showList.frame.size.width + 1 ),
+                y: showList.frame.origin.y
+            )
+            
+            let showListTable = UITableView(frame: CGRect(x: 10, y: 10, width: showList.frame.size.width - 20, height: showList.frame.size.height - 20), style: .Plain)
+            showListTable.tag = 301
+            showListTable.dataSource = self
+            showListTable.delegate = self
+            
+            // showListTable.reloadData()
+            showListTable.sizeToFit()
+            
+            let multiRowCalloutCell2Nib = UINib(nibName: "MultiRowCalloutCell2", bundle: nil)
+            showListTable.registerNib( multiRowCalloutCell2Nib, forCellReuseIdentifier: "multiRowCalloutCell2" )
+            
+            showList.contentView.addSubview( showListTable )
+            view.insertSubview( showList, belowSubview: blurEffectView )
+            
+            UIView.animateWithDuration(
+                0.4,
+                delay: 0.5,
+                options: UIViewAnimationOptions.CurveLinear,
+                animations:
+                {
+                    let stoppingPoint: CGFloat = CGRectGetMidX( self.view.bounds ) - ( showList.frame.size.width / 2 )
+                    showList.frame.origin.x = stoppingPoint
+                },
+                completion: nil
+            )
+        }
     }
     
     // MARK: MKMapViewDelegate methods
