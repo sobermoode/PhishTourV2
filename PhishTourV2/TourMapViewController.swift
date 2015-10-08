@@ -471,7 +471,7 @@ class TourMapViewController: UIViewController,
             dateLabel.tag = 201
             dateLabel.textColor = UIColor.whiteColor()
             dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
-            dateLabel.text = currentShow?.date
+            dateLabel.text = currentShow!.date + " \( currentShow!.year )"
             dateLabel.sizeToFit()
             
             let venueLabel = UILabel()
@@ -641,7 +641,7 @@ class TourMapViewController: UIViewController,
         let venueLabel = infoPane.viewWithTag( 202 )! as! UILabel
         let cityLabel = infoPane.viewWithTag( 203 )! as! UILabel
         
-        dateLabel.text = currentShow?.date
+        dateLabel.text = currentShow!.date + " \( currentShow!.year )"
         dateLabel.sizeToFit()
         venueLabel.text = currentShow?.venue
         venueLabel.sizeToFit()
@@ -675,7 +675,7 @@ class TourMapViewController: UIViewController,
         let venueLabel = infoPane.viewWithTag( 202 )! as! UILabel
         let cityLabel = infoPane.viewWithTag( 203 )! as! UILabel
         
-        dateLabel.text = currentShow?.date
+        dateLabel.text = currentShow!.date + " \( currentShow!.year )"
         dateLabel.sizeToFit()
         venueLabel.text = currentShow?.venue
         venueLabel.sizeToFit()
