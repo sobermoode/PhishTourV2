@@ -135,20 +135,32 @@ class TourMapViewController: UIViewController,
         resetButton.enabled = false
     }
     
-    func resetTourNavControls( resume: Bool = false )
+    func resetTourNavControls( resume: Bool = false, tourNav: Bool = false )
     {
-        let titleOption: String = ( resume ) ? "Resume" : "Start"
-        println( "titleOption: \( titleOption )" )
-        isResuming = resume
-        
-        tourNavControls.setTitle( titleOption, forSegmentAtIndex: 0 )
-        tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
-        tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
-        tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-        tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
-        
-        // didStartTour = false
-        didStartTour = resume
+        if tourNav
+        {
+            tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
+            tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+            tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+        }
+        else
+        {
+            let titleOption: String = ( resume ) ? "Resume" : "Start"
+            println( "titleOption: \( titleOption )" )
+            isResuming = resume
+            
+            tourNavControls.setTitle( titleOption, forSegmentAtIndex: 0 )
+            tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+            tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+            // tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+            let oneShow = ( selectedTour!.shows.count == 1 ) ? false : true
+            tourNavControls.setEnabled( oneShow, forSegmentAtIndex: 3 )
+            
+            // didStartTour = false
+            // didStartTour = resume
+        }
     }
     
     @IBAction func showTourPicker( sender: UIBarButtonItem? )
@@ -294,6 +306,7 @@ class TourMapViewController: UIViewController,
                         }
                         
                         self.tourNavControls.hidden = false
+                        self.resetTourNavControls(resume: false)
                     }
                 }
             }
@@ -389,7 +402,9 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-        tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
+        
+        let oneShow = ( selectedTour!.shows.count == 1 ) ? false : true
+        tourNavControls.setEnabled( oneShow, forSegmentAtIndex: 3 )
         
         if currentShow != nil
         {
@@ -638,6 +653,7 @@ class TourMapViewController: UIViewController,
             println( "Pressed the List button." )
             
             bringInShowList()
+            resetTourNavControls( tourNav: true )
             
         case 3:
             println( "Pressed the NextShow button." )
@@ -747,14 +763,16 @@ class TourMapViewController: UIViewController,
                     {
                         showList.removeFromSuperview()
                         
-                        if self.didStartTour
-                        {
-                            let tourNavControls = self.view.viewWithTag( 400 ) as! UISegmentedControl
-                            tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
-                            tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
-                            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-                            tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
-                        }
+                        self.resetTourNavControls()
+                        
+//                        if self.didStartTour
+//                        {
+//                            let tourNavControls = self.view.viewWithTag( 400 ) as! UISegmentedControl
+//                            tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+//                            tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
+//                            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+//                            tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
+//                        }
                     }
                 }
             )
@@ -763,11 +781,12 @@ class TourMapViewController: UIViewController,
         {
             if didStartTour
             {
-                let tourNavControls = view.viewWithTag( 400 ) as! UISegmentedControl
-                tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
-                tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
-                tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-                tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+//                let tourNavControls = view.viewWithTag( 400 ) as! UISegmentedControl
+//                tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
+//                tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+//                tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+//                tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+                self.resetTourNavControls()
             }
             
             let blurEffect = UIBlurEffect( style: .Dark )
