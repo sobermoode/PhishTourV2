@@ -122,6 +122,7 @@ class TourMapViewController: UIViewController,
         {
             dropInfoPane()
         }
+        // bringUpInfoPane()
         
         tourMap.setRegion( defaultRegion, animated: true )
         
@@ -237,7 +238,8 @@ class TourMapViewController: UIViewController,
             
             resetTourNavControls()
             
-            dropInfoPane()
+            // dropInfoPane()
+            bringUpInfoPane()
             
             didStartTour = false
         }
@@ -421,76 +423,100 @@ class TourMapViewController: UIViewController,
     
     func bringUpInfoPane()
     {
-        let blurEffect = UIBlurEffect( style: .Dark )
-        let vibrancyEffect = UIVibrancyEffect( forBlurEffect: blurEffect )
-        let infoPane = UIVisualEffectView( effect: blurEffect )
-        let vibrancyView = UIVisualEffectView( effect: vibrancyEffect )
-        
-        infoPane.tag = 200
-        infoPane.frame = CGRect(
-            x: 0, y: CGRectGetMaxY( view.bounds ) + 1,
-            width: view.bounds.size.width - 25, height: 225
-        )
-        infoPane.frame.origin = CGPoint(
-            x: CGRectGetMidX( view.bounds ) - infoPane.frame.size.width / 2,
-            y: infoPane.frame.origin.y
-        )
-        vibrancyView.frame = CGRect(
-            x: 0, y: 0,
-            width: infoPane.frame.size.width, height: infoPane.frame.size.height
-        )
-        
-        infoPane.addSubview( vibrancyView )
-        
-        let dateLabel = UILabel()
-        dateLabel.tag = 201
-        dateLabel.textColor = UIColor.whiteColor()
-        dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
-        dateLabel.text = currentShow?.date
-        dateLabel.sizeToFit()
-        
-        let venueLabel = UILabel()
-        venueLabel.tag = 202
-        venueLabel.textColor = UIColor.whiteColor()
-        venueLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
-        venueLabel.text = currentShow?.venue
-        venueLabel.sizeToFit()
-        
-        let cityLabel = UILabel()
-        cityLabel.tag = 203
-        cityLabel.textColor = UIColor.whiteColor()
-        cityLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
-        cityLabel.text = currentShow?.city
-        cityLabel.sizeToFit()
-        
-        dateLabel.frame.origin = CGPoint(
-            x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
-            y: 5
-        )
-        venueLabel.frame.origin = CGPoint(
-            x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
-            y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5
-        )
-        cityLabel.frame.origin = CGPoint(
-            x: CGRectGetMidX( infoPane.contentView.bounds ) - ( cityLabel.frame.size.width / 2 ),
-            y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
-        )
-        
-        infoPane.contentView.addSubview( dateLabel )
-        infoPane.contentView.addSubview( venueLabel )
-        infoPane.contentView.addSubview( cityLabel )
-        view.insertSubview( infoPane, belowSubview: blurEffectView )
-        
-        UIView.animateWithDuration(
-            0.4,
-            delay: 0.5,
-            options: UIViewAnimationOptions.CurveLinear,
-            animations:
-            {
-                infoPane.frame.origin.y -= 275
-            },
-            completion: nil
-        )
+        if let infoPane = view.viewWithTag( 200 ) as? UIVisualEffectView
+        {
+            UIView.animateWithDuration(
+                0.4,
+                delay: 0.5,
+                options: UIViewAnimationOptions.CurveLinear,
+                animations:
+                {
+                    infoPane.frame.origin.y += 275
+                },
+                completion:
+                {
+                    finished in
+                    
+                    if finished
+                    {
+                        infoPane.removeFromSuperview()
+                    }
+                }
+            )
+        }
+        else
+        {
+            let blurEffect = UIBlurEffect( style: .Dark )
+            // let vibrancyEffect = UIVibrancyEffect( forBlurEffect: blurEffect )
+            let infoPane = UIVisualEffectView( effect: blurEffect )
+            // let vibrancyView = UIVisualEffectView( effect: vibrancyEffect )
+            
+            infoPane.tag = 200
+            infoPane.frame = CGRect(
+                x: 0, y: CGRectGetMaxY( view.bounds ) + 1,
+                width: view.bounds.size.width - 25, height: 225
+            )
+            infoPane.frame.origin = CGPoint(
+                x: CGRectGetMidX( view.bounds ) - infoPane.frame.size.width / 2,
+                y: infoPane.frame.origin.y
+            )
+    //        vibrancyView.frame = CGRect(
+    //            x: 0, y: 0,
+    //            width: infoPane.frame.size.width, height: infoPane.frame.size.height
+    //        )
+    //        
+    //        infoPane.addSubview( vibrancyView )
+            
+            let dateLabel = UILabel()
+            dateLabel.tag = 201
+            dateLabel.textColor = UIColor.whiteColor()
+            dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
+            dateLabel.text = currentShow?.date
+            dateLabel.sizeToFit()
+            
+            let venueLabel = UILabel()
+            venueLabel.tag = 202
+            venueLabel.textColor = UIColor.whiteColor()
+            venueLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
+            venueLabel.text = currentShow?.venue
+            venueLabel.sizeToFit()
+            
+            let cityLabel = UILabel()
+            cityLabel.tag = 203
+            cityLabel.textColor = UIColor.whiteColor()
+            cityLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
+            cityLabel.text = currentShow?.city
+            cityLabel.sizeToFit()
+            
+            dateLabel.frame.origin = CGPoint(
+                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
+                y: 5
+            )
+            venueLabel.frame.origin = CGPoint(
+                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
+                y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5
+            )
+            cityLabel.frame.origin = CGPoint(
+                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( cityLabel.frame.size.width / 2 ),
+                y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
+            )
+            
+            infoPane.contentView.addSubview( dateLabel )
+            infoPane.contentView.addSubview( venueLabel )
+            infoPane.contentView.addSubview( cityLabel )
+            view.insertSubview( infoPane, belowSubview: blurEffectView )
+            
+            UIView.animateWithDuration(
+                0.4,
+                delay: 0.5,
+                options: UIViewAnimationOptions.CurveLinear,
+                animations:
+                {
+                    infoPane.frame.origin.y -= 275
+                },
+                completion: nil
+            )
+        }
     }
     
     func dropInfoPane()
@@ -505,10 +531,16 @@ class TourMapViewController: UIViewController,
             {
                 infoPane.frame.origin.y += 275
             },
-            completion: nil
+            completion:
+            {
+                finished in
+                
+                if finished
+                {
+                    infoPane.removeFromSuperview()
+                }
+            }
         )
-        
-        infoPane.removeFromSuperview()
     }
     
     func selectTourNavigationOption( sender: UISegmentedControl )
@@ -559,7 +591,8 @@ class TourMapViewController: UIViewController,
             )
             tourMap.selectAnnotation( currentShow, animated: true )
             
-            dropInfoPane()
+            // dropInfoPane()
+            bringUpInfoPane()
             
             if find( selectedTour!.shows, currentShow! ) != 0
             {

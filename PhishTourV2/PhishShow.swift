@@ -30,7 +30,7 @@ class PhishShow: NSObject,
     }
     var title: String
     {
-        return date
+        return date + " \( year )"
     }
     var subtitle: String
     {
