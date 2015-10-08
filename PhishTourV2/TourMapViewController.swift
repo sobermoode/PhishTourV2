@@ -74,6 +74,7 @@ class TourMapViewController: UIViewController,
         
         resetButton.enabled = false
         
+        tourNavControls.tag = 400
         tourNavControls.addTarget(
             self,
             action: "selectTourNavigationOption:",
@@ -123,6 +124,11 @@ class TourMapViewController: UIViewController,
             dropInfoPane()
         }
         // bringUpInfoPane()
+        
+        if let showList = view.viewWithTag( 300 )
+        {
+            bringInShowList()
+        }
         
         tourMap.setRegion( defaultRegion, animated: true )
         
@@ -246,6 +252,10 @@ class TourMapViewController: UIViewController,
             if view.viewWithTag( 200 ) != nil
             {
                 bringUpInfoPane()
+            }
+            if view.viewWithTag( 300 ) != nil
+            {
+                bringInShowList()
             }
             
             didStartTour = false
@@ -389,6 +399,11 @@ class TourMapViewController: UIViewController,
         currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
         
         zoomInOnCurrentShow()
+        // bringInShowList()
+        if view.viewWithTag( 300 ) != nil
+        {
+            bringInShowList()
+        }
         bringUpInfoPane()
         
         didStartTour = true
@@ -410,6 +425,12 @@ class TourMapViewController: UIViewController,
         currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
         
         zoomInOnCurrentShow()
+        
+        if view.viewWithTag( 300 ) != nil
+        {
+            bringInShowList()
+        }
+        
         bringUpInfoPane()
         
         didStartTour = true
@@ -725,12 +746,30 @@ class TourMapViewController: UIViewController,
                     if finished
                     {
                         showList.removeFromSuperview()
+                        
+                        if self.didStartTour
+                        {
+                            let tourNavControls = self.view.viewWithTag( 400 ) as! UISegmentedControl
+                            tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+                            tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
+                            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+                            tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
+                        }
                     }
                 }
             )
         }
         else
         {
+            if didStartTour
+            {
+                let tourNavControls = view.viewWithTag( 400 ) as! UISegmentedControl
+                tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
+                tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+                tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+                tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+            }
+            
             let blurEffect = UIBlurEffect( style: .Dark )
             let showList = UIVisualEffectView( effect: blurEffect )
             
