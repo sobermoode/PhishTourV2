@@ -132,6 +132,7 @@ class TourMapViewController: UIViewController,
     func resetTourNavControls( resume: Bool = false )
     {
         let titleOption: String = ( resume ) ? "Resume" : "Start"
+        println( "titleOption: \( titleOption )" )
         isResuming = resume
         
         tourNavControls.setTitle( titleOption, forSegmentAtIndex: 0 )
@@ -140,7 +141,8 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
         
-        didStartTour = false
+        // didStartTour = false
+        didStartTour = resume
     }
     
     @IBAction func showTourPicker( sender: UIBarButtonItem? )
@@ -234,12 +236,17 @@ class TourMapViewController: UIViewController,
         
         if didStartTour
         {
+            println( "didStartTour" )
             tourMap.setRegion( defaultRegion, animated: true )
             
             resetTourNavControls()
             
             // dropInfoPane()
-            bringUpInfoPane()
+            // bringUpInfoPane()
+            if view.viewWithTag( 200 ) != nil
+            {
+                bringUpInfoPane()
+            }
             
             didStartTour = false
         }
