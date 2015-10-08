@@ -34,6 +34,7 @@ class TourMapViewController: UIViewController,
     var dontGoBack: Bool = false
     var didStartTour: Bool = false
     var isResuming: Bool = false
+    var previousStatesOfTourNav: [ Int : Bool ]? = nil
     let defaultRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(
             latitude: 39.8282,
@@ -102,7 +103,12 @@ class TourMapViewController: UIViewController,
         if !tourNavControls.hidden
         {
             tourNavControls.hidden = true
-            resetTourNavControls()
+            // resetTourNavControls()
+            tourNavControls.setTitle( "Start", forSegmentAtIndex: 0 )
+            tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+            tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+            tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
         }
         
         if !tourMap.annotations.isEmpty
@@ -135,6 +141,7 @@ class TourMapViewController: UIViewController,
         resetButton.enabled = false
     }
     
+    /*
     func resetTourNavControls( resume: Bool = false, tourNav: Bool = false )
     {
         if tourNav
@@ -162,6 +169,7 @@ class TourMapViewController: UIViewController,
             // didStartTour = resume
         }
     }
+    */
     
     @IBAction func showTourPicker( sender: UIBarButtonItem? )
     {
@@ -257,7 +265,12 @@ class TourMapViewController: UIViewController,
             println( "didStartTour" )
             tourMap.setRegion( defaultRegion, animated: true )
             
-            resetTourNavControls()
+            // resetTourNavControls()
+            tourNavControls.setTitle( "Start", forSegmentAtIndex: 0 )
+            tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+            tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+            tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
             
             // dropInfoPane()
             // bringUpInfoPane()
@@ -306,7 +319,7 @@ class TourMapViewController: UIViewController,
                         }
                         
                         self.tourNavControls.hidden = false
-                        self.resetTourNavControls(resume: false)
+                        // self.resetTourNavControls(resume: false)
                     }
                 }
             }
@@ -430,7 +443,9 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-        tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
+        
+        let lastShow = (find( selectedTour!.shows, currentShow! ) == selectedTour!.shows.count - 1) ? false : true
+        tourNavControls.setEnabled( lastShow, forSegmentAtIndex: 3 )
         
         if currentShow != nil
         {
@@ -639,26 +654,53 @@ class TourMapViewController: UIViewController,
             
             if find( selectedTour!.shows, currentShow! ) != 0
             {
-                // tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
-                resetTourNavControls( resume: true )
+                tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
+                // resetTourNavControls( resume: true )
             }
             else
             {
-                resetTourNavControls()
+                // resetTourNavControls()
+                tourNavControls.setTitle( "Start", forSegmentAtIndex: 0 )
+                didStartTour = false
             }
+            
+            tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+            tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+            tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
             
             isZoomedOut = true
             
         case 2:
             println( "Pressed the List button." )
             
-            bringInShowList()
-            resetTourNavControls( tourNav: true )
+            if previousStatesOfTourNav != nil
+            {
+                bringInShowList(previousStates: previousStatesOfTourNav)
+                previousStatesOfTourNav = nil
+            }
+            else
+            {
+                previousStatesOfTourNav = [ Int : Bool ]()
+                previousStatesOfTourNav!.updateValue( tourNavControls.isEnabledForSegmentAtIndex( 0 ), forKey: 0 )
+                previousStatesOfTourNav!.updateValue( tourNavControls.isEnabledForSegmentAtIndex( 1 ), forKey: 1 )
+                previousStatesOfTourNav!.updateValue( tourNavControls.isEnabledForSegmentAtIndex( 2 ), forKey: 2 )
+                previousStatesOfTourNav!.updateValue( tourNavControls.isEnabledForSegmentAtIndex( 3 ), forKey: 3 )
+                bringInShowList()
+            }
+            
+            // resetTourNavControls( tourNav: true )
+//            tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
+//            tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+//            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+//            tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
             
         case 3:
             println( "Pressed the NextShow button." )
             
             goToNextShow()
+            
+            tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
             
             if find( selectedTour!.shows, currentShow! ) == selectedTour!.shows.count - 1
             {
@@ -704,7 +746,7 @@ class TourMapViewController: UIViewController,
     
     func goToNextShow()
     {
-        tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+        // tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
         
         var showIndex = find( selectedTour!.shows, currentShow! )!
         showIndex++
@@ -735,14 +777,14 @@ class TourMapViewController: UIViewController,
             y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
         )
         
-        if isZoomedOut
-        {
-            isZoomedOut = false
-            tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
-        }
+//        if isZoomedOut
+//        {
+//            isZoomedOut = false
+//            tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
+//        }
     }
     
-    func bringInShowList()
+    func bringInShowList( previousStates: [ Int : Bool ]? = nil )
     {
         if let showList = view.viewWithTag( 300 ) as? UIVisualEffectView
         {
@@ -763,7 +805,16 @@ class TourMapViewController: UIViewController,
                     {
                         showList.removeFromSuperview()
                         
-                        self.resetTourNavControls()
+                        if previousStates != nil
+                        {
+                            self.tourNavControls.setEnabled( previousStates![ 0 ]!, forSegmentAtIndex: 0 )
+                            self.tourNavControls.setEnabled( previousStates![ 1 ]!, forSegmentAtIndex: 1 )
+                            self.tourNavControls.setEnabled( previousStates![ 2 ]!, forSegmentAtIndex: 2 )
+                            self.tourNavControls.setEnabled( previousStates![ 3 ]!, forSegmentAtIndex: 3 )
+                        }
+                        
+                        
+                        // self.resetTourNavControls()
                         
 //                        if self.didStartTour
 //                        {
@@ -786,7 +837,7 @@ class TourMapViewController: UIViewController,
 //                tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
 //                tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
 //                tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
-                self.resetTourNavControls()
+                // self.resetTourNavControls()
             }
             
             let blurEffect = UIBlurEffect( style: .Dark )
@@ -825,7 +876,18 @@ class TourMapViewController: UIViewController,
                     let stoppingPoint: CGFloat = CGRectGetMidX( self.view.bounds ) - ( showList.frame.size.width / 2 )
                     showList.frame.origin.x = stoppingPoint
                 },
-                completion: nil
+                completion:
+                {
+                    finished in
+                    
+                    if finished
+                    {
+                        self.tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
+                        self.tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+                        self.tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+                        self.tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+                    }
+                }
             )
         }
     }
@@ -902,13 +964,21 @@ class TourMapViewController: UIViewController,
         
         if find( selectedTour!.shows, selectedShow ) != 0
         {
-            // tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
-            resetTourNavControls( resume: true )
+            tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
+            isResuming = true
+            // resetTourNavControls( resume: true )
         }
         else
         {
-            resetTourNavControls()
+            tourNavControls.setTitle( "Start", forSegmentAtIndex: 0 )
+            isResuming = false
+            // resetTourNavControls()
         }
+        
+        tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+        tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+        tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+        tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
     }
     
     // MARK: UIPickerViewDataSource, UIPIckerViewDelegate methods
