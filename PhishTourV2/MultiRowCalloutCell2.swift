@@ -160,7 +160,7 @@ class MultiRowCalloutCell2: UITableViewCell
         cellHeight = self.frame.size.height
         // cellHeight = self.frame.size.height + extraHeight
         // cellHeight += extraHeight
-        // setFrame()
+        setFrame()
     }
     
     /*

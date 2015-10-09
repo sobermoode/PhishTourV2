@@ -920,7 +920,7 @@ class TourMapViewController: UIViewController,
         {
             reusedAnnotationView.annotation = annotation
             reusedAnnotationView.animatesDrop = true
-            reusedAnnotationView.canShowCallout = true
+            reusedAnnotationView.canShowCallout = false
             
             return reusedAnnotationView
         }
@@ -931,7 +931,7 @@ class TourMapViewController: UIViewController,
                 reuseIdentifier: "mapPin"
             )
             newAnnotationView.animatesDrop = true
-            newAnnotationView.canShowCallout = true
+            newAnnotationView.canShowCallout = false
             
             return newAnnotationView
         }
@@ -968,7 +968,6 @@ class TourMapViewController: UIViewController,
         let callout = CalloutCellView()
         
         let venue = currentShow!.venue
-        
         let showsAtVenue = selectedTour!.locationDictionary[ venue ]!
         for ( index, show ) in enumerate( showsAtVenue )
         {
