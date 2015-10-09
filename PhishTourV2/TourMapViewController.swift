@@ -319,7 +319,8 @@ class TourMapViewController: UIViewController,
                         )
                         dispatch_after( delayTime, dispatch_get_main_queue() )
                         {
-                            self.tourMap.addAnnotations( theTour.shows )
+                            // self.tourMap.addAnnotations( theTour.shows )
+                            self.tourMap.addAnnotations( theTour.uniqueLocations )
                         }
                         
                         self.tourNavControls.hidden = false
@@ -1045,6 +1046,7 @@ class TourMapViewController: UIViewController,
         didDeselectAnnotationView view: MKAnnotationView!
     )
     {
+        // remove the current callout if one is showing
         if currentCallout != nil
         {
             currentCallout?.dismissCalloutAnimated( true )

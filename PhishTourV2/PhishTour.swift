@@ -16,6 +16,7 @@ class PhishTour: NSObject,
     var name: String
     var tourID: Int
     var shows: [ PhishShow ]
+    var uniqueLocations: [ PhishShow ]
     var locationDictionary: [ String : [ PhishShow ] ]
     
     var showCoordinates: [ CLLocationCoordinate2D ]
@@ -44,6 +45,7 @@ class PhishTour: NSObject,
         self.name = name
         self.tourID = tourID
         self.shows = shows
+        self.uniqueLocations = [ PhishShow ]()
         self.locationDictionary = [ String : [ PhishShow ] ]()
     }
     
@@ -55,6 +57,7 @@ class PhishTour: NSObject,
         self.name = aDecoder.decodeObjectForKey( "name" ) as! String
         self.tourID = aDecoder.decodeIntegerForKey( "tourID" )
         self.shows = aDecoder.decodeObjectForKey( "shows" ) as! [ PhishShow ]
+        self.uniqueLocations = aDecoder.decodeObjectForKey( "uniqueLocations" ) as! [ PhishShow ]
         self.locationDictionary = aDecoder.decodeObjectForKey( "locationDictionary" ) as! [ String : [ PhishShow ] ]
     }
     
@@ -65,33 +68,43 @@ class PhishTour: NSObject,
         aCoder.encodeObject( name, forKey: "name" )
         aCoder.encodeInteger( tourID, forKey: "tourID" )
         aCoder.encodeObject( shows, forKey: "shows" )
+        aCoder.encodeObject( uniqueLocations, forKey: "uniqueLocations" )
         aCoder.encodeObject( locationDictionary, forKey: "locationDictionary" )
     }
     
+    // this creates a dictionary keyed a venue name, which retuns an array of shows played there during a tour.
+    // this is how i accomplished letting the map know when a callout for an annotation at any one location
+    // should display info for more than one show
     func createLocationDictionary()
     {
-        // var currentShow: PhishShow = shows.first!
         var previousShow: PhishShow = shows.first!
         var currentVenue: String = previousShow.venue
         var multiNightRun = [ PhishShow ]()
         var locationDictionary = [ String : [ PhishShow ] ]()
         
+        // go through each show and add the to an array. keep adding shows to the array if the venue continues to be the same.
+        // when the next venue is reached, set the array as a value for the key of the venue.
         for ( index, show ) in enumerate( shows )
         {
-            println( "Current venue[\( index )]: \( show.venue )" )
+            // automatically add the first show the array
             if index == 0
             {
+                uniqueLocations.append( show )
                 multiNightRun.append( show )
+                
                 continue
             }
             else
             {
+                // we're still at the current venue, so it's a multi-night run
                 if show.venue == previousShow.venue
                 {
+                    // add the show and remember where we were
                     currentVenue = show.venue
                     multiNightRun.append( show )
                     previousShow = show
                     
+                    // if we're at the last show, then add the array to the dictionary
                     if index == shows.count - 1
                     {
                         locationDictionary.updateValue( multiNightRun, forKey: currentVenue )
@@ -101,9 +114,15 @@ class PhishTour: NSObject,
                 }
                 else
                 {
-                    println( "Adding \( multiNightRun ) for \( currentVenue )" )
+                    uniqueLocations.append( show )
+                    
+                    // add the show to the dictionary
                     locationDictionary.updateValue( multiNightRun, forKey: currentVenue )
+                    
+                    // blank the current multi-night run array
                     multiNightRun.removeAll( keepCapacity: false )
+                    
+                    // add the current show to the empty multi-night run array and remember where we were
                     currentVenue = show.venue
                     multiNightRun.append( show )
                     previousShow = show
@@ -111,8 +130,7 @@ class PhishTour: NSObject,
             }
         }
         
-        println( "new location dictionary: \( locationDictionary )" )
-        
+        // set the tour's location dictionary
         self.locationDictionary = locationDictionary
     }
 }
