@@ -35,6 +35,7 @@ class TourMapViewController: UIViewController,
     var didStartTour: Bool = false
     var isResuming: Bool = false
     var previousStatesOfTourNav: [ Int : Bool ]? = nil
+    var multiRowCalloutCell2Nib: UINib!
     let defaultRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(
             latitude: 39.8282,
@@ -84,6 +85,8 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+        
+        multiRowCalloutCell2Nib = UINib(nibName: "MultiRowCalloutCell2", bundle: nil)
         
         tourMap.delegate = self
         
@@ -962,6 +965,55 @@ class TourMapViewController: UIViewController,
         let selectedShow = view.annotation as! PhishShow
         currentShow = selectedShow
         
+        let callout = CalloutCellView()
+        
+        let venue = currentShow!.venue
+        
+        let showsAtVenue = selectedTour!.locationDictionary[ venue ]!
+        for ( index, show ) in enumerate( showsAtVenue )
+        {
+            let newDateCell = multiRowCalloutCell2Nib.instantiateWithOwner(self, options: nil)[0] as! MultiRowCalloutCell2
+            newDateCell.dateLabel.text = show.date
+            newDateCell.yearLabel.text = show.year.description
+            newDateCell.venueLabel.text = show.venue
+            newDateCell.cityLabel.text = show.city
+            newDateCell.cellNumber = CGFloat( index )
+            newDateCell.setBackgroundColor()
+            callout.addSubview( newDateCell )
+        }
+        
+        for cell in callout.subviews
+        {
+            let currentCell = cell as! MultiRowCalloutCell2
+            
+            currentCell.setNeedsDisplay()
+        }
+        callout.sizeToFit()
+        
+        let calloutView = SMCalloutView()
+        calloutView.contentView = callout
+        let bgView: SMCalloutMaskedBackgroundView = calloutView.backgroundView as! SMCalloutMaskedBackgroundView
+        let lastCell = callout.subviews.last as! MultiRowCalloutCell2
+        bgView.arrowImageColor( lastCell.backgroundColor! )
+        
+        let annotationCoordinate = view.annotation.coordinate
+        let viewPosition = mapView.convertCoordinate(
+            annotationCoordinate,
+            toPointToView: mapView
+        )
+        
+        calloutView.presentCalloutFromRect(
+            CGRect(
+                x: viewPosition.x,
+                y: viewPosition.y - 40,
+                width: calloutView.frame.size.width,
+                height: calloutView.frame.size.height
+            ),
+            inView: tourMap,
+            constrainedToView: tourMap,
+            animated: true
+        )
+        
         if find( selectedTour!.shows, selectedShow ) != 0
         {
             tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
@@ -979,14 +1031,6 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
-        
-        let annotationCoordinate = view.annotation.coordinate
-        let viewPosition = mapView.convertCoordinate(
-            annotationCoordinate,
-            toPointToView: mapView
-        )
-        
-        let callout = CalloutCellView()
     }
     
     // MARK: UIPickerViewDataSource, UIPIckerViewDelegate methods

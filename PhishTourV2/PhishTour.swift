@@ -78,9 +78,15 @@ class PhishTour: NSObject,
         
         for ( index, show ) in enumerate( shows )
         {
+            println( "Current venue[\( index )]: \( show.venue )" )
             if index == 0
             {
+                multiNightRun.append( show )
                 continue
+            }
+            else if index == shows.count - 1
+            {
+                locationDictionary.updateValue( multiNightRun, forKey: currentVenue )
             }
             else
             {
@@ -93,12 +99,17 @@ class PhishTour: NSObject,
                 }
                 else
                 {
+                    println( "Adding \( multiNightRun ) for \( currentVenue )" )
                     locationDictionary.updateValue( multiNightRun, forKey: currentVenue )
                     multiNightRun.removeAll( keepCapacity: false )
+                    currentVenue = show.venue
+                    multiNightRun.append( show )
                     previousShow = show
                 }
             }
         }
+        
+        println( "new location dictionary: \( locationDictionary )" )
         
         self.locationDictionary = locationDictionary
     }
