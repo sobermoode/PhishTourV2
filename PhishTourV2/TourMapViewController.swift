@@ -979,6 +979,14 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+        
+        let annotationCoordinate = view.annotation.coordinate
+        let viewPosition = mapView.convertCoordinate(
+            annotationCoordinate,
+            toPointToView: mapView
+        )
+        
+        let callout = CalloutCellView()
     }
     
     // MARK: UIPickerViewDataSource, UIPIckerViewDelegate methods

@@ -19,6 +19,8 @@
 		81755A661BBCE28D00A16229 /* PhishinClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A651BBCE28D00A16229 /* PhishinClient.swift */; };
 		81755A681BBCE82700A16229 /* TourMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A671BBCE82700A16229 /* TourMapViewController.swift */; };
 		81755A6A1BBCE85000A16229 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81755A691BBCE85000A16229 /* Main.storyboard */; };
+		81A9C6A61BC8709100C72ABD /* CalloutCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A9C6A31BC8709100C72ABD /* CalloutCellView.swift */; };
+		81A9C6A71BC8709100C72ABD /* SMCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A9C6A51BC8709100C72ABD /* SMCalloutView.m */; };
 		81B219D11BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B219CF1BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift */; };
 		81B219D21BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81B219D01BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib */; };
 /* End PBXBuildFile section */
@@ -50,6 +52,10 @@
 		81755A651BBCE28D00A16229 /* PhishinClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhishinClient.swift; sourceTree = "<group>"; };
 		81755A671BBCE82700A16229 /* TourMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TourMapViewController.swift; sourceTree = "<group>"; };
 		81755A691BBCE85000A16229 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		81A9C6A31BC8709100C72ABD /* CalloutCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalloutCellView.swift; sourceTree = "<group>"; };
+		81A9C6A41BC8709100C72ABD /* SMCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMCalloutView.h; sourceTree = "<group>"; };
+		81A9C6A51BC8709100C72ABD /* SMCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCalloutView.m; sourceTree = "<group>"; };
+		81A9C6A81BC8713900C72ABD /* PhishTourV2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PhishTourV2-Bridging-Header.h"; sourceTree = "<group>"; };
 		81B219CF1BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiRowCalloutCell2.swift; sourceTree = "<group>"; };
 		81B219D01BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultiRowCalloutCell2.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -104,6 +110,10 @@
 				81755A671BBCE82700A16229 /* TourMapViewController.swift */,
 				81B219CF1BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift */,
 				81B219D01BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib */,
+				81A9C6A31BC8709100C72ABD /* CalloutCellView.swift */,
+				81A9C6A41BC8709100C72ABD /* SMCalloutView.h */,
+				81A9C6A51BC8709100C72ABD /* SMCalloutView.m */,
+				81A9C6A81BC8713900C72ABD /* PhishTourV2-Bridging-Header.h */,
 				81755A461BBCDE5D00A16229 /* Images.xcassets */,
 				81755A481BBCDE5D00A16229 /* LaunchScreen.xib */,
 				81755A3D1BBCDE5D00A16229 /* Supporting Files */,
@@ -238,10 +248,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				81B219D11BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift in Sources */,
+				81A9C6A61BC8709100C72ABD /* CalloutCellView.swift in Sources */,
 				81755A601BBCDECF00A16229 /* PhishTour.swift in Sources */,
 				816655051BBE262A0028911E /* PhishYear.swift in Sources */,
 				81755A641BBCE13C00A16229 /* PhishSong.swift in Sources */,
 				81755A621BBCDF9E00A16229 /* PhishShow.swift in Sources */,
+				81A9C6A71BC8709100C72ABD /* SMCalloutView.m in Sources */,
 				81755A681BBCE82700A16229 /* TourMapViewController.swift in Sources */,
 				81755A661BBCE28D00A16229 /* PhishinClient.swift in Sources */,
 				81101E801BC241FF00D0449C /* MapquestClient.swift in Sources */,
@@ -367,6 +379,7 @@
 				INFOPLIST_FILE = PhishTourV2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "PhishTourV2/PhishTourV2-Bridging-Header.h";
 			};
 			name = Debug;
 		};
@@ -377,6 +390,7 @@
 				INFOPLIST_FILE = PhishTourV2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "PhishTourV2/PhishTourV2-Bridging-Header.h";
 			};
 			name = Release;
 		};

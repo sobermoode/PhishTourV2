@@ -16,6 +16,7 @@ class PhishTour: NSObject,
     var name: String
     var tourID: Int
     var shows: [ PhishShow ]
+    var locationDictionary: [ String : [ PhishShow ] ]
     
     var showCoordinates: [ CLLocationCoordinate2D ]
     {
@@ -43,6 +44,7 @@ class PhishTour: NSObject,
         self.name = name
         self.tourID = tourID
         self.shows = shows
+        self.locationDictionary = [ String : [ PhishShow ] ]()
     }
     
     required init( coder aDecoder: NSCoder )
@@ -53,6 +55,7 @@ class PhishTour: NSObject,
         self.name = aDecoder.decodeObjectForKey( "name" ) as! String
         self.tourID = aDecoder.decodeIntegerForKey( "tourID" )
         self.shows = aDecoder.decodeObjectForKey( "shows" ) as! [ PhishShow ]
+        self.locationDictionary = aDecoder.decodeObjectForKey( "locationDictionary" ) as! [ String : [ PhishShow ] ]
     }
     
     func encodeWithCoder( aCoder: NSCoder )
@@ -62,5 +65,41 @@ class PhishTour: NSObject,
         aCoder.encodeObject( name, forKey: "name" )
         aCoder.encodeInteger( tourID, forKey: "tourID" )
         aCoder.encodeObject( shows, forKey: "shows" )
+        aCoder.encodeObject( locationDictionary, forKey: "locationDictionary" )
+    }
+    
+    func createLocationDictionary()
+    {
+        // var currentShow: PhishShow = shows.first!
+        var previousShow: PhishShow = shows.first!
+        var currentVenue: String = previousShow.venue
+        var multiNightRun = [ PhishShow ]()
+        var locationDictionary = [ String : [ PhishShow ] ]()
+        
+        for ( index, show ) in enumerate( shows )
+        {
+            if index == 0
+            {
+                continue
+            }
+            else
+            {
+                if show.venue == previousShow.venue
+                {
+                    currentVenue = show.venue
+                    multiNightRun.append( show )
+                    previousShow = show
+                    continue
+                }
+                else
+                {
+                    locationDictionary.updateValue( multiNightRun, forKey: currentVenue )
+                    multiNightRun.removeAll( keepCapacity: false )
+                    previousShow = show
+                }
+            }
+        }
+        
+        self.locationDictionary = locationDictionary
     }
 }
