@@ -84,10 +84,6 @@ class PhishTour: NSObject,
                 multiNightRun.append( show )
                 continue
             }
-            else if index == shows.count - 1
-            {
-                locationDictionary.updateValue( multiNightRun, forKey: currentVenue )
-            }
             else
             {
                 if show.venue == previousShow.venue
@@ -95,6 +91,12 @@ class PhishTour: NSObject,
                     currentVenue = show.venue
                     multiNightRun.append( show )
                     previousShow = show
+                    
+                    if index == shows.count - 1
+                    {
+                        locationDictionary.updateValue( multiNightRun, forKey: currentVenue )
+                    }
+                    
                     continue
                 }
                 else

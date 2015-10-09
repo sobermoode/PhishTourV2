@@ -23,6 +23,7 @@ class MultiRowCalloutCell2: UITableViewCell
     // var cellHeight: Int = 45
     var cellWidth: CGFloat = 0
     var cellHeight: CGFloat = 0
+    var isTableViewCell: Bool = false
     var extraHeight: CGFloat = 0
     
     var venueLabelIsTooLarge: Bool = false
@@ -160,7 +161,10 @@ class MultiRowCalloutCell2: UITableViewCell
         cellHeight = self.frame.size.height
         // cellHeight = self.frame.size.height + extraHeight
         // cellHeight += extraHeight
-        setFrame()
+        if !isTableViewCell
+        {
+            setFrame()
+        }
     }
     
     /*

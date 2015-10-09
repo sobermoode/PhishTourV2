@@ -1246,6 +1246,7 @@ class TourMapViewController: UIViewController,
         let cell = tableView.dequeueReusableCellWithIdentifier( "multiRowCalloutCell2", forIndexPath: indexPath ) as! MultiRowCalloutCell2
         
         // cell.textLabel?.text = "SHOW"
+        cell.isTableViewCell = true
         cell.dateLabel.text = selectedTour?.shows[ indexPath.row ].date
         cell.yearLabel.text = selectedTour?.shows[ indexPath.row ].year.description
         cell.venueLabel.text = selectedTour?.shows[ indexPath.row ].venue
