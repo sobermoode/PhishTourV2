@@ -36,6 +36,7 @@ class TourMapViewController: UIViewController,
     var isResuming: Bool = false
     var previousStatesOfTourNav: [ Int : Bool ]? = nil
     var multiRowCalloutCell2Nib: UINib!
+    var currentCallout: SMCalloutView?
     let defaultRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(
             latitude: 39.8282,
@@ -962,6 +963,11 @@ class TourMapViewController: UIViewController,
         didSelectAnnotationView view: MKAnnotationView!
     )
     {
+        if currentCallout != nil
+        {
+            currentCallout?.dismissCalloutAnimated( true )
+        }
+        
         let selectedShow = view.annotation as! PhishShow
         currentShow = selectedShow
         
@@ -1013,6 +1019,8 @@ class TourMapViewController: UIViewController,
             animated: true
         )
         
+        currentCallout = calloutView
+        
         if find( selectedTour!.shows, selectedShow ) != 0
         {
             tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
@@ -1030,6 +1038,17 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+    }
+    
+    func mapView(
+        mapView: MKMapView!,
+        didDeselectAnnotationView view: MKAnnotationView!
+    )
+    {
+        if currentCallout != nil
+        {
+            currentCallout?.dismissCalloutAnimated( true )
+        }
     }
     
     // MARK: UIPickerViewDataSource, UIPIckerViewDelegate methods
