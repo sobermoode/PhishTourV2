@@ -1230,6 +1230,7 @@ class TourMapViewController: UIViewController,
         {
             tourNavControls.setTitle( "Start", forSegmentAtIndex: 0 )
             isResuming = false
+            didStartTour = false
             // resetTourNavControls()
         }
         
