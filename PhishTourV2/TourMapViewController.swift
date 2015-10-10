@@ -711,8 +711,8 @@ class TourMapViewController: UIViewController,
             tourMap.setRegion(
                 MKCoordinateRegion(
                     center: CLLocationCoordinate2D(
-                        latitude: currentShow!.showLatitude,
-                        longitude: currentShow!.showLongitude
+                        latitude: currentLocation!.showLatitude,
+                        longitude: currentLocation!.showLongitude
                     ),
                     span: MKCoordinateSpan(
                         latitudeDelta: 50.0,
@@ -721,12 +721,18 @@ class TourMapViewController: UIViewController,
                 ),
                 animated: true
             )
-            tourMap.selectAnnotation( currentShow, animated: true )
+            tourMap.selectAnnotation( currentLocation, animated: true )
             
             // dropInfoPane()
             bringUpInfoPane()
             
-            if find( selectedTour!.shows, currentShow! ) != 0
+//            if find( selectedTour!.shows, currentShow! ) != 0
+//            {
+//                tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
+//                isResuming = true
+//                // resetTourNavControls( resume: true )
+//            }
+            if find( selectedTour!.uniqueLocations, currentLocation! ) != 0
             {
                 tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
                 isResuming = true
