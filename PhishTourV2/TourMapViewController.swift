@@ -1471,11 +1471,31 @@ class TourMapViewController: UIViewController,
         cell.yearLabel.text = selectedTour?.shows[ indexPath.row ].year.description
         cell.venueLabel.text = selectedTour?.shows[ indexPath.row ].venue
         cell.cityLabel.text = selectedTour?.shows[ indexPath.row ].city
-        println( "cell \( indexPath.row ) width: \( cell.cityLabel.frame.size.width )" )
+        // println( "cell \( indexPath.row ) width: \( cell.cityLabel.frame.size.width )" )
         
         // cell.contentView.sizeToFit()
         // cell.sizeToFit()
         
         return cell
+    }
+    
+    func tableView(
+        tableView: UITableView,
+        didSelectRowAtIndexPath indexPath: NSIndexPath
+    )
+    {
+        // get the venue
+        let selectedCell = tableView.cellForRowAtIndexPath( indexPath ) as! MultiRowCalloutCell2
+        let venue = selectedCell.venueLabel.text!
+        
+        // find the location associated with that venue
+        if let locations = selectedTour!.locationDictionary[ venue ]
+        {
+            currentLocation = locations.first!
+            
+            bringInShowList()
+        
+            tourMap.selectAnnotation( currentLocation!, animated: true )
+        }
     }
 }
