@@ -462,15 +462,21 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         
-        let lastShow = (find( selectedTour!.shows, currentShow! ) == selectedTour!.shows.count - 1) ? false : true
+        // let lastShow = (find( selectedTour!.shows, currentShow! ) == selectedTour!.shows.count - 1) ? false : true
+        let lastShow = ( find( selectedTour!.uniqueLocations, currentLocation! ) == selectedTour!.uniqueLocations.count - 1) ? false : true
         tourNavControls.setEnabled( lastShow, forSegmentAtIndex: 3 )
         
-        if currentShow != nil
+//        if currentShow != nil
+//        {
+//            tourMap.deselectAnnotation( currentShow!, animated: true )
+//        }
+        if currentLocation != nil
         {
-            tourMap.deselectAnnotation( currentShow!, animated: true )
+            tourMap.deselectAnnotation( currentLocation!, animated: true )
         }
         
-        currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
+        // currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
+        currentLocation = ( currentLocation == nil ) ? selectedTour!.uniqueLocations.first! : currentLocation
         
         zoomInOnCurrentShow()
         
@@ -1150,14 +1156,17 @@ class TourMapViewController: UIViewController,
             currentCallout?.dismissCalloutAnimated( true )
         }
         
-        let selectedShow = view.annotation as! PhishShow
+        // let selectedShow = view.annotation as! PhishShow
         // var showIndex = find( selectedTour!.shows, selectedShow )!
         // currentShow = selectedTour!.shows[ showIndex ]
-        currentShow = selectedShow
+        // currentShow = selectedShow
+        let selectedLocation = view.annotation as! PhishShow
+        currentLocation = selectedLocation
         
         let callout = CalloutCellView()
         
-        let venue = currentShow!.venue
+        // let venue = currentShow!.venue
+        let venue = currentLocation!.venue
         let showsAtVenue = selectedTour!.locationDictionary[ venue ]!
         for ( index, show ) in enumerate( showsAtVenue )
         {
@@ -1205,7 +1214,13 @@ class TourMapViewController: UIViewController,
         
         currentCallout = calloutView
         
-        if find( selectedTour!.shows, selectedShow ) != 0
+//        if find( selectedTour!.shows, selectedShow ) != 0
+//        {
+//            tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
+//            isResuming = true
+//            // resetTourNavControls( resume: true )
+//        }
+        if find( selectedTour!.uniqueLocations, selectedLocation ) != 0
         {
             tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
             isResuming = true
