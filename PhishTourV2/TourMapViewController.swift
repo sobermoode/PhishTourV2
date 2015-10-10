@@ -660,6 +660,7 @@ class TourMapViewController: UIViewController,
             if find( selectedTour!.shows, currentShow! ) != 0
             {
                 tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
+                isResuming = true
                 // resetTourNavControls( resume: true )
             }
             else
