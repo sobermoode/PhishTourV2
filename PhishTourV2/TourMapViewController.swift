@@ -529,13 +529,28 @@ class TourMapViewController: UIViewController,
     //        )
     //        
     //        infoPane.addSubview( vibrancyView )
+
+            var dateLabels = [ UILabel ]()
+            var labelTag = 201
+            let currentVenue = currentShow?.venue
+            let showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
+            for show in showsAtVenue
+            {
+                let dateLabel = UILabel()
+                dateLabel.tag = labelTag++
+                dateLabel.textColor = UIColor.whiteColor()
+                dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
+                dateLabel.text = show.date + " \( show.year )"
+                dateLabel.sizeToFit()
+                dateLabels.append( dateLabel )
+            }
             
-            let dateLabel = UILabel()
-            dateLabel.tag = 201
-            dateLabel.textColor = UIColor.whiteColor()
-            dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
-            dateLabel.text = currentShow!.date + " \( currentShow!.year )"
-            dateLabel.sizeToFit()
+//            let dateLabel = UILabel()
+//            dateLabel.tag = 201
+//            dateLabel.textColor = UIColor.whiteColor()
+//            dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
+//            dateLabel.text = currentShow!.date + " \( currentShow!.year )"
+//            dateLabel.sizeToFit()
             
             let venueLabel = UILabel()
             venueLabel.tag = 202
@@ -551,20 +566,46 @@ class TourMapViewController: UIViewController,
             cityLabel.text = currentShow?.city
             cityLabel.sizeToFit()
             
-            dateLabel.frame.origin = CGPoint(
-                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
-                y: 5
-            )
+            var lastDateLabel = UILabel()
+            for ( index, dateLabel ) in enumerate( dateLabels )
+            {
+                let labelHeight: CGFloat = dateLabel.frame.size.height
+                // dateLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (dateLabel.frame.size.width / 2), y: labelHeight * (index + 1) + 1)
+                dateLabel.frame.origin = CGPoint(
+                    x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
+                    y: ( labelHeight * ( CGFloat( index ) + 1 ) + 1 )
+                )
+                
+                lastDateLabel = dateLabel
+            }
+            
             venueLabel.frame.origin = CGPoint(
                 x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
-                y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5
+                y: lastDateLabel.frame.origin.y + lastDateLabel.frame.size.height + 5
             )
             cityLabel.frame.origin = CGPoint(
                 x: CGRectGetMidX( infoPane.contentView.bounds ) - ( cityLabel.frame.size.width / 2 ),
                 y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
             )
             
-            infoPane.contentView.addSubview( dateLabel )
+//            dateLabel.frame.origin = CGPoint(
+//                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
+//                y: 5
+//            )
+//            venueLabel.frame.origin = CGPoint(
+//                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
+//                y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5
+//            )
+//            cityLabel.frame.origin = CGPoint(
+//                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( cityLabel.frame.size.width / 2 ),
+//                y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
+//            )
+            
+            // infoPane.contentView.addSubview( dateLabel )
+            for dateLabel in dateLabels
+            {
+                infoPane.contentView.addSubview( dateLabel )
+            }
             infoPane.contentView.addSubview( venueLabel )
             infoPane.contentView.addSubview( cityLabel )
             view.insertSubview( infoPane, belowSubview: blurEffectView )
