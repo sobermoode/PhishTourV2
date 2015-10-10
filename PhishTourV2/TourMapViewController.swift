@@ -537,6 +537,7 @@ class TourMapViewController: UIViewController,
             let showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
             for show in showsAtVenue
             {
+                println( "Adding label tag \( labelTag )" )
                 let dateLabel = UILabel()
                 dateLabel.tag = labelTag++
                 dateLabel.textColor = UIColor.whiteColor()
@@ -554,14 +555,14 @@ class TourMapViewController: UIViewController,
 //            dateLabel.sizeToFit()
             
             let venueLabel = UILabel()
-            venueLabel.tag = 202
+            venueLabel.tag = 210
             venueLabel.textColor = UIColor.whiteColor()
             venueLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
             venueLabel.text = currentShow?.venue
             venueLabel.sizeToFit()
             
             let cityLabel = UILabel()
-            cityLabel.tag = 203
+            cityLabel.tag = 211
             cityLabel.textColor = UIColor.whiteColor()
             cityLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
             cityLabel.text = currentShow?.city
@@ -762,31 +763,74 @@ class TourMapViewController: UIViewController,
     
     func goBackToPreviousShow()
     {
-//        var showIndex = find( selectedTour!.shows, currentShow! )!
-//        showIndex--
+        let infoPane = view.viewWithTag( 200 )! as! UIVisualEffectView
         
-        var locationIndex = find( selectedTour!.uniqueLocations, currentLocation )
+        // remove the current date labels before we figure out which new ones to add
+        var currentVenue = currentShow?.venue
+        var showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
+        var labelTags = 201...( 201 + ( showsAtVenue.count - 1 ) )
+        for tag in labelTags
+        {
+            let dateLabel = infoPane.viewWithTag( tag )!
+            dateLabel.removeFromSuperview()
+        }
         
+        // get previous show
+        // get the next show
+        var showIndex = find( selectedTour!.shows, currentShow! )!
+        showIndex -= ( showsAtVenue.count + 1 )
         currentShow = selectedTour!.shows[ showIndex ]
         
+        // reset the current venue and shows
+        currentVenue = currentShow?.venue
+        showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
+        
+        // set the map on the new location
         let previousShowCoordinate = currentShow!.coordinate
         tourMap.setCenterCoordinate( previousShowCoordinate, animated: true )
         
-        let infoPane = view.viewWithTag( 200 )! as! UIVisualEffectView
-        let dateLabel = infoPane.viewWithTag( 201 )! as! UILabel
-        let venueLabel = infoPane.viewWithTag( 202 )! as! UILabel
-        let cityLabel = infoPane.viewWithTag( 203 )! as! UILabel
+        // create the new date labels
+        var dateLabels = [ UILabel ]()
+        for ( index, show ) in enumerate( showsAtVenue )
+        {
+            let dateLabel = UILabel()
+            dateLabel.tag = 201 + index
+            dateLabel.textColor = UIColor.whiteColor()
+            dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
+            dateLabel.text = show.date + " \( show.year )"
+            dateLabel.sizeToFit()
+            dateLabels.append( dateLabel )
+        }
         
-        dateLabel.text = currentShow!.date + " \( currentShow!.year )"
-        dateLabel.sizeToFit()
+        // set the new labels' frames
+        var lastDateLabel = UILabel()
+        for ( index, dateLabel ) in enumerate( dateLabels )
+        {
+            let labelHeight: CGFloat = dateLabel.frame.size.height
+            dateLabel.frame.origin = CGPoint(
+                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
+                y: ( labelHeight * ( CGFloat( index ) + 1 ) + 1 )
+            )
+            
+            lastDateLabel = dateLabel
+        }
+        
+        // add the labels to the info pane
+        for dateLabel in dateLabels
+        {
+            infoPane.contentView.addSubview( dateLabel )
+        }
+        
+        // set the venue and city labels
+        let venueLabel = infoPane.viewWithTag( 210 ) as! UILabel
+        let cityLabel = infoPane.viewWithTag( 211 ) as! UILabel
         venueLabel.text = currentShow?.venue
         venueLabel.sizeToFit()
         cityLabel.text = currentShow?.city
         cityLabel.sizeToFit()
-        
         venueLabel.frame.origin = CGPoint(
             x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
-            y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5
+            y: lastDateLabel.frame.origin.y + lastDateLabel.frame.size.height + 5
         )
         cityLabel.frame.origin = CGPoint(
             x: CGRectGetMidX( infoPane.contentView.bounds ) - ( cityLabel.frame.size.width / 2 ),
@@ -796,42 +840,79 @@ class TourMapViewController: UIViewController,
     
     func goToNextShow()
     {
-        // tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+        let infoPane = view.viewWithTag( 200 )! as! UIVisualEffectView
         
+        // remove the current date labels before we figure out which new ones to add
+        var currentVenue = currentShow?.venue
+        var showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
+        var labelTags = 201...( 201 + ( showsAtVenue.count - 1 ) )
+        for tag in labelTags
+        {
+            let dateLabel = infoPane.viewWithTag( tag )!
+            dateLabel.removeFromSuperview()
+        }
+        
+        // get the next show
         var showIndex = find( selectedTour!.shows, currentShow! )!
-        showIndex++
-        
+        showIndex += ( showsAtVenue.count )
         currentShow = selectedTour!.shows[ showIndex ]
         
+        // set the map on the new location
         let nextShowCoordinate = currentShow!.coordinate
         tourMap.setCenterCoordinate( nextShowCoordinate, animated: true )
         
-        let infoPane = view.viewWithTag( 200 )! as! UIVisualEffectView
-        let dateLabel = infoPane.viewWithTag( 201 )! as! UILabel
-        let venueLabel = infoPane.viewWithTag( 202 )! as! UILabel
-        let cityLabel = infoPane.viewWithTag( 203 )! as! UILabel
+        // reset the current venue and shows
+        currentVenue = currentShow?.venue
+        showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
         
-        dateLabel.text = currentShow!.date + " \( currentShow!.year )"
-        dateLabel.sizeToFit()
+        // create the new date labels
+        var dateLabels = [ UILabel ]()
+        for ( index, show ) in enumerate( showsAtVenue )
+        {
+            let dateLabel = UILabel()
+            dateLabel.tag = 201 + index
+            println( "Adding label tag \( dateLabel.tag )" )
+            dateLabel.textColor = UIColor.whiteColor()
+            dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
+            dateLabel.text = show.date + " \( show.year )"
+            dateLabel.sizeToFit()
+            dateLabels.append( dateLabel )
+        }
+        
+        // set the new labels' frames
+        var lastDateLabel = UILabel()
+        for ( index, dateLabel ) in enumerate( dateLabels )
+        {
+            let labelHeight: CGFloat = dateLabel.frame.size.height
+            dateLabel.frame.origin = CGPoint(
+                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
+                y: ( labelHeight * ( CGFloat( index ) + 1 ) + 1 )
+            )
+            
+            lastDateLabel = dateLabel
+        }
+        
+        // add the labels to the info pane
+        for dateLabel in dateLabels
+        {
+            infoPane.contentView.addSubview( dateLabel )
+        }
+        
+        // set the venue and city labels
+        let venueLabel = infoPane.viewWithTag( 210 ) as! UILabel
+        let cityLabel = infoPane.viewWithTag( 211 ) as! UILabel
         venueLabel.text = currentShow?.venue
         venueLabel.sizeToFit()
         cityLabel.text = currentShow?.city
         cityLabel.sizeToFit()
-        
         venueLabel.frame.origin = CGPoint(
             x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
-            y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5
+            y: lastDateLabel.frame.origin.y + lastDateLabel.frame.size.height + 5
         )
         cityLabel.frame.origin = CGPoint(
             x: CGRectGetMidX( infoPane.contentView.bounds ) - ( cityLabel.frame.size.width / 2 ),
             y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
         )
-        
-//        if isZoomedOut
-//        {
-//            isZoomedOut = false
-//            tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
-//        }
     }
     
     func bringInShowList( previousStates: [ Int : Bool ]? = nil )
