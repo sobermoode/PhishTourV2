@@ -26,7 +26,7 @@ class TourMapViewController: UIViewController,
     var selectedYear: String?
     var tours: [ PhishTour ]?
     var selectedTour: PhishTour?
-    var currentShow: PhishShow?
+    var currentShow: PhishShow? // TODO: not sure this is used anymore; now using currentLocation
     var didDropPins: Bool = false
     var isZoomedOut: Bool = true
     var didAddAnnotations: Bool = false
@@ -37,6 +37,7 @@ class TourMapViewController: UIViewController,
     var previousStatesOfTourNav: [ Int : Bool ]? = nil
     var multiRowCalloutCell2Nib: UINib!
     var currentCallout: SMCalloutView?
+    var currentLocation: String?
     let defaultRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(
             latitude: 39.8282,
@@ -761,8 +762,10 @@ class TourMapViewController: UIViewController,
     
     func goBackToPreviousShow()
     {
-        var showIndex = find( selectedTour!.shows, currentShow! )!
-        showIndex--
+//        var showIndex = find( selectedTour!.shows, currentShow! )!
+//        showIndex--
+        
+        var locationIndex = find( selectedTour!.uniqueLocations, currentLocation )
         
         currentShow = selectedTour!.shows[ showIndex ]
         
