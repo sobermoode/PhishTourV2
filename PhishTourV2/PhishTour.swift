@@ -77,6 +77,7 @@ class PhishTour: NSObject,
     // should display info for more than one show
     func createLocationDictionary()
     {
+        println( "There are \( shows.count ) shows in the \( name )" )
         var previousShow: PhishShow = shows.first!
         var currentVenue: String = previousShow.venue
         var multiNightRun = [ PhishShow ]()
@@ -86,7 +87,19 @@ class PhishTour: NSObject,
         // when the next venue is reached, set the array as a value for the key of the venue.
         for ( index, show ) in enumerate( shows )
         {
-            // automatically add the first show the array
+            // it's possible that there's only one show for the tour
+            if shows.count == 1
+            {
+                uniqueLocations.append( show )
+                multiNightRun.append( show )
+                
+                locationDictionary.updateValue( multiNightRun, forKey: currentVenue )
+                
+                self.locationDictionary = locationDictionary
+                
+                return
+            }
+            // automatically add the first show to the array
             if index == 0
             {
                 uniqueLocations.append( show )

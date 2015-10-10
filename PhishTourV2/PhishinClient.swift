@@ -286,6 +286,7 @@ class PhishinClient: NSObject
                         // let newTour = PhishTour(year: year, name: tourName, tourID: tourID, shows: shows)
                         let newTour = PhishTour(year: year, name: tourName, tourID: tourID, shows: showsForID[ tourID ]! )
                         newTour.createLocationDictionary()
+                        println( "newTour.locationDictionary: \( newTour.locationDictionary )" )
                         tours.append( newTour )
 //                        tours.append( PhishTour(
 //                            year: year,
