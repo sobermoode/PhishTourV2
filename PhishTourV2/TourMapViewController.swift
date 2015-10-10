@@ -37,7 +37,8 @@ class TourMapViewController: UIViewController,
     var previousStatesOfTourNav: [ Int : Bool ]? = nil
     var multiRowCalloutCell2Nib: UINib!
     var currentCallout: SMCalloutView?
-    var currentLocation: String?
+    // var currentLocation: String?
+    var currentLocation: PhishShow?
     let defaultRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(
             latitude: 39.8282,
@@ -308,7 +309,8 @@ class TourMapViewController: UIViewController,
                 {
                     dispatch_async( dispatch_get_main_queue() )
                     {
-                        self.currentShow = theTour.shows.first
+                        // self.currentShow = theTour.shows.first
+                        // self.currentLocation = theTour.uniqueLocations.first
                         
                         self.showTourTitle()
                         self.centerOnFirstShow()
@@ -422,22 +424,32 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         
-        let oneShow = ( selectedTour!.shows.count == 1 ) ? false : true
-        tourNavControls.setEnabled( oneShow, forSegmentAtIndex: 3 )
+        // let oneShow = ( selectedTour!.shows.count == 1 ) ? false : true
+        // tourNavControls.setEnabled( oneShow, forSegmentAtIndex: 3 )
+        let oneLocation = ( selectedTour!.uniqueLocations.count == 1 ) ? true : false
+        tourNavControls.setEnabled( !oneLocation, forSegmentAtIndex: 3 )
         
-        if currentShow != nil
+//        if currentShow != nil
+//        {
+//            tourMap.deselectAnnotation( currentShow!, animated: true )
+//        }
+        if currentLocation != nil
         {
-            tourMap.deselectAnnotation( currentShow!, animated: true )
+            tourMap.deselectAnnotation( currentLocation!, animated: true )
         }
         
-        currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
+        // currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
+        currentLocation = selectedTour!.uniqueLocations.first
         
         zoomInOnCurrentShow()
+        
         // bringInShowList()
+        
         if view.viewWithTag( 300 ) != nil
         {
             bringInShowList()
         }
+        
         bringUpInfoPane()
         
         didStartTour = true
@@ -475,8 +487,15 @@ class TourMapViewController: UIViewController,
     
     func zoomInOnCurrentShow()
     {
+//        let zoomedRegion = MKCoordinateRegion(
+//            center: currentShow!.coordinate,
+//            span: MKCoordinateSpan(
+//                latitudeDelta: 0.2,
+//                longitudeDelta: 0.2
+//            )
+//        )
         let zoomedRegion = MKCoordinateRegion(
-            center: currentShow!.coordinate,
+            center: currentLocation!.coordinate,
             span: MKCoordinateSpan(
                 latitudeDelta: 0.2,
                 longitudeDelta: 0.2
@@ -533,8 +552,9 @@ class TourMapViewController: UIViewController,
 
             var dateLabels = [ UILabel ]()
             var labelTag = 201
-            let currentVenue = currentShow?.venue
-            let showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
+            // let currentVenue = currentShow?.venue
+            let currentVenue = currentLocation!.venue
+            let showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
             for show in showsAtVenue
             {
                 println( "Adding label tag \( labelTag )" )
@@ -558,14 +578,16 @@ class TourMapViewController: UIViewController,
             venueLabel.tag = 210
             venueLabel.textColor = UIColor.whiteColor()
             venueLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
-            venueLabel.text = currentShow?.venue
+            // venueLabel.text = currentShow?.venue
+            venueLabel.text = currentVenue
             venueLabel.sizeToFit()
             
             let cityLabel = UILabel()
             cityLabel.tag = 211
             cityLabel.textColor = UIColor.whiteColor()
             cityLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
-            cityLabel.text = currentShow?.city
+            // cityLabel.text = currentShow?.city
+            cityLabel.text = currentLocation?.city
             cityLabel.sizeToFit()
             
             var lastDateLabel = UILabel()
@@ -668,7 +690,11 @@ class TourMapViewController: UIViewController,
                 
                 goBackToPreviousShow()
                 
-                if find( selectedTour!.shows, currentShow! ) == 0
+//                if find( selectedTour!.shows, currentShow! ) == 0
+//                {
+//                    tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
+//                }
+                if find( selectedTour!.uniqueLocations, currentLocation! ) == 0
                 {
                     tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
                 }
@@ -751,7 +777,11 @@ class TourMapViewController: UIViewController,
             
             tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
             
-            if find( selectedTour!.shows, currentShow! ) == selectedTour!.shows.count - 1
+//            if find( selectedTour!.shows, currentShow! ) == selectedTour!.shows.count - 1
+//            {
+//                tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+//            }
+            if find( selectedTour!.uniqueLocations, currentLocation! ) == selectedTour!.uniqueLocations.count - 1
             {
                 tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
             }
@@ -766,8 +796,9 @@ class TourMapViewController: UIViewController,
         let infoPane = view.viewWithTag( 200 )! as! UIVisualEffectView
         
         // remove the current date labels before we figure out which new ones to add
-        var currentVenue = currentShow?.venue
-        var showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
+        // var currentVenue = currentShow?.venue
+        var currentVenue = currentLocation!.venue
+        var showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
         var labelTags = 201...( 201 + ( showsAtVenue.count - 1 ) )
         for tag in labelTags
         {
@@ -776,17 +807,23 @@ class TourMapViewController: UIViewController,
         }
         
         // get previous show
-        // get the next show
-        var showIndex = find( selectedTour!.shows, currentShow! )!
-        showIndex -= ( showsAtVenue.count + 1 )
-        currentShow = selectedTour!.shows[ showIndex ]
+//        var showIndex = find( selectedTour!.shows, currentShow! )!
+//        println( "The current show was at [\( showIndex )]" )
+//        showIndex -= ( showsAtVenue.count + 1 )
+//        currentShow = selectedTour!.shows[ showIndex ]
+        var locationIndex = find( selectedTour!.uniqueLocations, currentLocation! )!
+        // println( "The current show was at [\( showIndex )]" )
+        locationIndex--
+        currentLocation = selectedTour!.uniqueLocations[ locationIndex ]
         
         // reset the current venue and shows
-        currentVenue = currentShow?.venue
-        showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
+        // currentVenue = currentShow?.venue
+        currentVenue = currentLocation!.venue
+        showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
         
         // set the map on the new location
-        let previousShowCoordinate = currentShow!.coordinate
+        // let previousShowCoordinate = currentShow!.coordinate
+        let previousShowCoordinate = currentLocation!.coordinate
         tourMap.setCenterCoordinate( previousShowCoordinate, animated: true )
         
         // create the new date labels
@@ -824,9 +861,11 @@ class TourMapViewController: UIViewController,
         // set the venue and city labels
         let venueLabel = infoPane.viewWithTag( 210 ) as! UILabel
         let cityLabel = infoPane.viewWithTag( 211 ) as! UILabel
-        venueLabel.text = currentShow?.venue
+        // venueLabel.text = currentShow?.venue
+        venueLabel.text = currentLocation?.venue
         venueLabel.sizeToFit()
-        cityLabel.text = currentShow?.city
+        // cityLabel.text = currentShow?.city
+        cityLabel.text = currentLocation?.city
         cityLabel.sizeToFit()
         venueLabel.frame.origin = CGPoint(
             x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
@@ -843,8 +882,9 @@ class TourMapViewController: UIViewController,
         let infoPane = view.viewWithTag( 200 )! as! UIVisualEffectView
         
         // remove the current date labels before we figure out which new ones to add
-        var currentVenue = currentShow?.venue
-        var showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
+        // var currentVenue = currentShow?.venue
+        var currentVenue = currentLocation!.venue
+        var showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
         var labelTags = 201...( 201 + ( showsAtVenue.count - 1 ) )
         for tag in labelTags
         {
@@ -853,17 +893,24 @@ class TourMapViewController: UIViewController,
         }
         
         // get the next show
-        var showIndex = find( selectedTour!.shows, currentShow! )!
-        showIndex += ( showsAtVenue.count )
-        currentShow = selectedTour!.shows[ showIndex ]
+//        var showIndex = find( selectedTour!.shows, currentShow! )!
+//        showIndex += ( showsAtVenue.count )
+//        currentShow = selectedTour!.shows[ showIndex ]
+        var locationIndex = find( selectedTour!.uniqueLocations, currentLocation! )!
+        locationIndex++
+        currentLocation = selectedTour!.uniqueLocations[ locationIndex ]
         
         // set the map on the new location
-        let nextShowCoordinate = currentShow!.coordinate
+//        let nextShowCoordinate = currentShow!.coordinate
+//        tourMap.setCenterCoordinate( nextShowCoordinate, animated: true )
+        let nextShowCoordinate = currentLocation!.coordinate
         tourMap.setCenterCoordinate( nextShowCoordinate, animated: true )
         
         // reset the current venue and shows
-        currentVenue = currentShow?.venue
-        showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
+//        currentVenue = currentShow?.venue
+//        showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
+        currentVenue = currentLocation!.venue
+        showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
         
         // create the new date labels
         var dateLabels = [ UILabel ]()
@@ -901,9 +948,11 @@ class TourMapViewController: UIViewController,
         // set the venue and city labels
         let venueLabel = infoPane.viewWithTag( 210 ) as! UILabel
         let cityLabel = infoPane.viewWithTag( 211 ) as! UILabel
-        venueLabel.text = currentShow?.venue
+        // venueLabel.text = currentShow?.venue
+        venueLabel.text = currentLocation?.venue
         venueLabel.sizeToFit()
-        cityLabel.text = currentShow?.city
+        // cityLabel.text = currentShow?.city
+        cityLabel.text = currentLocation?.city
         cityLabel.sizeToFit()
         venueLabel.frame.origin = CGPoint(
             x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
@@ -1096,6 +1145,8 @@ class TourMapViewController: UIViewController,
         }
         
         let selectedShow = view.annotation as! PhishShow
+        // var showIndex = find( selectedTour!.shows, selectedShow )!
+        // currentShow = selectedTour!.shows[ showIndex ]
         currentShow = selectedShow
         
         let callout = CalloutCellView()
