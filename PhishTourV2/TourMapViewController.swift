@@ -136,7 +136,6 @@ class TourMapViewController: UIViewController,
         {
             dropInfoPane()
         }
-        // bringUpInfoPane()
         
         if let showList = view.viewWithTag( 300 )
         {
@@ -147,36 +146,6 @@ class TourMapViewController: UIViewController,
         
         resetButton.enabled = false
     }
-    
-    /*
-    func resetTourNavControls( resume: Bool = false, tourNav: Bool = false )
-    {
-        if tourNav
-        {
-            tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
-            tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
-            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-            tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
-        }
-        else
-        {
-            let titleOption: String = ( resume ) ? "Resume" : "Start"
-            println( "titleOption: \( titleOption )" )
-            isResuming = resume
-            
-            tourNavControls.setTitle( titleOption, forSegmentAtIndex: 0 )
-            tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
-            tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
-            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-            // tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
-            let oneShow = ( selectedTour!.shows.count == 1 ) ? false : true
-            tourNavControls.setEnabled( oneShow, forSegmentAtIndex: 3 )
-            
-            // didStartTour = false
-            // didStartTour = resume
-        }
-    }
-    */
     
     @IBAction func showTourPicker( sender: UIBarButtonItem? )
     {
@@ -269,18 +238,14 @@ class TourMapViewController: UIViewController,
         
         if didStartTour
         {
-            // println( "didStartTour" )
             tourMap.setRegion( defaultRegion, animated: true )
             
-            // resetTourNavControls()
             tourNavControls.setTitle( "Start", forSegmentAtIndex: 0 )
             tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
             tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
             tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
             tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
             
-            // dropInfoPane()
-            // bringUpInfoPane()
             if view.viewWithTag( 200 ) != nil
             {
                 bringUpInfoPane()
@@ -310,8 +275,6 @@ class TourMapViewController: UIViewController,
                 {
                     dispatch_async( dispatch_get_main_queue() )
                     {
-                        // self.currentShow = theTour.shows.first
-                        // self.currentLocation = theTour.uniqueLocations.first
                         self.currentLocation = theTour.uniqueLocations.first
                         
                         self.showTourTitle()
@@ -324,12 +287,10 @@ class TourMapViewController: UIViewController,
                         )
                         dispatch_after( delayTime, dispatch_get_main_queue() )
                         {
-                            // self.tourMap.addAnnotations( theTour.shows )
                             self.tourMap.addAnnotations( theTour.uniqueLocations )
                         }
                         
                         self.tourNavControls.hidden = false
-                        // self.resetTourNavControls(resume: false)
                     }
                 }
             }
@@ -426,26 +387,15 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         
-        // let oneShow = ( selectedTour!.shows.count == 1 ) ? false : true
-        // tourNavControls.setEnabled( oneShow, forSegmentAtIndex: 3 )
         let oneLocation = ( selectedTour!.uniqueLocations.count == 1 ) ? true : false
         tourNavControls.setEnabled( !oneLocation, forSegmentAtIndex: 3 )
         
-//        if currentShow != nil
-//        {
-//            tourMap.deselectAnnotation( currentShow!, animated: true )
-//        }
         if currentLocation != nil
         {
             tourMap.deselectAnnotation( currentLocation!, animated: true )
         }
         
-        // currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
-        // currentLocation = selectedTour!.uniqueLocations.first
-        
         zoomInOnCurrentShow()
-        
-        // bringInShowList()
         
         if view.viewWithTag( 300 ) != nil
         {
@@ -464,20 +414,14 @@ class TourMapViewController: UIViewController,
         tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
         tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
         
-        // let lastShow = (find( selectedTour!.shows, currentShow! ) == selectedTour!.shows.count - 1) ? false : true
         let lastShow = ( find( selectedTour!.uniqueLocations, currentLocation! ) == selectedTour!.uniqueLocations.count - 1) ? false : true
         tourNavControls.setEnabled( lastShow, forSegmentAtIndex: 3 )
         
-//        if currentShow != nil
-//        {
-//            tourMap.deselectAnnotation( currentShow!, animated: true )
-//        }
         if currentLocation != nil
         {
             tourMap.deselectAnnotation( currentLocation!, animated: true )
         }
         
-        // currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
         currentLocation = ( currentLocation == nil ) ? selectedTour!.uniqueLocations.first! : currentLocation
         
         zoomInOnCurrentShow()
@@ -495,13 +439,6 @@ class TourMapViewController: UIViewController,
     
     func zoomInOnCurrentShow()
     {
-//        let zoomedRegion = MKCoordinateRegion(
-//            center: currentShow!.coordinate,
-//            span: MKCoordinateSpan(
-//                latitudeDelta: 0.2,
-//                longitudeDelta: 0.2
-//            )
-//        )
         let zoomedRegion = MKCoordinateRegion(
             center: currentLocation!.coordinate,
             span: MKCoordinateSpan(
@@ -538,9 +475,7 @@ class TourMapViewController: UIViewController,
         else
         {
             let blurEffect = UIBlurEffect( style: .Dark )
-            // let vibrancyEffect = UIVibrancyEffect( forBlurEffect: blurEffect )
             let infoPane = UIVisualEffectView( effect: blurEffect )
-            // let vibrancyView = UIVisualEffectView( effect: vibrancyEffect )
             
             infoPane.tag = 200
             infoPane.frame = CGRect(
@@ -551,21 +486,13 @@ class TourMapViewController: UIViewController,
                 x: CGRectGetMidX( view.bounds ) - infoPane.frame.size.width / 2,
                 y: infoPane.frame.origin.y
             )
-    //        vibrancyView.frame = CGRect(
-    //            x: 0, y: 0,
-    //            width: infoPane.frame.size.width, height: infoPane.frame.size.height
-    //        )
-    //        
-    //        infoPane.addSubview( vibrancyView )
 
             var dateLabels = [ UILabel ]()
             var labelTag = 201
-            // let currentVenue = currentShow?.venue
             let currentVenue = currentLocation!.venue
             let showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
             for show in showsAtVenue
             {
-                // println( "Adding label tag \( labelTag )" )
                 let dateLabel = UILabel()
                 dateLabel.tag = labelTag++
                 dateLabel.textColor = UIColor.whiteColor()
@@ -575,18 +502,10 @@ class TourMapViewController: UIViewController,
                 dateLabels.append( dateLabel )
             }
             
-//            let dateLabel = UILabel()
-//            dateLabel.tag = 201
-//            dateLabel.textColor = UIColor.whiteColor()
-//            dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
-//            dateLabel.text = currentShow!.date + " \( currentShow!.year )"
-//            dateLabel.sizeToFit()
-            
             let venueLabel = UILabel()
             venueLabel.tag = 210
             venueLabel.textColor = UIColor.whiteColor()
             venueLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
-            // venueLabel.text = currentShow?.venue
             venueLabel.text = currentVenue
             venueLabel.sizeToFit()
             
@@ -594,7 +513,6 @@ class TourMapViewController: UIViewController,
             cityLabel.tag = 211
             cityLabel.textColor = UIColor.whiteColor()
             cityLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 18 )
-            // cityLabel.text = currentShow?.city
             cityLabel.text = currentLocation?.city
             cityLabel.sizeToFit()
             
@@ -602,7 +520,7 @@ class TourMapViewController: UIViewController,
             for ( index, dateLabel ) in enumerate( dateLabels )
             {
                 let labelHeight: CGFloat = dateLabel.frame.size.height
-                // dateLabel.frame.origin = CGPoint(x: CGRectGetMidX(infoPane.contentView.bounds) - (dateLabel.frame.size.width / 2), y: labelHeight * (index + 1) + 1)
+                
                 dateLabel.frame.origin = CGPoint(
                     x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
                     y: ( labelHeight * ( CGFloat( index ) + 1 ) + 1 )
@@ -620,20 +538,6 @@ class TourMapViewController: UIViewController,
                 y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
             )
             
-//            dateLabel.frame.origin = CGPoint(
-//                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
-//                y: 5
-//            )
-//            venueLabel.frame.origin = CGPoint(
-//                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
-//                y: dateLabel.frame.origin.y + dateLabel.frame.size.height + 5
-//            )
-//            cityLabel.frame.origin = CGPoint(
-//                x: CGRectGetMidX( infoPane.contentView.bounds ) - ( cityLabel.frame.size.width / 2 ),
-//                y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
-//            )
-            
-            // infoPane.contentView.addSubview( dateLabel )
             for dateLabel in dateLabels
             {
                 infoPane.contentView.addSubview( dateLabel )
@@ -698,10 +602,6 @@ class TourMapViewController: UIViewController,
                 
                 goBackToPreviousShow()
                 
-//                if find( selectedTour!.shows, currentShow! ) == 0
-//                {
-//                    tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
-//                }
                 if find( selectedTour!.uniqueLocations, currentLocation! ) == 0
                 {
                     tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
@@ -732,24 +632,15 @@ class TourMapViewController: UIViewController,
             
             tourMap.selectAnnotation( currentLocation, animated: true )
             
-            // dropInfoPane()
             bringUpInfoPane()
             
-//            if find( selectedTour!.shows, currentShow! ) != 0
-//            {
-//                tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
-//                isResuming = true
-//                // resetTourNavControls( resume: true )
-//            }
             if find( selectedTour!.uniqueLocations, currentLocation! ) != 0
             {
                 tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
                 isResuming = true
-                // resetTourNavControls( resume: true )
             }
             else
             {
-                // resetTourNavControls()
                 tourNavControls.setTitle( "Start", forSegmentAtIndex: 0 )
                 didStartTour = false
             }
@@ -779,12 +670,6 @@ class TourMapViewController: UIViewController,
                 bringInShowList()
             }
             
-            // resetTourNavControls( tourNav: true )
-//            tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
-//            tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
-//            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-//            tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
-            
         case 3:
             println( "Pressed the NextShow button." )
             
@@ -792,10 +677,6 @@ class TourMapViewController: UIViewController,
             
             tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
             
-//            if find( selectedTour!.shows, currentShow! ) == selectedTour!.shows.count - 1
-//            {
-//                tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
-//            }
             if find( selectedTour!.uniqueLocations, currentLocation! ) == selectedTour!.uniqueLocations.count - 1
             {
                 tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
@@ -811,7 +692,6 @@ class TourMapViewController: UIViewController,
         let infoPane = view.viewWithTag( 200 )! as! UIVisualEffectView
         
         // remove the current date labels before we figure out which new ones to add
-        // var currentVenue = currentShow?.venue
         var currentVenue = currentLocation!.venue
         var showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
         var labelTags = 201...( 201 + ( showsAtVenue.count - 1 ) )
@@ -822,22 +702,15 @@ class TourMapViewController: UIViewController,
         }
         
         // get previous show
-//        var showIndex = find( selectedTour!.shows, currentShow! )!
-//        println( "The current show was at [\( showIndex )]" )
-//        showIndex -= ( showsAtVenue.count + 1 )
-//        currentShow = selectedTour!.shows[ showIndex ]
         var locationIndex = find( selectedTour!.uniqueLocations, currentLocation! )!
-        // println( "The current show was at [\( showIndex )]" )
         locationIndex--
         currentLocation = selectedTour!.uniqueLocations[ locationIndex ]
         
         // reset the current venue and shows
-        // currentVenue = currentShow?.venue
         currentVenue = currentLocation!.venue
         showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
         
         // set the map on the new location
-        // let previousShowCoordinate = currentShow!.coordinate
         let previousShowCoordinate = currentLocation!.coordinate
         tourMap.setCenterCoordinate( previousShowCoordinate, animated: true )
         
@@ -897,7 +770,6 @@ class TourMapViewController: UIViewController,
         let infoPane = view.viewWithTag( 200 )! as! UIVisualEffectView
         
         // remove the current date labels before we figure out which new ones to add
-        // var currentVenue = currentShow?.venue
         var currentVenue = currentLocation!.venue
         var showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
         var labelTags = 201...( 201 + ( showsAtVenue.count - 1 ) )
@@ -908,22 +780,15 @@ class TourMapViewController: UIViewController,
         }
         
         // get the next show
-//        var showIndex = find( selectedTour!.shows, currentShow! )!
-//        showIndex += ( showsAtVenue.count )
-//        currentShow = selectedTour!.shows[ showIndex ]
         var locationIndex = find( selectedTour!.uniqueLocations, currentLocation! )!
         locationIndex++
         currentLocation = selectedTour!.uniqueLocations[ locationIndex ]
         
         // set the map on the new location
-//        let nextShowCoordinate = currentShow!.coordinate
-//        tourMap.setCenterCoordinate( nextShowCoordinate, animated: true )
         let nextShowCoordinate = currentLocation!.coordinate
         tourMap.setCenterCoordinate( nextShowCoordinate, animated: true )
         
         // reset the current venue and shows
-//        currentVenue = currentShow?.venue
-//        showsAtVenue = selectedTour!.locationDictionary[ currentVenue! ]!
         currentVenue = currentLocation!.venue
         showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
         
@@ -933,7 +798,6 @@ class TourMapViewController: UIViewController,
         {
             let dateLabel = UILabel()
             dateLabel.tag = 201 + index
-            // println( "Adding label tag \( dateLabel.tag )" )
             dateLabel.textColor = UIColor.whiteColor()
             dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
             dateLabel.text = show.date + " \( show.year )"
@@ -1007,34 +871,12 @@ class TourMapViewController: UIViewController,
                             self.tourNavControls.setEnabled( previousStates![ 2 ]!, forSegmentAtIndex: 2 )
                             self.tourNavControls.setEnabled( previousStates![ 3 ]!, forSegmentAtIndex: 3 )
                         }
-                        
-                        
-                        // self.resetTourNavControls()
-                        
-//                        if self.didStartTour
-//                        {
-//                            let tourNavControls = self.view.viewWithTag( 400 ) as! UISegmentedControl
-//                            tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
-//                            tourNavControls.setEnabled( true, forSegmentAtIndex: 1 )
-//                            tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-//                            tourNavControls.setEnabled( true, forSegmentAtIndex: 3 )
-//                        }
                     }
                 }
             )
         }
         else
         {
-            if didStartTour
-            {
-//                let tourNavControls = view.viewWithTag( 400 ) as! UISegmentedControl
-//                tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
-//                tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
-//                tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-//                tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
-                // self.resetTourNavControls()
-            }
-            
             let blurEffect = UIBlurEffect( style: .Dark )
             let showList = UIVisualEffectView( effect: blurEffect )
             
@@ -1053,7 +895,6 @@ class TourMapViewController: UIViewController,
             showListTable.dataSource = self
             showListTable.delegate = self
             
-            // showListTable.reloadData()
             showListTable.sizeToFit()
             
             let multiRowCalloutCell2Nib = UINib(nibName: "MultiRowCalloutCell2", bundle: nil)
@@ -1089,10 +930,7 @@ class TourMapViewController: UIViewController,
                             inSection: 0
                         )
                         
-                        // scroll the table;
-                        // (don't animate it; the cell needs to be onscreen or cellForRowAtIndexPath will return nil,
-                        // animating the table might make it take too long)
-                        // this took me a while to make it work, but some light googling turned me on to that detail about cellForRowAtIndexPath
+                        // scroll the table to the cell being highlighted first, otherwise cellForRowAtIndexPath will return nil
                         showListTable.scrollToRowAtIndexPath(
                             scrollToIndexPath,
                             atScrollPosition: .Top,
@@ -1186,18 +1024,11 @@ class TourMapViewController: UIViewController,
             currentCallout?.dismissCalloutAnimated( true )
         }
         
-        // let selectedShow = view.annotation as! PhishShow
-        // var showIndex = find( selectedTour!.shows, selectedShow )!
-        // currentShow = selectedTour!.shows[ showIndex ]
-        // currentShow = selectedShow
         let selectedLocation = view.annotation as! PhishShow
         currentLocation = selectedLocation
         
-        println( "show index: \( selectedTour!.showListNumberForLocation( currentLocation! ) )" )
-        
         let callout = CalloutCellView()
         
-        // let venue = currentShow!.venue
         let venue = currentLocation!.venue
         let showsAtVenue = selectedTour!.locationDictionary[ venue ]!
         for ( index, show ) in enumerate( showsAtVenue )
@@ -1246,30 +1077,17 @@ class TourMapViewController: UIViewController,
         
         currentCallout = calloutView
         
-//        if find( selectedTour!.shows, selectedShow ) != 0
-//        {
-//            tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
-//            isResuming = true
-//            // resetTourNavControls( resume: true )
-//        }
         if find( selectedTour!.uniqueLocations, selectedLocation ) != 0
         {
             tourNavControls.setTitle( "Resume", forSegmentAtIndex: 0 )
             isResuming = true
-            // resetTourNavControls( resume: true )
         }
         else
         {
             tourNavControls.setTitle( "Start", forSegmentAtIndex: 0 )
             isResuming = false
             didStartTour = false
-            // resetTourNavControls()
         }
-        
-//        tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
-//        tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
-//        tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-//        tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
     }
     
     func mapView(
@@ -1503,8 +1321,6 @@ class TourMapViewController: UIViewController,
         cell.yearLabel.text = selectedTour?.shows[ indexPath.row ].year.description
         cell.venueLabel.text = selectedTour?.shows[ indexPath.row ].venue
         cell.cityLabel.text = selectedTour?.shows[ indexPath.row ].city
-        // cell.highlighted ? cell.setHighlighted( true, animated: false ) : cell.setHighlighted( false, animated: false )
-        // println( "cell \( indexPath.row ) width: \( cell.cityLabel.frame.size.width )" )
         
         // cell.contentView.sizeToFit()
         // cell.sizeToFit()
@@ -1523,14 +1339,8 @@ class TourMapViewController: UIViewController,
             let currentCell = tableView.cellForRowAtIndexPath( currentHighlight! )!
             
             currentCell.setHighlighted( false, animated: true )
+            currentCell.setSelected( false, animated: false )
         }
-//        if let currentHighlightedIndexPath = tableView.indexPathForSelectedRow()
-//        {
-//            println( "currentCellIndexPath: \( currentCellIndexPath )" )
-//            let currentCell = tableView.cellForRowAtIndexPath( currentCellIndexPath )!
-//            
-//            currentCell.setHighlighted( false, animated: true )
-//        }
         
         // get the venue
         let selectedCell = tableView.cellForRowAtIndexPath( indexPath ) as! MultiRowCalloutCell2
@@ -1565,7 +1375,7 @@ class TourMapViewController: UIViewController,
             }
             
             // dismiss the show list by faking pressing the tour nav controls;
-            // set the states that the tour nav controls shoudl revert to
+            // set the states that the tour nav controls should revert to
             tourNavControls.selectedSegmentIndex = 2
             previousStatesOfTourNav = nil
             previousStatesOfTourNav = [ Int : Bool ]()

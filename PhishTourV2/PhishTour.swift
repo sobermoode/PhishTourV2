@@ -149,10 +149,16 @@ class PhishTour: NSObject,
         self.locationDictionary = locationDictionary
     }
     
+    // for use with highlighting the correct rows in the show list table view
+    // returns the row number of the show to highlight and the row number of the last show of a multi-night run
     func showListNumberForLocation( location: PhishShow ) -> ( Int, Int )
     {
+        // get all the shows played at the location
         let showsAtVenue = locationDictionary[ location.venue ]!
         
+        // highlight the row of the first show
+        // scroll to the row of the last show (might be the same)
+        // if the first show of the tour was selected, don't scroll at all
         let highlightIndex = find( shows, location )!
         let scrollToIndex = ( highlightIndex == 0 ) ? highlightIndex : highlightIndex + ( showsAtVenue.count - 1 )
         
