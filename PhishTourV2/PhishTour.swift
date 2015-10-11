@@ -154,22 +154,8 @@ class PhishTour: NSObject,
         let showsAtVenue = locationDictionary[ location.venue ]!
         
         let highlightIndex = find( shows, location )!
-        let scrollToIndex = highlightIndex + ( showsAtVenue.count - 1 )
+        let scrollToIndex = ( highlightIndex == 0 ) ? highlightIndex : highlightIndex + ( showsAtVenue.count - 1 )
         
         return ( highlightIndex, scrollToIndex )
-//        let locationIndex = find( shows, location )!
-//        let keys = locationDictionary.keys
-//        
-//        var showNumber: Int = 0
-//        for key in locationDictionary.keys
-//        {
-//            let shows = locationDictionary[ key ]!
-//            
-//            showNumber += shows.count
-//        }
-//        
-//        showNumber--
-//        
-//        return showNumber
     }
 }

@@ -39,6 +39,7 @@ class TourMapViewController: UIViewController,
     var currentCallout: SMCalloutView?
     // var currentLocation: String?
     var currentLocation: PhishShow?
+    var currentHighlight: NSIndexPath?
     let defaultRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(
             latitude: 39.8282,
@@ -311,6 +312,7 @@ class TourMapViewController: UIViewController,
                     {
                         // self.currentShow = theTour.shows.first
                         // self.currentLocation = theTour.uniqueLocations.first
+                        self.currentLocation = theTour.uniqueLocations.first
                         
                         self.showTourTitle()
                         self.centerOnFirstShow()
@@ -439,7 +441,7 @@ class TourMapViewController: UIViewController,
         }
         
         // currentShow = ( currentShow == nil ) ? selectedTour!.shows.first! : currentShow
-        currentLocation = selectedTour!.uniqueLocations.first
+        // currentLocation = selectedTour!.uniqueLocations.first
         
         zoomInOnCurrentShow()
         
@@ -1090,7 +1092,7 @@ class TourMapViewController: UIViewController,
                         // scroll the table;
                         // (don't animate it; the cell needs to be onscreen or cellForRowAtIndexPath will return nil,
                         // animating the table might make it take too long)
-                        // this took me a while to make it work, but some light googling turned me on to that detail
+                        // this took me a while to make it work, but some light googling turned me on to that detail about cellForRowAtIndexPath
                         showListTable.scrollToRowAtIndexPath(
                             scrollToIndexPath,
                             atScrollPosition: .Top,
@@ -1100,6 +1102,7 @@ class TourMapViewController: UIViewController,
                         // highlight the cell
                         let showCell = showListTable.cellForRowAtIndexPath( highlightIndexPath )!
                         showCell.setHighlighted( true, animated: true )
+                        self.currentHighlight = highlightIndexPath
                         
                         self.tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
                         self.tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
@@ -1500,6 +1503,7 @@ class TourMapViewController: UIViewController,
         cell.yearLabel.text = selectedTour?.shows[ indexPath.row ].year.description
         cell.venueLabel.text = selectedTour?.shows[ indexPath.row ].venue
         cell.cityLabel.text = selectedTour?.shows[ indexPath.row ].city
+        // cell.highlighted ? cell.setHighlighted( true, animated: false ) : cell.setHighlighted( false, animated: false )
         // println( "cell \( indexPath.row ) width: \( cell.cityLabel.frame.size.width )" )
         
         // cell.contentView.sizeToFit()
@@ -1513,6 +1517,21 @@ class TourMapViewController: UIViewController,
         didSelectRowAtIndexPath indexPath: NSIndexPath
     )
     {
+        // de-select currently selected cell
+        if currentHighlight != nil
+        {
+            let currentCell = tableView.cellForRowAtIndexPath( currentHighlight! )!
+            
+            currentCell.setHighlighted( false, animated: true )
+        }
+//        if let currentHighlightedIndexPath = tableView.indexPathForSelectedRow()
+//        {
+//            println( "currentCellIndexPath: \( currentCellIndexPath )" )
+//            let currentCell = tableView.cellForRowAtIndexPath( currentCellIndexPath )!
+//            
+//            currentCell.setHighlighted( false, animated: true )
+//        }
+        
         // get the venue
         let selectedCell = tableView.cellForRowAtIndexPath( indexPath ) as! MultiRowCalloutCell2
         let venue = selectedCell.venueLabel.text!
