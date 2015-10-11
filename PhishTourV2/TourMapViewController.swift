@@ -28,7 +28,7 @@ class TourMapViewController: UIViewController,
     var selectedTour: PhishTour?
     var currentShow: PhishShow? // TODO: not sure this is used anymore; now using currentLocation
     var didDropPins: Bool = false
-    var isZoomedOut: Bool = true
+    var isZoomedOut: Bool = true // TODO: never check for this anywhere
     var didAddAnnotations: Bool = false
     var didMakeTourTrail: Bool = false
     var dontGoBack: Bool = false
@@ -563,7 +563,7 @@ class TourMapViewController: UIViewController,
             let showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
             for show in showsAtVenue
             {
-                println( "Adding label tag \( labelTag )" )
+                // println( "Adding label tag \( labelTag )" )
                 let dateLabel = UILabel()
                 dateLabel.tag = labelTag++
                 dateLabel.textColor = UIColor.whiteColor()
@@ -727,6 +727,7 @@ class TourMapViewController: UIViewController,
                 ),
                 animated: true
             )
+            
             tourMap.selectAnnotation( currentLocation, animated: true )
             
             // dropInfoPane()
@@ -1151,6 +1152,7 @@ class TourMapViewController: UIViewController,
         didSelectAnnotationView view: MKAnnotationView!
     )
     {
+        println( "didSelectAnnotationView..." )
         if currentCallout != nil
         {
             currentCallout?.dismissCalloutAnimated( true )
@@ -1234,10 +1236,10 @@ class TourMapViewController: UIViewController,
             // resetTourNavControls()
         }
         
-        tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
-        tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
-        tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
-        tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
+//        tourNavControls.setEnabled( true, forSegmentAtIndex: 0 )
+//        tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
+//        tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
+//        tourNavControls.setEnabled( false, forSegmentAtIndex: 3 )
     }
     
     func mapView(
@@ -1491,11 +1493,48 @@ class TourMapViewController: UIViewController,
         // find the location associated with that venue
         if let locations = selectedTour!.locationDictionary[ venue ]
         {
+            // set the current location
             currentLocation = locations.first!
             
-            bringInShowList()
+            // if the info pane is up, drop it and zoom out
+            if view.viewWithTag( 200 ) != nil
+            {
+                tourMap.setRegion(
+                    MKCoordinateRegion(
+                        center: CLLocationCoordinate2D(
+                            latitude: currentLocation!.showLatitude,
+                            longitude: currentLocation!.showLongitude
+                        ),
+                        span: MKCoordinateSpan(
+                            latitudeDelta: 50.0,
+                            longitudeDelta: 50.0
+                        )
+                    ),
+                    animated: true
+                )
+                
+                isZoomedOut = true
+                
+                bringUpInfoPane()
+            }
+            
+            // dismiss the show list by faking pressing the tour nav controls;
+            // set the states that the tour nav controls shoudl revert to
+            tourNavControls.selectedSegmentIndex = 2
+            previousStatesOfTourNav = nil
+            previousStatesOfTourNav = [ Int : Bool ]()
+            previousStatesOfTourNav!.updateValue( true, forKey: 0 )
+            previousStatesOfTourNav!.updateValue( false, forKey: 1 )
+            previousStatesOfTourNav!.updateValue( true, forKey: 2 )
+            previousStatesOfTourNav!.updateValue( false, forKey: 3 )
+            selectTourNavigationOption( tourNavControls )
+            tourNavControls.selectedSegmentIndex = -1
         
-            tourMap.selectAnnotation( currentLocation!, animated: true )
+            tourMap.selectAnnotation( currentLocation!, animated: false )
+        }
+        else
+        {
+            println( "Couldn't find that location..." )
         }
     }
 }

@@ -64,7 +64,7 @@ class MultiRowCalloutCell2: UITableViewCell
     func setFrame()
     {
         // self.frame = CGRect(x: 0.0, y: cellHeight * cellNumber, width: cellWidth, height: cellHeight)
-        println( "Setting cell frame, cellHeight: \( cellHeight )" )
+        // println( "Setting cell frame, cellHeight: \( cellHeight )" )
         self.frame = CGRect(
             x: 0.0, y: cellHeight * cellNumber,
             width: cellWidth, height: cellHeight
@@ -87,7 +87,7 @@ class MultiRowCalloutCell2: UITableViewCell
     
     override func layoutSubviews()
     {
-        println( "layoutSubviews..." )
+        // println( "layoutSubviews..." )
         // var cellBecameTaller: Bool = false
         // var extraHeight: CGFloat = 0
         
@@ -239,7 +239,7 @@ class MultiRowCalloutCell2: UITableViewCell
         super.awakeFromNib()
         // Initialization code
         
-        println( "awakeFromNib..." )
+        // println( "awakeFromNib..." )
         self.cellNumber = 0
 //        self.layer.borderColor = UIColor.blueColor().CGColor
 //        self.layer.borderWidth = 1
