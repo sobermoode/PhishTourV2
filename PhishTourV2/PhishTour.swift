@@ -99,7 +99,8 @@ class PhishTour: NSObject,
                 
                 return
             }
-            // automatically add the first show to the array
+            
+            // add the first show to the array
             if index == 0
             {
                 uniqueLocations.append( show )
@@ -127,9 +128,10 @@ class PhishTour: NSObject,
                 }
                 else
                 {
+                    // there's a new location
                     uniqueLocations.append( show )
                     
-                    // add the show to the dictionary
+                    // add the show(s) to the dictionary
                     locationDictionary.updateValue( multiNightRun, forKey: currentVenue )
                     
                     // blank the current multi-night run array
@@ -145,5 +147,29 @@ class PhishTour: NSObject,
         
         // set the tour's location dictionary
         self.locationDictionary = locationDictionary
+    }
+    
+    func showListNumberForLocation( location: PhishShow ) -> ( Int, Int )
+    {
+        let showsAtVenue = locationDictionary[ location.venue ]!
+        
+        let highlightIndex = find( shows, location )!
+        let scrollToIndex = highlightIndex + ( showsAtVenue.count - 1 )
+        
+        return ( highlightIndex, scrollToIndex )
+//        let locationIndex = find( shows, location )!
+//        let keys = locationDictionary.keys
+//        
+//        var showNumber: Int = 0
+//        for key in locationDictionary.keys
+//        {
+//            let shows = locationDictionary[ key ]!
+//            
+//            showNumber += shows.count
+//        }
+//        
+//        showNumber--
+//        
+//        return showNumber
     }
 }

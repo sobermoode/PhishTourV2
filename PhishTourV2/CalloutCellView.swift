@@ -37,7 +37,7 @@ class CalloutCellView: UIView
                 rowWidth = ( currentCell.frame.size.width > rowWidth ) ? currentCell.frame.size.width : rowWidth
                 // let rowHeight = currentCell.frame.size.height
                 // let totalHeight = CGFloat( subviews.count ) * rowHeight
-                println( "currentCell.frame.size.height: \( currentCell.frame.size.height )" )
+                // println( "currentCell.frame.size.height: \( currentCell.frame.size.height )" )
                 totalHeight += currentCell.frame.size.height
             }
             

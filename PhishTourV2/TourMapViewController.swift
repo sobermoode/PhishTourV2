@@ -268,7 +268,7 @@ class TourMapViewController: UIViewController,
         
         if didStartTour
         {
-            println( "didStartTour" )
+            // println( "didStartTour" )
             tourMap.setRegion( defaultRegion, animated: true )
             
             // resetTourNavControls()
@@ -931,7 +931,7 @@ class TourMapViewController: UIViewController,
         {
             let dateLabel = UILabel()
             dateLabel.tag = 201 + index
-            println( "Adding label tag \( dateLabel.tag )" )
+            // println( "Adding label tag \( dateLabel.tag )" )
             dateLabel.textColor = UIColor.whiteColor()
             dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
             dateLabel.text = show.date + " \( show.year )"
@@ -1075,6 +1075,32 @@ class TourMapViewController: UIViewController,
                     
                     if finished
                     {
+                        // highlight the selected show in the table
+                        // get the index paths of the cells to highlight and scroll the table to
+                        let ( highlightIndex, scrollToIndex ) = self.selectedTour!.showListNumberForLocation( self.currentLocation! )
+                        let highlightIndexPath = NSIndexPath(
+                            forRow: highlightIndex,
+                            inSection: 0
+                        )
+                        let scrollToIndexPath = NSIndexPath(
+                            forRow: scrollToIndex,
+                            inSection: 0
+                        )
+                        
+                        // scroll the table;
+                        // (don't animate it; the cell needs to be onscreen or cellForRowAtIndexPath will return nil,
+                        // animating the table might make it take too long)
+                        // this took me a while to make it work, but some light googling turned me on to that detail
+                        showListTable.scrollToRowAtIndexPath(
+                            scrollToIndexPath,
+                            atScrollPosition: .Top,
+                            animated: false
+                        )
+                        
+                        // highlight the cell
+                        let showCell = showListTable.cellForRowAtIndexPath( highlightIndexPath )!
+                        showCell.setHighlighted( true, animated: true )
+                        
                         self.tourNavControls.setEnabled( false, forSegmentAtIndex: 0 )
                         self.tourNavControls.setEnabled( false, forSegmentAtIndex: 1 )
                         self.tourNavControls.setEnabled( true, forSegmentAtIndex: 2 )
@@ -1152,7 +1178,6 @@ class TourMapViewController: UIViewController,
         didSelectAnnotationView view: MKAnnotationView!
     )
     {
-        println( "didSelectAnnotationView..." )
         if currentCallout != nil
         {
             currentCallout?.dismissCalloutAnimated( true )
@@ -1164,6 +1189,8 @@ class TourMapViewController: UIViewController,
         // currentShow = selectedShow
         let selectedLocation = view.annotation as! PhishShow
         currentLocation = selectedLocation
+        
+        println( "show index: \( selectedTour!.showListNumberForLocation( currentLocation! ) )" )
         
         let callout = CalloutCellView()
         
@@ -1371,14 +1398,14 @@ class TourMapViewController: UIViewController,
                     {
                         toursRequestError, tours in
                         
-                        println( "requestToursForYears was successful..." )
+                        // println( "requestToursForYears was successful..." )
                         if toursRequestError != nil
                         {
                             println( "There was an error requesting the tours for \( years ): \( toursRequestError.localizedDescription )" )
                         }
                         else
                         {
-                            println( "tours: \( tours )" )
+                            // println( "tours: \( tours )" )
                             self.selectedYear = self.years?[ row ]
                             self.tours = tours
                             if let firstTour = self.tours?.first!
@@ -1388,7 +1415,7 @@ class TourMapViewController: UIViewController,
                             
                             dispatch_async( dispatch_get_main_queue() )
                             {
-                                println( "Reloading the season picker..." )
+                                // println( "Reloading the season picker..." )
                                 self.seasonPicker.reloadAllComponents()
                             }
                         }
@@ -1409,7 +1436,7 @@ class TourMapViewController: UIViewController,
                             }
                             else
                             {
-                                println( "Finished the request: tours: \( tours )" )
+                                // println( "Finished the request: tours: \( tours )" )
                                 self.selectedYear = self.years?[ row ]
                                 self.tours = tours
                                 if let firstTour = self.tours?.first!
@@ -1419,7 +1446,7 @@ class TourMapViewController: UIViewController,
                                 
                                 dispatch_async( dispatch_get_main_queue() )
                                 {
-                                    println( "Reloading the season picker..." )
+                                    // println( "Reloading the season picker..." )
                                     self.seasonPicker.reloadAllComponents()
                                 }
                             }
@@ -1434,7 +1461,7 @@ class TourMapViewController: UIViewController,
             case 2:
                 // selectedTour = tourIDs[ row ]
                 selectedTour = tours?[ row ]
-                println( "Selected \( selectedTour )" )
+                // println( "Selected \( selectedTour )" )
                 return
                 
             default:
