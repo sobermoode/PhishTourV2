@@ -1011,7 +1011,8 @@ class TourMapViewController: UIViewController,
             if mapView.pointInside( coordinatePoint, withEvent: nil )
             {
                 // the annotation view appears at its coordinate; set its animation endpoint here
-                let endFrame: CGRect = annotationView.frame
+                // let endFrame: CGRect = annotationView.frame
+                let endFrame = CGRect(x: annotationView.frame.origin.x - 5, y: annotationView.frame.origin.y - 3, width: annotationView.frame.size.width, height: annotationView.frame.size.height)
                 
                 // position the annotation view off the top of the screen
                 annotationView.frame = CGRect(
