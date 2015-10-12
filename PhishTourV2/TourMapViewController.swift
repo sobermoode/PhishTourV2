@@ -997,9 +997,7 @@ class TourMapViewController: UIViewController,
                 height: numberImageView.frame.size.height
             )
             numberImageView.tag = 5
-            
             reusedAnnotationView.addSubview( numberImageView )
-            reusedAnnotationView.canShowCallout = false
             
             return reusedAnnotationView
         }
@@ -1019,89 +1017,20 @@ class TourMapViewController: UIViewController,
                 height: numberImageView.frame.size.height
             )
             numberImageView.tag = 5
-            
-            // add the number to the pin
             newAnnotationView.addSubview( numberImageView )
+            
+            newAnnotationView.animatesDrop = true
             newAnnotationView.canShowCallout = false
             
             return newAnnotationView
         }
     }
     
-    // NOTE:
-    // code for pin drop animation adapted from http://stackoverflow.com/a/7045916
     func mapView(
         mapView: MKMapView!,
         didAddAnnotationViews views: [AnyObject]!
     )
-    {
-        for view in views
-        {
-            let annotationView = view as! MKPinAnnotationView
-            
-            // get the annotation view's point in the view, to make sure it is onscreen
-            let annotationCoordinate: CLLocationCoordinate2D = annotationView.annotation.coordinate
-            let coordinatePoint: CGPoint = mapView.convertCoordinate( annotationCoordinate, toPointToView: self.view )
-            if mapView.pointInside( coordinatePoint, withEvent: nil )
-            {
-                // the annotation view appears at its coordinate; set its animation endpoint here
-                let endFrame: CGRect = annotationView.frame
-                
-                // position the annotation view off the top of the screen
-                annotationView.frame = CGRect(
-                    x: annotationView.frame.origin.x,
-                    y: CGRectGetMinY( self.view.bounds ) - annotationView.frame.size.height,
-                    width: annotationView.frame.size.width,
-                    height: annotationView.frame.size.height
-                )
-                
-                // start the drop-in animation
-                UIView.animateWithDuration(
-                    0.6,
-                    animations:
-                    {
-                        annotationView.frame = endFrame
-                    },
-                    completion:
-                    {
-                        finished in
-                        
-                        if finished
-                        {
-                            // "squash" animation
-                            UIView.animateWithDuration(
-                                0.1,
-                                animations:
-                                {
-                                    annotationView.transform = CGAffineTransformMakeScale( 1.0, 0.8 )
-                                },
-                                completion:
-                                {
-                                    finished in
-                                    
-                                    if finished
-                                    {
-                                        UIView.animateWithDuration(
-                                            0.2,
-                                            animations:
-                                            {
-                                                annotationView.transform = CGAffineTransformIdentity
-                                            }
-                                        )
-                                    }
-                                }
-                            )
-                        }
-                    }
-                )
-            }
-                // don't "drop" the annotation view if it is offscreen
-            else
-            {
-                continue
-            }
-        }
-        
+    {        
         // draw the tour trail a short delay after the pins drop
         if !dontGoBack
         {

@@ -30,32 +30,6 @@ class PhishShow: NSObject,
             longitude: showLongitude
         )
     }
-    var title: String
-    {
-        return date + " \( year )"
-    }
-    var subtitle: String
-    {
-        return "\( venue )  --  \( city )"
-    }
-    
-    /*
-    init(
-        date: String,
-        year: Int,
-        venue: String,
-        city: String,
-        showID: Int
-    )
-    {
-        self.date = date
-        self.year = year
-        self.venue = venue
-        self.city = city
-        self.showID = showID
-        // self.tour = tour
-    }
-    */
     
     init(
         showInfo: [ String : AnyObject ],
@@ -105,18 +79,4 @@ class PhishShow: NSObject,
         aCoder.encodeInteger( self.showID, forKey: "showID" )
         aCoder.encodeInteger( self.consecutiveNights, forKey: "consecutiveNights" )
     }
-    
-//    func reformatDate( date: String ) -> String
-//    {
-//        var newDate: String = ""
-//        
-//        let pieces = date.componentsSeparatedByString( "-" )
-//        var pieceCounter = pieces.count
-//        while ( pieceCounter-- >= 0 )
-//        {
-//            newDate += pieces[ pieceCounter ]
-//        }
-//        
-//        return newDate
-//    }
 }
