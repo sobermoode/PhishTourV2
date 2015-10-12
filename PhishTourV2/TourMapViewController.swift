@@ -973,20 +973,32 @@ class TourMapViewController: UIViewController,
         viewForAnnotation annotation: MKAnnotation!
     ) -> MKAnnotationView!
     {
+        // cast the annotation to a PhishShow to get at the consecutiveNights property
         let theShow = annotation as! PhishShow
         
-        if let reusedAnnotationView = mapView.dequeueReusableAnnotationViewWithIdentifier( "phishPin" ) as? MKPinAnnotationView
+        // re-use an annotation view, if possible
+        if let reusedAnnotationView = mapView.dequeueReusableAnnotationViewWithIdentifier( "mapPin" ) as? MKPinAnnotationView
         {
-            reusedAnnotationView.annotation = theShow
-            // reusedAnnotationView.image = UIImage( named: "phishPin-1show" )
-            // let showCount = currentLocation!.consecutiveNights
-            // let theShow = annotation as! PhishShow
-            // let showCount = theShow.consecutiveNights
+            // remove the number image view it came with
+            // (the annotation view being re-used might not be the same one that was associated with the annotation last time)
+            if let previousNumberImageView = reusedAnnotationView.viewWithTag( 5 )
+            {
+                previousNumberImageView.removeFromSuperview()
+            }
             
-            let numberImageView = UIImageView(image: UIImage(named: "\(theShow.consecutiveNights)"))
-            numberImageView.frame = CGRect(x: CGRectGetMidX(reusedAnnotationView.bounds) - (numberImageView.frame.size.width / 2) - 1, y: CGRectGetMaxY(reusedAnnotationView.bounds) - (numberImageView.frame.size.height), width: numberImageView.frame.size.width, height: numberImageView.frame.size.height)
-            reusedAnnotationView.addSubview(numberImageView)
-            // reusedAnnotationView.animatesDrop = true
+            reusedAnnotationView.annotation = theShow
+            
+            // add a new number image view with the correct number
+            let numberImageView = UIImageView( image: UIImage( named: "\( theShow.consecutiveNights )" ) )
+            numberImageView.frame = CGRect(
+                x: CGRectGetMidX( reusedAnnotationView.bounds ) - ( numberImageView.frame.size.width / 2 ) - 1,
+                y: CGRectGetMaxY( reusedAnnotationView.bounds ) - ( numberImageView.frame.size.height ),
+                width: numberImageView.frame.size.width,
+                height: numberImageView.frame.size.height
+            )
+            numberImageView.tag = 5
+            
+            reusedAnnotationView.addSubview( numberImageView )
             reusedAnnotationView.canShowCallout = false
             
             return reusedAnnotationView
@@ -997,31 +1009,32 @@ class TourMapViewController: UIViewController,
                 annotation: theShow,
                 reuseIdentifier: "mapPin"
             )
-            // var newPhishPin = PhishPin(annotation: annotation, reuseIdentifier: "phishPin")
-            // newPhishPin.consecutiveNights = theShow.consecutiveNights
             
-            // let showsAtVenue = selectedTour!.locationDictionary[ currentLocation!.venue ]!
-            // let showCount = showsAtVenue.count
-            // let theShow = annotation as! PhishShow
-            // let showCount = theShow.consecutiveNights
+            // use the consecutiveNights to add a number to the pin indicating the number of nights played at that location
+            let numberImageView = UIImageView( image: UIImage( named: "\( theShow.consecutiveNights )" ) )
+            numberImageView.frame = CGRect(
+                x: CGRectGetMidX( newAnnotationView.bounds ) - ( numberImageView.frame.size.width / 2 ) - 1,
+                y: CGRectGetMaxY( newAnnotationView.bounds ) - ( numberImageView.frame.size.height ),
+                width: numberImageView.frame.size.width,
+                height: numberImageView.frame.size.height
+            )
+            numberImageView.tag = 5
             
-            let numberImageView = UIImageView(image: UIImage(named: "\(theShow.consecutiveNights)"))
-            numberImageView.frame = CGRect(x: CGRectGetMidX(newAnnotationView.bounds) - (numberImageView.frame.size.width / 2) - 1, y: CGRectGetMaxY(newAnnotationView.bounds) - (numberImageView.frame.size.height), width: numberImageView.frame.size.width, height: numberImageView.frame.size.height)
-            newAnnotationView.addSubview(numberImageView)
-            // newAnnotationView.image = UIImage( named: "phishPin-1show" )
-            // newAnnotationView.animatesDrop = true
+            // add the number to the pin
+            newAnnotationView.addSubview( numberImageView )
             newAnnotationView.canShowCallout = false
             
             return newAnnotationView
         }
     }
     
+    // NOTE:
+    // code for pin drop animation adapted from http://stackoverflow.com/a/7045916
     func mapView(
         mapView: MKMapView!,
         didAddAnnotationViews views: [AnyObject]!
     )
     {
-        /*
         for view in views
         {
             let annotationView = view as! MKPinAnnotationView
@@ -1033,7 +1046,6 @@ class TourMapViewController: UIViewController,
             {
                 // the annotation view appears at its coordinate; set its animation endpoint here
                 let endFrame: CGRect = annotationView.frame
-                // let endFrame = CGRect(x: annotationView.frame.origin.x - 5, y: annotationView.frame.origin.y - 3, width: annotationView.frame.size.width, height: annotationView.frame.size.height)
                 
                 // position the annotation view off the top of the screen
                 annotationView.frame = CGRect(
@@ -1089,8 +1101,8 @@ class TourMapViewController: UIViewController,
                 continue
             }
         }
-        */
         
+        // draw the tour trail a short delay after the pins drop
         if !dontGoBack
         {
             dontGoBack = true

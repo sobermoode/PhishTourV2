@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		81101E801BC241FF00D0449C /* MapquestClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81101E7F1BC241FF00D0449C /* MapquestClient.swift */; };
 		816655051BBE262A0028911E /* PhishYear.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816655041BBE262A0028911E /* PhishYear.swift */; };
-		816D26221BCB2A6F00D85C39 /* PhishPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816D26211BCB2A6F00D85C39 /* PhishPin.swift */; };
 		81755A401BBCDE5D00A16229 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A3F1BBCDE5D00A16229 /* AppDelegate.swift */; };
 		81755A471BBCDE5D00A16229 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 81755A461BBCDE5D00A16229 /* Images.xcassets */; };
 		81755A4A1BBCDE5D00A16229 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81755A481BBCDE5D00A16229 /* LaunchScreen.xib */; };
@@ -39,7 +38,6 @@
 /* Begin PBXFileReference section */
 		81101E7F1BC241FF00D0449C /* MapquestClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapquestClient.swift; sourceTree = "<group>"; };
 		816655041BBE262A0028911E /* PhishYear.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhishYear.swift; sourceTree = "<group>"; };
-		816D26211BCB2A6F00D85C39 /* PhishPin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhishPin.swift; sourceTree = "<group>"; };
 		81755A3A1BBCDE5D00A16229 /* PhishTourV2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhishTourV2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		81755A3E1BBCDE5D00A16229 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		81755A3F1BBCDE5D00A16229 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -107,7 +105,6 @@
 				816655041BBE262A0028911E /* PhishYear.swift */,
 				81755A611BBCDF9E00A16229 /* PhishShow.swift */,
 				81755A631BBCE13C00A16229 /* PhishSong.swift */,
-				816D26211BCB2A6F00D85C39 /* PhishPin.swift */,
 				81755A651BBCE28D00A16229 /* PhishinClient.swift */,
 				81101E7F1BC241FF00D0449C /* MapquestClient.swift */,
 				81755A671BBCE82700A16229 /* TourMapViewController.swift */,
@@ -250,7 +247,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				816D26221BCB2A6F00D85C39 /* PhishPin.swift in Sources */,
 				81B219D11BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift in Sources */,
 				81A9C6A61BC8709100C72ABD /* CalloutCellView.swift in Sources */,
 				81755A601BBCDECF00A16229 /* PhishTour.swift in Sources */,
