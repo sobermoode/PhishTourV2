@@ -988,7 +988,10 @@ class TourMapViewController: UIViewController,
                 annotation: annotation,
                 reuseIdentifier: "mapPin"
             )
-            newAnnotationView.image = UIImage( named: "phishPin-1show" )
+            let numberImageView = UIImageView(image: UIImage(named: "4"))
+            numberImageView.frame = CGRect(x: CGRectGetMidX(newAnnotationView.bounds) - (numberImageView.frame.size.width / 2) - 1, y: CGRectGetMaxY(newAnnotationView.bounds) - (numberImageView.frame.size.height), width: numberImageView.frame.size.width, height: numberImageView.frame.size.height)
+            newAnnotationView.addSubview(numberImageView)
+            // newAnnotationView.image = UIImage( named: "phishPin-1show" )
             // newAnnotationView.animatesDrop = true
             newAnnotationView.canShowCallout = false
             
@@ -1011,8 +1014,8 @@ class TourMapViewController: UIViewController,
             if mapView.pointInside( coordinatePoint, withEvent: nil )
             {
                 // the annotation view appears at its coordinate; set its animation endpoint here
-                // let endFrame: CGRect = annotationView.frame
-                let endFrame = CGRect(x: annotationView.frame.origin.x - 5, y: annotationView.frame.origin.y - 3, width: annotationView.frame.size.width, height: annotationView.frame.size.height)
+                let endFrame: CGRect = annotationView.frame
+                // let endFrame = CGRect(x: annotationView.frame.origin.x - 5, y: annotationView.frame.origin.y - 3, width: annotationView.frame.size.width, height: annotationView.frame.size.height)
                 
                 // position the annotation view off the top of the screen
                 annotationView.frame = CGRect(
