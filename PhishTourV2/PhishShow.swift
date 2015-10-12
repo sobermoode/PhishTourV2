@@ -17,6 +17,8 @@ class PhishShow: NSObject,
     var venue: String
     var city: String
     var showID: Int
+    var consecutiveNights: Int!
+    var imageToReuse: UIImage!
     var tour: PhishTour!  // not set yet; need to do it in the PhishTour init
     var setlist: [ PhishSong ]!
     
@@ -91,6 +93,7 @@ class PhishShow: NSObject,
         self.venue = aDecoder.decodeObjectForKey( "venue" ) as! String
         self.city = aDecoder.decodeObjectForKey( "city" ) as! String
         self.showID = aDecoder.decodeIntegerForKey( "showID" )
+        self.consecutiveNights = aDecoder.decodeIntegerForKey( "consecutiveNights" )
     }
     
     func encodeWithCoder( aCoder: NSCoder )
@@ -100,6 +103,7 @@ class PhishShow: NSObject,
         aCoder.encodeObject( self.venue, forKey: "venue" )
         aCoder.encodeObject( self.city, forKey: "city" )
         aCoder.encodeInteger( self.showID, forKey: "showID" )
+        aCoder.encodeInteger( self.consecutiveNights, forKey: "consecutiveNights" )
     }
     
 //    func reformatDate( date: String ) -> String

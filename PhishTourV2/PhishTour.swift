@@ -93,6 +93,9 @@ class PhishTour: NSObject,
                 uniqueLocations.append( show )
                 multiNightRun.append( show )
                 
+                show.consecutiveNights = multiNightRun.count
+                println( "This location has \( multiNightRun.count ) shows." )
+                
                 locationDictionary.updateValue( multiNightRun, forKey: currentVenue )
                 
                 self.locationDictionary = locationDictionary
@@ -121,6 +124,12 @@ class PhishTour: NSObject,
                     // if we're at the last show, then add the array to the dictionary
                     if index == shows.count - 1
                     {
+                        for aShow in multiNightRun
+                        {
+                            aShow.consecutiveNights = multiNightRun.count
+                        }
+                        println( "This location has \( multiNightRun.count ) shows." )
+                        
                         locationDictionary.updateValue( multiNightRun, forKey: currentVenue )
                     }
                     
@@ -130,6 +139,12 @@ class PhishTour: NSObject,
                 {
                     // there's a new location
                     uniqueLocations.append( show )
+                    
+                    for aShow in multiNightRun
+                    {
+                        aShow.consecutiveNights = multiNightRun.count
+                    }
+                    println( "This location has \( multiNightRun.count ) shows." )
                     
                     // add the show(s) to the dictionary
                     locationDictionary.updateValue( multiNightRun, forKey: currentVenue )

@@ -9,8 +9,20 @@
 import UIKit
 import MapKit
 
-class PhishPin: MKPinAnnotationView
+class PhishPin: MKAnnotationView
 {
+    var consecutiveNights: Int!
+    
+    override init!(annotation: MKAnnotation!, reuseIdentifier: String!) {
+        super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        
+        let show = annotation as! PhishShow
+        self.consecutiveNights = show.consecutiveNights
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
 //    override init!(
 //        annotation: MKAnnotation!,
 //        reuseIdentifier: String!
@@ -28,5 +40,10 @@ class PhishPin: MKPinAnnotationView
 
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        let show = self.annotation as! PhishShow
+        self.consecutiveNights = show.consecutiveNights
     }
 }
