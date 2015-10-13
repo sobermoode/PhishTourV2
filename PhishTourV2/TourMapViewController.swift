@@ -474,9 +474,9 @@ class TourMapViewController: UIViewController,
         }
         else
         {
+            // create the info pane
             let blurEffect = UIBlurEffect( style: .Dark )
             let infoPane = UIVisualEffectView( effect: blurEffect )
-            
             infoPane.tag = 200
             infoPane.frame = CGRect(
                 x: 0, y: CGRectGetMaxY( view.bounds ) + 1,
@@ -487,8 +487,11 @@ class TourMapViewController: UIViewController,
                 y: infoPane.frame.origin.y
             )
 
+            // create labels and buttons for each show at the location
             var dateLabels = [ UILabel ]()
-            var labelTag = 201
+            var setlistButtons = [ UIButton ]()
+            var labelTag: Int = 201
+            var setlistButtonTag: Int = 251
             let currentVenue = currentLocation!.venue
             let showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
             for show in showsAtVenue
@@ -496,12 +499,25 @@ class TourMapViewController: UIViewController,
                 let dateLabel = UILabel()
                 dateLabel.tag = labelTag++
                 dateLabel.textColor = UIColor.whiteColor()
-                dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
+                dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 22 )
                 dateLabel.text = show.date + " \( show.year )"
                 dateLabel.sizeToFit()
                 dateLabels.append( dateLabel )
+                
+                let setlistButton = UIButton()
+                setlistButton.tag = setlistButtonTag++
+                setlistButton.titleLabel?.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 14 )
+                setlistButton.setTitle( "🎵", forState: .Normal )
+                setlistButton.sizeToFit()
+                setlistButton.addTarget(
+                    self,
+                    action: "showSetlist:",
+                    forControlEvents: .TouchUpInside
+                )
+                setlistButtons.append( setlistButton )
             }
             
+            // create the venue label
             let venueLabel = UILabel()
             venueLabel.tag = 210
             venueLabel.textColor = UIColor.whiteColor()
@@ -509,6 +525,7 @@ class TourMapViewController: UIViewController,
             venueLabel.text = currentVenue
             venueLabel.sizeToFit()
             
+            // create the city label
             let cityLabel = UILabel()
             cityLabel.tag = 211
             cityLabel.textColor = UIColor.whiteColor()
@@ -516,36 +533,56 @@ class TourMapViewController: UIViewController,
             cityLabel.text = currentLocation?.city
             cityLabel.sizeToFit()
             
+            // the number of labels and setlist buttons are the same
+            let viewElements: Int = dateLabels.count
+            
+            // we need to remember where the last date label is placed to correctly place the venue label
             var lastDateLabel = UILabel()
-            for ( index, dateLabel ) in enumerate( dateLabels )
+            
+            // set the origins of the date labels and the setlist buttons
+            for viewIndex in 0..<viewElements
             {
+                let dateLabel: UILabel = dateLabels[ viewIndex ]
                 let labelHeight: CGFloat = dateLabel.frame.size.height
-                
                 dateLabel.frame.origin = CGPoint(
                     x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
-                    y: ( labelHeight * ( CGFloat( index ) + 1 ) + 1 )
+                    y: ( labelHeight * ( CGFloat( viewIndex ) + 1 ) + 1 )
                 )
-                
                 lastDateLabel = dateLabel
+                
+                let setlistButton: UIButton = setlistButtons[ viewIndex ]
+                setlistButton.center = CGPoint(
+                    x: dateLabel.center.x + ( dateLabel.frame.size.width / 2 ) + 20,
+                    y: dateLabel.center.y
+                )
             }
             
+            // set the venue label origin
             venueLabel.frame.origin = CGPoint(
                 x: CGRectGetMidX( infoPane.contentView.bounds ) - ( venueLabel.frame.size.width / 2 ),
                 y: lastDateLabel.frame.origin.y + lastDateLabel.frame.size.height + 5
             )
+            
+            // set the city label origin
             cityLabel.frame.origin = CGPoint(
                 x: CGRectGetMidX( infoPane.contentView.bounds ) - ( cityLabel.frame.size.width / 2 ),
                 y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 5
             )
             
-            for dateLabel in dateLabels
+            // add all the views to the info pane and add the info pane to the main view
+            for viewIndex in 0..<viewElements
             {
+                let dateLabel: UILabel = dateLabels[ viewIndex ]
+                let setlistButton: UIButton = setlistButtons[ viewIndex ]
+                
                 infoPane.contentView.addSubview( dateLabel )
+                infoPane.contentView.addSubview( setlistButton )
             }
             infoPane.contentView.addSubview( venueLabel )
             infoPane.contentView.addSubview( cityLabel )
             view.insertSubview( infoPane, belowSubview: blurEffectView )
             
+            // slide the info pane up from the bottom of the screen
             UIView.animateWithDuration(
                 0.4,
                 delay: 0.5,
@@ -950,6 +987,18 @@ class TourMapViewController: UIViewController,
                 }
             )
         }
+    }
+    
+    func showSetlist( sender: UIButton )
+    {
+        // get an accessor to the setlist info
+        let buttonIndex: Int = sender.tag - 251
+        
+        // get all the shows at the location and then the specific show that was selected
+        let shows: [ PhishShow ] = selectedTour!.locationDictionary[ currentLocation!.venue ]!
+        let show: PhishShow = shows[ buttonIndex ]
+        
+        println( "Seeing setlist for \( show.date ), \( show.year )" )
     }
     
     // MARK: MKMapViewDelegate methods
