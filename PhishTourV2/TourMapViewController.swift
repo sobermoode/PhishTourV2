@@ -728,14 +728,20 @@ class TourMapViewController: UIViewController,
     {
         let infoPane = view.viewWithTag( 200 )! as! UIVisualEffectView
         
-        // remove the current date labels before we figure out which new ones to add
+        // remove the current date labels and setlist buttons before we figure out which new ones to add
         var currentVenue = currentLocation!.venue
         var showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
         var labelTags = 201...( 201 + ( showsAtVenue.count - 1 ) )
-        for tag in labelTags
+        for labelTag in labelTags
         {
-            let dateLabel = infoPane.viewWithTag( tag )!
+            let dateLabel = infoPane.viewWithTag( labelTag )!
             dateLabel.removeFromSuperview()
+        }
+        var setlistButtonTags = 251...( 251 + ( showsAtVenue.count - 1 ) )
+        for setlistButtonTag in setlistButtonTags
+        {
+            let setlistButton = infoPane.viewWithTag( setlistButtonTag )!
+            setlistButton.removeFromSuperview()
         }
         
         // get previous show
@@ -751,45 +757,73 @@ class TourMapViewController: UIViewController,
         let previousShowCoordinate = currentLocation!.coordinate
         tourMap.setCenterCoordinate( previousShowCoordinate, animated: true )
         
-        // create the new date labels
+        // create labels and buttons for each show at the location
         var dateLabels = [ UILabel ]()
-        for ( index, show ) in enumerate( showsAtVenue )
+        var setlistButtons = [ UIButton ]()
+        var labelTag: Int = 201
+        var setlistButtonTag: Int = 251
+        for show in showsAtVenue
         {
             let dateLabel = UILabel()
-            dateLabel.tag = 201 + index
+            dateLabel.tag = labelTag++
             dateLabel.textColor = UIColor.whiteColor()
-            dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 24 )
+            dateLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 22 )
             dateLabel.text = show.date + " \( show.year )"
             dateLabel.sizeToFit()
             dateLabels.append( dateLabel )
+            
+            let setlistButton = UIButton()
+            setlistButton.tag = setlistButtonTag++
+            setlistButton.titleLabel?.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 14 )
+            setlistButton.setTitle( "🎵", forState: .Normal )
+            setlistButton.sizeToFit()
+            setlistButton.addTarget(
+                self,
+                action: "showSetlist:",
+                forControlEvents: .TouchUpInside
+            )
+            setlistButtons.append( setlistButton )
         }
         
-        // set the new labels' frames
+        // the number of labels and setlist buttons are the same
+        let viewElements: Int = dateLabels.count
+        
+        // we need to remember where the last date label is placed to correctly place the venue label
         var lastDateLabel = UILabel()
-        for ( index, dateLabel ) in enumerate( dateLabels )
+        
+        // set the origins of the date labels and the setlist buttons
+        for viewIndex in 0..<viewElements
         {
+            let dateLabel: UILabel = dateLabels[ viewIndex ]
             let labelHeight: CGFloat = dateLabel.frame.size.height
             dateLabel.frame.origin = CGPoint(
                 x: CGRectGetMidX( infoPane.contentView.bounds ) - ( dateLabel.frame.size.width / 2 ),
-                y: ( labelHeight * ( CGFloat( index ) + 1 ) + 1 )
+                y: ( labelHeight * ( CGFloat( viewIndex ) + 1 ) + 1 )
             )
-            
             lastDateLabel = dateLabel
+            
+            let setlistButton: UIButton = setlistButtons[ viewIndex ]
+            setlistButton.center = CGPoint(
+                x: dateLabel.center.x + ( dateLabel.frame.size.width / 2 ) + 20,
+                y: dateLabel.center.y
+            )
         }
         
-        // add the labels to the info pane
-        for dateLabel in dateLabels
+        // add new date labels and setlist buttons to the info pane
+        for viewIndex in 0..<viewElements
         {
+            let dateLabel: UILabel = dateLabels[ viewIndex ]
+            let setlistButton: UIButton = setlistButtons[ viewIndex ]
+            
             infoPane.contentView.addSubview( dateLabel )
+            infoPane.contentView.addSubview( setlistButton )
         }
         
         // set the venue and city labels
         let venueLabel = infoPane.viewWithTag( 210 ) as! UILabel
         let cityLabel = infoPane.viewWithTag( 211 ) as! UILabel
-        // venueLabel.text = currentShow?.venue
         venueLabel.text = currentLocation?.venue
         venueLabel.sizeToFit()
-        // cityLabel.text = currentShow?.city
         cityLabel.text = currentLocation?.city
         cityLabel.sizeToFit()
         venueLabel.frame.origin = CGPoint(
