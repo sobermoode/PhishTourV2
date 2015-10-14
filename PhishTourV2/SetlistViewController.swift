@@ -70,6 +70,20 @@ class SetlistViewController: UIViewController
         view.addSubview( venueLabel )
         view.addSubview( cityLabel )
         view.addSubview( cancelButton )
+        
+        PhishinClient.sharedInstance().requestSetlistForShow( currentShow )
+        {
+            setlistError, setlist in
+            
+            if setlistError != nil
+            {
+                println( "There was an error requesting the setlist for \( currentShow.date ) \( currentShow.year )" )
+            }
+            else
+            {
+                println( "Got setlist: \( setlist )" )
+            }
+        }
     }
     
     func cancel( sender: UIButton )

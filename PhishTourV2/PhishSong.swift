@@ -12,9 +12,40 @@ class PhishSong: NSObject
 {
     var name: String
     var duration: Float
+    var set: Int
     var songID: Int
     var show: PhishShow!
     
+    init(
+        songInfo: [ String : AnyObject ],
+        forShow show: PhishShow
+    )
+    {
+        self.name = songInfo[ "title" ] as! String
+        
+        let milliseconds = songInfo[ "duration" ] as! Float
+        let seconds = milliseconds / 1000
+        self.duration = seconds / 60
+        println( "\( name ) duration: \( duration )" )
+        
+        let setString = songInfo[ "set" ] as! String
+        if setString.toInt() != nil
+        {
+            self.set = setString.toInt()!
+        }
+        else
+        {
+            self.set = 3
+        }
+        // self.set = setString.toInt()!
+        
+        let songIDs = songInfo[ "song_ids" ] as! [ Int ]
+        self.songID = songIDs.first!
+        
+        self.show = show
+    }
+    
+    /*
     init(
         name: String,
         duration: Float,
@@ -27,4 +58,5 @@ class PhishSong: NSObject
         self.songID = songID
         self.show = show
     }
+    */
 }

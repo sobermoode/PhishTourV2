@@ -25,6 +25,7 @@ class PhishinClient: NSObject
     {
         static let Years = "/years"
         static let Tours = "/tours"
+        static let Shows = "/shows"
     }
     
     class func sharedInstance() -> PhishinClient
@@ -89,11 +90,11 @@ class PhishinClient: NSObject
     )
     {
         let yearFilePath = documentsPath + "\( year )"
-        println( "Attempting to get saved year at \( yearFilePath )" )
+        // println( "Attempting to get saved year at \( yearFilePath )" )
         
         if let savedYear = NSKeyedUnarchiver.unarchiveObjectWithFile( yearFilePath ) as? PhishYear
         {
-            println( "savedTours: \( savedYear.tours )" )
+            // println( "savedTours: \( savedYear.tours )" )
             completionHandler(toursRequestError: nil, tours: savedYear.tours)
         }
         else
@@ -190,7 +191,7 @@ class PhishinClient: NSObject
         completionHandler: ( toursRequestError: NSError!, tours: [ PhishTour ]! ) -> Void
     )
     {
-        println( "requestToursForYears..." )
+        // println( "requestToursForYears..." )
         var allTours = [ PhishTour ]()
         
         for year in years
@@ -239,10 +240,10 @@ class PhishinClient: NSObject
         
         for tourID in tourIDs
         {
-            println( "requestTourNameForID: \( tourID )" )
+            // println( "requestTourNameForID: \( tourID )" )
             // var tourNames = [ String ]()
             let tourIDRequestString = endpoint + Routes.Tours + "/\( tourID )"
-            println( tourIDRequestString )
+            // println( tourIDRequestString )
             let tourIDRequestURL = NSURL( string: tourIDRequestString )!
             let tourIDRequestTask = session.dataTaskWithURL( tourIDRequestURL )
             {
@@ -258,7 +259,7 @@ class PhishinClient: NSObject
                 }
                 else
                 {
-                    println( "got this far..." )
+                    // println( "got this far..." )
                     var tourJSONificationError: NSErrorPointer = nil
                     if let tourResults = NSJSONSerialization.JSONObjectWithData(
                         tourData,
@@ -268,7 +269,7 @@ class PhishinClient: NSObject
                     {
                         let theTourData = tourResults[ "data" ] as! [ String : AnyObject ]
                         let tourName = theTourData[ "name" ] as! String
-                        println( "tourName: \( tourName )" )
+                        // println( "tourName: \( tourName )" )
                         /*
                         if !contains( tourNames, tourName )
                         {
@@ -286,7 +287,7 @@ class PhishinClient: NSObject
                         // let newTour = PhishTour(year: year, name: tourName, tourID: tourID, shows: shows)
                         let newTour = PhishTour(year: year, name: tourName, tourID: tourID, shows: showsForID[ tourID ]! )
                         newTour.createLocationDictionary()
-                        println( "newTour.locationDictionary: \( newTour.locationDictionary )" )
+                        // println( "newTour.locationDictionary: \( newTour.locationDictionary )" )
                         tours.append( newTour )
 //                        tours.append( PhishTour(
 //                            year: year,
@@ -317,6 +318,61 @@ class PhishinClient: NSObject
             }
             tourIDRequestTask.resume()
         }
+    }
+    
+    func requestSetlistForShow(
+        show: PhishShow,
+        completionHandler: ( setlistError: NSError?, setlist: [ PhishSong ]? ) -> Void
+    )
+    {
+        let setlistRequestString = endpoint + Routes.Shows + "/\( show.showID )"
+        let setlistRequestURL = NSURL( string: setlistRequestString )!
+        let setlistRequestTask = session.dataTaskWithURL( setlistRequestURL )
+        {
+            setlistData, setlistResponse, setlistError in
+            
+            if setlistError != nil
+            {
+                completionHandler(
+                    setlistError: setlistError,
+                    setlist: nil
+                )
+            }
+            else
+            {
+                var setlistJSONificationError: NSErrorPointer = nil
+                if let setlistResults = NSJSONSerialization.JSONObjectWithData(
+                    setlistData,
+                    options: nil,
+                    error: setlistJSONificationError
+                ) as? [ String : AnyObject ]
+                {
+                    let resultsData = setlistResults[ "data" ] as! [ String : AnyObject ]
+                    let tracks = resultsData[ "tracks" ] as! [[ String : AnyObject ]]
+                    
+                    var setlist = [ PhishSong ]()
+                    for song in tracks
+                    {
+                        let newSong = PhishSong(
+                            songInfo: song,
+                            forShow: show
+                        )
+                        
+                        setlist.append( newSong )
+                    }
+                    
+                    completionHandler(
+                        setlistError: nil,
+                        setlist: setlist
+                    )
+                }
+                else
+                {
+                    println( "There was an error parsing the setlist data for \( show.date ) \( show.year )" )
+                }
+            }
+        }
+        setlistRequestTask.resume()
     }
     
     func saveTour( tour: PhishTour )
