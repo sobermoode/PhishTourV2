@@ -1308,6 +1308,7 @@ class TourMapViewController: UIViewController,
         }
     }
     
+    // NOTE:
     // the trick for using this method came from http://stackoverflow.com/a/7185460
     func pickerView(
         pickerView: UIPickerView,
@@ -1560,15 +1561,29 @@ class TourMapViewController: UIViewController,
     
     func setlistButtonWasPressedInCell( cell: MultiRowCalloutCell2 )
     {
-        // println( "Going to the setlist for \( cell.show?.date ) \( cell.show?.year )" )
+        // set the current location for the date that was selected
+        currentLocation = cell.show
+        
+        // get the shows at that location
         let currentVenue = currentLocation!.venue
         let showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
-        let showIndex = find( showsAtVenue, cell.show! )
-        
-        let setlistViewController = SetlistViewController()
-        setlistViewController.shows = showsAtVenue
-        setlistViewController.showIndex = showIndex
-        
-        self.presentViewController( setlistViewController, animated: true, completion: nil )
+        if let showIndex = find( showsAtVenue, cell.show! )
+        {
+            // found the show, present the setlist
+            let setlistViewController = SetlistViewController()
+            setlistViewController.shows = showsAtVenue
+            setlistViewController.showIndex = showIndex
+            
+            self.presentViewController(
+                setlistViewController,
+                animated: true,
+                completion: nil
+            )
+        }
+        else
+        {
+            // there was an error finding the selected show
+            println( "Couldn't get the showIndex..." )
+        }
     }
 }

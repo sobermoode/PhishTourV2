@@ -320,61 +320,86 @@ class PhishinClient: NSObject
         }
     }
     
+    // will request a setlist for a given show and return the result by completion handler
     func requestSetlistForShow(
         show: PhishShow,
         completionHandler: ( setlistError: NSError?, setlist: [ PhishSong ]? ) -> Void
     )
     {
-        let setlistRequestString = endpoint + Routes.Shows + "/\( show.showID )"
-        let setlistRequestURL = NSURL( string: setlistRequestString )!
-        let setlistRequestTask = session.dataTaskWithURL( setlistRequestURL )
+        // check for a saved setlist file
+        let setlistPath = documentsPath + "setlist\( show.showID )"
+        if let savedSetlist = NSKeyedUnarchiver.unarchiveObjectWithFile( setlistPath ) as? [ PhishSong ]
         {
-            setlistData, setlistResponse, setlistError in
-            
-            if setlistError != nil
+            // return the saved setlist through the completion handler
+            completionHandler(
+                setlistError: nil,
+                setlist: savedSetlist
+            )
+        }
+        // no saved setlist, we need to request one
+        else
+        {
+            // construct a URL to the setlist and start a task
+            let setlistRequestString = endpoint + Routes.Shows + "/\( show.showID )"
+            let setlistRequestURL = NSURL( string: setlistRequestString )!
+            let setlistRequestTask = session.dataTaskWithURL( setlistRequestURL )
             {
-                completionHandler(
-                    setlistError: setlistError,
-                    setlist: nil
-                )
-            }
-            else
-            {
-                var setlistJSONificationError: NSErrorPointer = nil
-                if let setlistResults = NSJSONSerialization.JSONObjectWithData(
-                    setlistData,
-                    options: nil,
-                    error: setlistJSONificationError
-                ) as? [ String : AnyObject ]
+                setlistData, setlistResponse, setlistError in
+                
+                // an error occurred
+                if setlistError != nil
                 {
-                    let resultsData = setlistResults[ "data" ] as! [ String : AnyObject ]
-                    let tracks = resultsData[ "tracks" ] as! [[ String : AnyObject ]]
-                    
-                    var setlist = [ PhishSong ]()
-                    for song in tracks
-                    {
-                        let newSong = PhishSong(
-                            songInfo: song,
-                            forShow: show
-                        )
-                        
-                        setlist.append( newSong )
-                    }
-                    
                     completionHandler(
-                        setlistError: nil,
-                        setlist: setlist
+                        setlistError: setlistError,
+                        setlist: nil
                     )
                 }
                 else
                 {
-                    println( "There was an error parsing the setlist data for \( show.date ) \( show.year )" )
+                    // turn the received data into a JSON object
+                    var setlistJSONificationError: NSErrorPointer = nil
+                    if let setlistResults = NSJSONSerialization.JSONObjectWithData(
+                        setlistData,
+                        options: nil,
+                        error: setlistJSONificationError
+                    ) as? [ String : AnyObject ]
+                    {
+                        // get the songs
+                        let resultsData = setlistResults[ "data" ] as! [ String : AnyObject ]
+                        let tracks = resultsData[ "tracks" ] as! [[ String : AnyObject ]]
+                        
+                        // create the setlist by creating new PhishSong objects for each song
+                        var setlist = [ PhishSong ]()
+                        for song in tracks
+                        {
+                            let newSong = PhishSong(
+                                songInfo: song,
+                                forShow: show
+                            )
+                            
+                            setlist.append( newSong )
+                        }
+                        
+                        // save the setlist to the device for later retrieval
+                        self.saveSetlist( setlist, forShow: show )
+                        
+                        // return the setlist through the completion handler
+                        completionHandler(
+                            setlistError: nil,
+                            setlist: setlist
+                        )
+                    }
+                    else
+                    {
+                        println( "There was an error parsing the setlist data for \( show.date ) \( show.year )" )
+                    }
                 }
             }
+            setlistRequestTask.resume()
         }
-        setlistRequestTask.resume()
     }
     
+    /*
     func saveTour( tour: PhishTour )
     {
         let documentsPath = NSSearchPathForDirectoriesInDomains(
@@ -394,25 +419,42 @@ class PhishinClient: NSObject
             println( "There was an error saving the tour to the device." )
         }
     }
+    */
     
     func saveYearWithTours( year: PhishYear, tours: [ PhishTour ] )
     {
+        // TODO: use the var, as below
         let documentsPath = NSSearchPathForDirectoriesInDomains(
             .DocumentDirectory,
             .UserDomainMask,
             true
-            )[ 0 ] as! String
+        )[ 0 ] as! String
         let yearPath = documentsPath + "\( year.year )"
-        println( "yearPath: \( yearPath )" )
+        // println( "yearPath: \( yearPath )" )
         
-        if NSKeyedArchiver.archiveRootObject(year, toFile: yearPath)
+        if NSKeyedArchiver.archiveRootObject( year, toFile: yearPath )
         {
-            println( "Writing a new file..." )
+            // println( "Writing a new file..." )
             return
         }
         else
         {
             println( "There was an error saving the tour to the device." )
+        }
+    }
+    
+    func saveSetlist( setlist: [ PhishSong ], forShow show: PhishShow )
+    {
+        let setlistPath = documentsPath + "setlist\( show.showID )"
+        
+        if NSKeyedArchiver.archiveRootObject( setlist, toFile: setlistPath )
+        {
+            println( "Writing a new setlist to \( setlistPath )" )
+            return
+        }
+        else
+        {
+            println( "There was an error saving the setlist to the device." )
         }
     }
 }

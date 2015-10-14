@@ -8,7 +8,8 @@
 
 import UIKit
 
-class PhishSong: NSObject
+class PhishSong: NSObject,
+    NSCoding
 {
     var name: String
     var duration: Float
@@ -43,6 +44,24 @@ class PhishSong: NSObject
         self.songID = songIDs.first!
         
         self.show = show
+    }
+    
+    required init( coder aDecoder: NSCoder )
+    {
+        self.name = aDecoder.decodeObjectForKey( "name" ) as! String
+        self.duration = aDecoder.decodeFloatForKey( "duration" )
+        self.set = aDecoder.decodeIntegerForKey( "set" )
+        self.songID = aDecoder.decodeIntegerForKey( "songID" )
+        self.show = aDecoder.decodeObjectForKey( "show" ) as! PhishShow
+    }
+    
+    func encodeWithCoder( aCoder: NSCoder )
+    {
+        aCoder.encodeObject( self.name, forKey: "name" )
+        aCoder.encodeFloat( self.duration, forKey: "duration" )
+        aCoder.encodeInteger( self.set, forKey: "set" )
+        aCoder.encodeInteger( self.songID, forKey: "songID" )
+        aCoder.encodeObject( self.show, forKey: "show" )
     }
     
     /*
