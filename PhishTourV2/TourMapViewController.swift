@@ -1560,6 +1560,15 @@ class TourMapViewController: UIViewController,
     
     func setlistButtonWasPressedInCell( cell: MultiRowCalloutCell2 )
     {
-        println( "Going to the setlist for \( cell.show?.date ) \( cell.show?.year )" )
+        // println( "Going to the setlist for \( cell.show?.date ) \( cell.show?.year )" )
+        let currentVenue = currentLocation!.venue
+        let showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
+        let showIndex = find( showsAtVenue, cell.show! )
+        
+        let setlistViewController = SetlistViewController()
+        setlistViewController.shows = showsAtVenue
+        setlistViewController.showIndex = showIndex
+        
+        self.presentViewController( setlistViewController, animated: true, completion: nil )
     }
 }

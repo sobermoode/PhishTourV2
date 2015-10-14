@@ -19,6 +19,7 @@
 		81755A661BBCE28D00A16229 /* PhishinClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A651BBCE28D00A16229 /* PhishinClient.swift */; };
 		81755A681BBCE82700A16229 /* TourMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81755A671BBCE82700A16229 /* TourMapViewController.swift */; };
 		81755A6A1BBCE85000A16229 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81755A691BBCE85000A16229 /* Main.storyboard */; };
+		8178703D1BCDFFA200B3C6C5 /* SetlistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8178703C1BCDFFA200B3C6C5 /* SetlistViewController.swift */; };
 		81A9C6A61BC8709100C72ABD /* CalloutCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A9C6A31BC8709100C72ABD /* CalloutCellView.swift */; };
 		81A9C6A71BC8709100C72ABD /* SMCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A9C6A51BC8709100C72ABD /* SMCalloutView.m */; };
 		81B219D11BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B219CF1BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift */; };
@@ -52,6 +53,7 @@
 		81755A651BBCE28D00A16229 /* PhishinClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhishinClient.swift; sourceTree = "<group>"; };
 		81755A671BBCE82700A16229 /* TourMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TourMapViewController.swift; sourceTree = "<group>"; };
 		81755A691BBCE85000A16229 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		8178703C1BCDFFA200B3C6C5 /* SetlistViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetlistViewController.swift; sourceTree = "<group>"; };
 		81A9C6A31BC8709100C72ABD /* CalloutCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalloutCellView.swift; sourceTree = "<group>"; };
 		81A9C6A41BC8709100C72ABD /* SMCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMCalloutView.h; sourceTree = "<group>"; };
 		81A9C6A51BC8709100C72ABD /* SMCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCalloutView.m; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 				81A9C6A41BC8709100C72ABD /* SMCalloutView.h */,
 				81A9C6A51BC8709100C72ABD /* SMCalloutView.m */,
 				81A9C6A81BC8713900C72ABD /* PhishTourV2-Bridging-Header.h */,
+				8178703C1BCDFFA200B3C6C5 /* SetlistViewController.swift */,
 				81755A461BBCDE5D00A16229 /* Images.xcassets */,
 				81755A481BBCDE5D00A16229 /* LaunchScreen.xib */,
 				81755A3D1BBCDE5D00A16229 /* Supporting Files */,
@@ -256,6 +259,7 @@
 				81A9C6A71BC8709100C72ABD /* SMCalloutView.m in Sources */,
 				81755A681BBCE82700A16229 /* TourMapViewController.swift in Sources */,
 				81755A661BBCE28D00A16229 /* PhishinClient.swift in Sources */,
+				8178703D1BCDFFA200B3C6C5 /* SetlistViewController.swift in Sources */,
 				81101E801BC241FF00D0449C /* MapquestClient.swift in Sources */,
 				81755A401BBCDE5D00A16229 /* AppDelegate.swift in Sources */,
 			);
