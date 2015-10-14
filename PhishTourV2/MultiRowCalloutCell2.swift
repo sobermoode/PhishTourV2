@@ -16,6 +16,9 @@ class MultiRowCalloutCell2: UITableViewCell
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var seeSetlistButton: UIButton!
     
+    var show: PhishShow?
+    var delegate: MultiRowCalloutCell2ShowSetlist?
+    
     // var cellNumber: Int!
     var cellNumber: CGFloat!
     
@@ -24,10 +27,10 @@ class MultiRowCalloutCell2: UITableViewCell
     var cellWidth: CGFloat = 0
     var cellHeight: CGFloat = 0
     var isTableViewCell: Bool = false
-    var extraHeight: CGFloat = 0
+    // var extraHeight: CGFloat = 0
     
-    var venueLabelIsTooLarge: Bool = false
-    var cityLabelIsTooLarge: Bool = false
+    // var venueLabelIsTooLarge: Bool = false
+    // var cityLabelIsTooLarge: Bool = false
     
     static var maxWidth: CGFloat = 0
     
@@ -245,6 +248,20 @@ class MultiRowCalloutCell2: UITableViewCell
 //        self.layer.borderWidth = 1
 //        self.cityLabel.layer.borderColor = UIColor.redColor().CGColor
 //        self.cityLabel.layer.borderWidth = 1
+        
+        self.seeSetlistButton.addTarget(
+            self,
+            action: "setlistButtonWasPressedInCell:",
+            forControlEvents: .TouchUpInside
+        )
+    }
+    
+    func setlistButtonWasPressedInCell( cell: MultiRowCalloutCell2 )
+    {
+        if delegate != nil
+        {
+            delegate!.setlistButtonWasPressedInCell( self )
+        }
     }
 
     override func setSelected(selected: Bool, animated: Bool) {
@@ -252,4 +269,12 @@ class MultiRowCalloutCell2: UITableViewCell
 
         // Configure the view for the selected state
     }
+}
+
+// the delegate will implement this method to present the setlist when the button is pressed
+protocol MultiRowCalloutCell2ShowSetlist
+{
+    // func multiRowCalloutCell2( multiRowCalloutCell2: MultiRowCalloutCell2, setlistButtonWasPressed button: UIButton )
+    // func didPressSetlistButton( sender: UIButton )
+    func setlistButtonWasPressedInCell( cell: MultiRowCalloutCell2 )
 }

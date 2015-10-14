@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 
 class TourMapViewController: UIViewController,
-    MKMapViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITableViewDataSource, UITableViewDelegate
+    MKMapViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITableViewDataSource, UITableViewDelegate, MultiRowCalloutCell2ShowSetlist
 {
     @IBOutlet weak var resetButton: UIBarButtonItem!
     @IBOutlet weak var selectTourButton: UIBarButtonItem!
@@ -1181,6 +1181,7 @@ class TourMapViewController: UIViewController,
         
         let venue = currentLocation!.venue
         let showsAtVenue = selectedTour!.locationDictionary[ venue ]!
+        var dateCells = [ MultiRowCalloutCell2 ]()
         for ( index, show ) in enumerate( showsAtVenue )
         {
             let newDateCell = multiRowCalloutCell2Nib.instantiateWithOwner(self, options: nil)[0] as! MultiRowCalloutCell2
@@ -1190,8 +1191,12 @@ class TourMapViewController: UIViewController,
             newDateCell.cityLabel.text = show.city
             newDateCell.cellNumber = CGFloat( index )
             newDateCell.setBackgroundColor()
-            callout.addSubview( newDateCell )
+            newDateCell.show = show
+            newDateCell.delegate = self
+            // callout.addSubview( newDateCell )
+            dateCells.append( newDateCell )
         }
+        callout.addCells( dateCells )
         
         for cell in callout.subviews
         {
@@ -1462,15 +1467,22 @@ class TourMapViewController: UIViewController,
         cellForRowAtIndexPath indexPath: NSIndexPath
     ) -> UITableViewCell
     {
-        // let cell = UITableViewCell(style: .Default, reuseIdentifier: "showListCell")
+        // dequeue a cell
         let cell = tableView.dequeueReusableCellWithIdentifier( "multiRowCalloutCell2", forIndexPath: indexPath ) as! MultiRowCalloutCell2
         
-        // cell.textLabel?.text = "SHOW"
+        // set the cell properties
+        // this lets the class know not to dp anything to the cell's frame, which messes up the cell in the table view
         cell.isTableViewCell = true
         cell.dateLabel.text = selectedTour?.shows[ indexPath.row ].date
         cell.yearLabel.text = selectedTour?.shows[ indexPath.row ].year.description
         cell.venueLabel.text = selectedTour?.shows[ indexPath.row ].venue
         cell.cityLabel.text = selectedTour?.shows[ indexPath.row ].city
+        
+        // set the show so that the button can pass the correct show to the setlist page
+        cell.show = selectedTour!.shows[ indexPath.row ]
+        
+        // set the MultiRowCalloutCell2ShowSetlist delegate
+        cell.delegate = self
         
         // cell.contentView.sizeToFit()
         // cell.sizeToFit()
@@ -1542,5 +1554,12 @@ class TourMapViewController: UIViewController,
         {
             println( "Couldn't find that location..." )
         }
+    }
+    
+    // MARK: MultiRoeCalloutCell2ShowSetlist method
+    
+    func setlistButtonWasPressedInCell( cell: MultiRowCalloutCell2 )
+    {
+        println( "Going to the setlist for \( cell.show?.date ) \( cell.show?.year )" )
     }
 }
