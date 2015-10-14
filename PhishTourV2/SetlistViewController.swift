@@ -77,7 +77,7 @@ class SetlistViewController: UIViewController
             
             if setlistError != nil
             {
-                println( "There was an error requesting the setlist for \( currentShow.date ) \( currentShow.year ): \( setlistError?.localizedDescription )" )
+                println( "There was an error requesting the setlist for \( currentShow.date ) \( currentShow.year ): \( setlistError?.localizedDescription ) " )
             }
             else
             {
