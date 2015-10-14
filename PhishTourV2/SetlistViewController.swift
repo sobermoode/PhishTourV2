@@ -22,7 +22,7 @@ class SetlistViewController: UIViewController
         view.backgroundColor = UIColor.whiteColor()
         
         let currentShow: PhishShow = shows[ showIndex ]
-        println( "Setlist for \( currentShow.date ) \( currentShow.year )" )
+        // println( "Setlist for \( currentShow.date ) \( currentShow.year )" )
         
         // create the header labels
         let dateLabel = UILabel()
@@ -81,7 +81,41 @@ class SetlistViewController: UIViewController
             }
             else
             {
-                println( "Got setlist: \( setlist )" )
+                // println( "Got setlist: \( setlist )" )
+                
+                var songNames = [ UILabel ]()
+                var songDurations = [ UILabel ]()
+                var widestLabel: CGFloat = 0
+                for song in setlist!
+                {
+                    let songNameLabel = UILabel()
+                    songNameLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+                    songNameLabel.text = song.name
+                    songNameLabel.sizeToFit()
+                    songNames.append( songNameLabel )
+                    
+                    widestLabel = ( songNameLabel.frame.size.width > widestLabel ) ? songNameLabel.frame.size.width : widestLabel
+                    
+                    let songDurationLabel = UILabel()
+                    songDurationLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+                    songDurationLabel.text = "\( song.duration )"
+                    songDurationLabel.sizeToFit()
+                    songDurations.append( songDurationLabel )
+                }
+                
+                var previousLabel = UILabel(frame: CGRect(x: venueLabel.frame.origin.x, y: cancelButton.frame.origin.y + cancelButton.frame.size.height + 15, width: 0, height: 0))
+                for ( index, label ) in enumerate( songNames )
+                {
+                    label.frame = CGRect(x: previousLabel.frame.origin.x, y: previousLabel.frame.origin.y + previousLabel.frame.size.height + 5, width: widestLabel, height: label.frame.size.height)
+                    
+                    let durationLabel = songDurations[ index ]
+                    durationLabel.frame = CGRect(x: label.frame.origin.x + label.frame.size.width + 10, y: label.frame.origin.y, width: durationLabel.frame.size.width, height: durationLabel.frame.size.height)
+                    
+                    previousLabel = label
+                    
+                    self.view.addSubview( label )
+                    self.view.addSubview( durationLabel )
+                }
             }
         }
     }
