@@ -12,7 +12,7 @@ class PhishSong: NSObject,
     NSCoding
 {
     var name: String
-    var duration: Float
+    var duration: String
     var set: Int
     var songID: Int
     var show: PhishShow!
@@ -24,22 +24,31 @@ class PhishSong: NSObject,
     {
         self.name = songInfo[ "title" ] as! String
         
+        // create a nicely formatted mm:ss string out of an amount of milliseconds
         let milliseconds = songInfo[ "duration" ] as! Float
         let seconds = milliseconds / 1000
-        self.duration = seconds / 60
-        println( "\( name ) duration: \( duration )" )
+        let minutes = seconds / 60
+        let finalMinutes = Int( minutes )
+        let remainder = minutes - Float( finalMinutes )
+        let finalSeconds = Int( ceil( remainder * 60 ) )
+        let finalSecondsString = ( finalSeconds < 10 ) ? "0\( finalSeconds ) " : "\( finalSeconds ) "
+        self.duration = "\( finalMinutes ):" + finalSecondsString
         
         let setString = songInfo[ "set" ] as! String
         if setString.toInt() != nil
         {
+            // the set is either 1, 2, 3, etc., or "E" for the encore
             self.set = setString.toInt()!
         }
         else
         {
-            self.set = 3
+            // for the encore;
+            // we'll just make sure we don't run into a problem with a valid uber-late fifth set, or something
+            self.set = 10
         }
-        // self.set = setString.toInt()!
         
+        // some songs have more than one ID...
+        // (i dunno, the property comes back as an array)
         let songIDs = songInfo[ "song_ids" ] as! [ Int ]
         self.songID = songIDs.first!
         
@@ -49,7 +58,7 @@ class PhishSong: NSObject,
     required init( coder aDecoder: NSCoder )
     {
         self.name = aDecoder.decodeObjectForKey( "name" ) as! String
-        self.duration = aDecoder.decodeFloatForKey( "duration" )
+        self.duration = aDecoder.decodeObjectForKey( "duration" ) as! String
         self.set = aDecoder.decodeIntegerForKey( "set" )
         self.songID = aDecoder.decodeIntegerForKey( "songID" )
         self.show = aDecoder.decodeObjectForKey( "show" ) as! PhishShow
@@ -58,24 +67,9 @@ class PhishSong: NSObject,
     func encodeWithCoder( aCoder: NSCoder )
     {
         aCoder.encodeObject( self.name, forKey: "name" )
-        aCoder.encodeFloat( self.duration, forKey: "duration" )
+        aCoder.encodeObject( self.duration, forKey: "duration" )
         aCoder.encodeInteger( self.set, forKey: "set" )
         aCoder.encodeInteger( self.songID, forKey: "songID" )
         aCoder.encodeObject( self.show, forKey: "show" )
     }
-    
-    /*
-    init(
-        name: String,
-        duration: Float,
-        songID: Int,
-        show: PhishShow
-    )
-    {
-        self.name = name
-        self.duration = duration
-        self.songID = songID
-        self.show = show
-    }
-    */
 }

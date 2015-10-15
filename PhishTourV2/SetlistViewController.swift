@@ -81,13 +81,14 @@ class SetlistViewController: UIViewController
             }
             else
             {
-                // println( "Got setlist: \( setlist )" )
+                println( "Got the setlist!!!" )
                 
                 var songNames = [ UILabel ]()
                 var songDurations = [ UILabel ]()
                 var widestLabel: CGFloat = 0
                 for song in setlist!
                 {
+                    println( "Creating a label..." )
                     let songNameLabel = UILabel()
                     songNameLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
                     songNameLabel.text = song.name
@@ -106,16 +107,34 @@ class SetlistViewController: UIViewController
                 var previousLabel = UILabel(frame: CGRect(x: venueLabel.frame.origin.x, y: cancelButton.frame.origin.y + cancelButton.frame.size.height + 15, width: 0, height: 0))
                 for ( index, label ) in enumerate( songNames )
                 {
+                    println( "Setting the frames..." )
                     label.frame = CGRect(x: previousLabel.frame.origin.x, y: previousLabel.frame.origin.y + previousLabel.frame.size.height + 5, width: widestLabel, height: label.frame.size.height)
                     
                     let durationLabel = songDurations[ index ]
                     durationLabel.frame = CGRect(x: label.frame.origin.x + label.frame.size.width + 10, y: label.frame.origin.y, width: durationLabel.frame.size.width, height: durationLabel.frame.size.height)
                     
                     previousLabel = label
+                }
+                
+                for ( index, song ) in enumerate( songNames )
+                {
+                    println( "Adding the labels..." )
+                    let duration = songDurations[ index ]
                     
+                    dispatch_async( dispatch_get_main_queue() )
+                    {
+                        self.view.addSubview( song )
+                        self.view.addSubview( duration )
+                    }
+                }
+                
+                /*
+                dispatch_async( dispatch_get_main_queue() )
+                {
                     self.view.addSubview( label )
                     self.view.addSubview( durationLabel )
                 }
+                */
             }
         }
     }

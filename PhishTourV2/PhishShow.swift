@@ -17,7 +17,7 @@ class PhishShow: NSObject,
     var venue: String
     var city: String
     var showID: Int
-    var consecutiveNights: Int!
+    var consecutiveNights: Int = 1
     // var imageToReuse: UIImage!
     var tour: PhishTour!  // not set yet; need to do it in the PhishTour init
     var setlist: [ PhishSong ]!
