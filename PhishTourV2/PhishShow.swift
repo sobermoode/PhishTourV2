@@ -20,7 +20,16 @@ class PhishShow: NSObject,
     var consecutiveNights: Int = 1
     // var imageToReuse: UIImage!
     var tour: PhishTour!  // not set yet; need to do it in the PhishTour init
-    var setlist: [ PhishSong ]!
+    // var setlist: [ PhishSong ]!
+    var setlist: [ Int : [ PhishSong ] ]!
+    
+    static let fileManager: NSFileManager = NSFileManager.defaultManager()
+    static let documentsPath = NSSearchPathForDirectoriesInDomains(
+        .DocumentDirectory,
+        .UserDomainMask,
+        true
+        )[ 0 ] as! String
+    var setlistPath: String
     
     var showLatitude, showLongitude: Double!
     var coordinate: CLLocationCoordinate2D
@@ -58,6 +67,7 @@ class PhishShow: NSObject,
         self.venue = showInfo[ "venue_name" ] as! String
         self.city = showInfo[ "location" ] as! String
         self.showID = showInfo[ "id" ] as! Int
+        self.setlistPath = PhishShow.documentsPath + "setlist" + self.date + "\( self.year )"
     }
     
     required init( coder aDecoder: NSCoder )
@@ -68,6 +78,7 @@ class PhishShow: NSObject,
         self.city = aDecoder.decodeObjectForKey( "city" ) as! String
         self.showID = aDecoder.decodeIntegerForKey( "showID" )
         self.consecutiveNights = aDecoder.decodeIntegerForKey( "consecutiveNights" )
+        self.setlistPath = aDecoder.decodeObjectForKey( "setlistPath" ) as! String
     }
     
     func encodeWithCoder( aCoder: NSCoder )
@@ -78,5 +89,24 @@ class PhishShow: NSObject,
         aCoder.encodeObject( self.city, forKey: "city" )
         aCoder.encodeInteger( self.showID, forKey: "showID" )
         aCoder.encodeInteger( self.consecutiveNights, forKey: "consecutiveNights" )
+        aCoder.encodeObject( self.setlistPath, forKey: "setlistPath" )
+    }
+    
+    func saveSetlist()
+    {
+        func saveSetlist( setlist: [ PhishSong ], forShow show: PhishShow )
+        {
+            // let setlistPath = PhishShow.documentsPath + "setlist\( show.showID )"
+            
+            if NSKeyedArchiver.archiveRootObject( setlist, toFile: self.setlistPath )
+            {
+                println( "Writing a new setlist to \( setlistPath )" )
+                return
+            }
+            else
+            {
+                println( "There was an error saving the setlist to the device." )
+            }
+        }
     }
 }

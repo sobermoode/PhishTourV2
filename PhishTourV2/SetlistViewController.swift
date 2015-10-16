@@ -81,8 +81,25 @@ class SetlistViewController: UIViewController
             }
             else
             {
-                println( "Got the setlist!!!" )
+                // println( "Got the setlist: \( setlist )" )
+                // var setNumbers: [ Int ]
+                // setNumbers = Array(arrayLiteral: setlist?.keys)
+                let setNumbers = setlist!.keys.array
+                for setNumber in setNumbers
+                {
+                    let set = setlist![ setNumber ]
+                    println( "Set \( setNumber ): " )
+                    for song in set!
+                    {
+                        println( "\( song.name )  \( song.duration )" )
+                    }
+                }
                 
+                // set the setlist on the current show
+                // TODO: when implementing Core Data, save the context here
+                // currentShow.setlist = setlist!
+                
+                /*
                 var songNames = [ UILabel ]()
                 var songDurations = [ UILabel ]()
                 var widestLabel: CGFloat = 0
@@ -127,6 +144,7 @@ class SetlistViewController: UIViewController
                         self.view.addSubview( duration )
                     }
                 }
+                */
                 
                 /*
                 dispatch_async( dispatch_get_main_queue() )

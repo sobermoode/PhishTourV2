@@ -30,7 +30,7 @@ class PhishSong: NSObject,
         let minutes = seconds / 60
         let finalMinutes = Int( minutes )
         let remainder = minutes - Float( finalMinutes )
-        let finalSeconds = Int( ceil( remainder * 60 ) )
+        let finalSeconds = Int( floor( remainder * 60 ) )
         let finalSecondsString = ( finalSeconds < 10 ) ? "0\( finalSeconds ) " : "\( finalSeconds ) "
         self.duration = "\( finalMinutes ):" + finalSecondsString
         
@@ -43,7 +43,7 @@ class PhishSong: NSObject,
         else
         {
             // for the encore;
-            // we'll just make sure we don't run into a problem with a valid uber-late fifth set, or something
+            // using 10 to avoid potential trouble with some kind of epic fifth-set madness
             self.set = 10
         }
         

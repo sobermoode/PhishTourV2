@@ -18,15 +18,18 @@ class PhishinClient: NSObject
         true
     )[ 0 ] as! String
     
+    // to construct request URLs
     let endpoint: String = "http://phish.in/api/v1"
-    let notPartOfATour: Int = 71
-    
     struct Routes
     {
         static let Years = "/years"
         static let Tours = "/tours"
         static let Shows = "/shows"
     }
+    
+    // phish has played a bunch of one-off shows that aren't part of any formal tour. phish.in gives all those shows the tour id 71.
+    // i use it as a flag to prevent "not part of a tour" from appearing in the tour picker
+    let notPartOfATour: Int = 71
     
     class func sharedInstance() -> PhishinClient
     {
@@ -323,12 +326,12 @@ class PhishinClient: NSObject
     // will request a setlist for a given show and return the result by completion handler
     func requestSetlistForShow(
         show: PhishShow,
-        completionHandler: ( setlistError: NSError?, setlist: [ PhishSong ]? ) -> Void
+        completionHandler: ( setlistError: NSError?, setlist: [ Int : [ PhishSong ] ]? ) -> Void
     )
     {
         // check for a saved setlist file
-        let setlistPath = documentsPath + "setlist\( show.showID )"
-        if let savedSetlist = NSKeyedUnarchiver.unarchiveObjectWithFile( setlistPath ) as? [ PhishSong ]
+        // let setlistPath = documentsPath + "setlist\( show.showID )"
+        if let savedSetlist = NSKeyedUnarchiver.unarchiveObjectWithFile( show.setlistPath ) as? [ Int : [ PhishSong ] ]
         {
             // return the saved setlist through the completion handler
             completionHandler(
@@ -369,19 +372,77 @@ class PhishinClient: NSObject
                         let tracks = resultsData[ "tracks" ] as! [[ String : AnyObject ]]
                         
                         // create the setlist by creating new PhishSong objects for each song
-                        var setlist = [ PhishSong ]()
-                        for song in tracks
+                        var set = [ PhishSong ]()
+                        var setlist = [ Int : [ PhishSong ] ]()
+                        var currentSet: Int = 1                        
+                        var previousTrackSet = currentSet
+                        for ( index, track ) in enumerate( tracks )
                         {
-                            let newSong = PhishSong(
-                                songInfo: song,
-                                forShow: show
-                            )
+                            // the set comes back as a string;
+                            // need to turn it into an int
+                            var currentTrackSet: Int
+                            var currentTrackSetString = track[ "set" ] as! String
+                            if let theTrackSet = currentTrackSetString.toInt()
+                            {
+                                currentTrackSet = theTrackSet
+                            }
+                            else
+                            {
+                                // the encore comes back as "E";
+                                // using 10 to avoid potential trouble with some kind of epic fifth-set madness
+                                currentTrackSet = 10
+                            }
                             
-                            setlist.append( newSong )
+                            // we're still in the same set, so add a new song to the set array
+                            if currentTrackSet == previousTrackSet
+                            {
+                                let newSong = PhishSong( songInfo: track, forShow: show )
+                                set.append( newSong )
+                                previousTrackSet = newSong.set
+                                
+                                // update the setlist if we're at the last song
+                                if index == tracks.count - 1
+                                {
+                                    setlist.updateValue( set, forKey: currentSet )
+                                }
+                                
+                                continue
+                            }
+                            // we got to the start of the next set or encore
+                            else
+                            {
+                                // update the setlist with the previous complete set
+                                setlist.updateValue( set, forKey: currentSet )
+                                
+                                // create a new song with the current track
+                                let newSong = PhishSong( songInfo: track, forShow: show )
+                                
+                                // update the current set
+                                currentSet = newSong.set
+                                
+                                // blank the set array, so we can start over with a new set
+                                // and add that first song to it
+                                set.removeAll( keepCapacity: false )
+                                set.append( newSong )
+                                
+                                // update the setlist if we're at the last song
+                                if index == tracks.count - 1
+                                {
+                                    setlist.updateValue( set, forKey: currentSet )
+                                }
+                                // otherwise, remember which set we're in
+                                else
+                                {
+                                    previousTrackSet = newSong.set
+                                }
+                            }
                         }
                         
                         // save the setlist to the device for later retrieval
-                        self.saveSetlist( setlist, forShow: show )
+                        // TODO: when implementing Core Data, save the context here
+                        // self.saveSetlist( setlist, forShow: show )
+                        show.setlist = setlist
+                        show.saveSetlist()
                         
                         // return the setlist through the completion handler
                         completionHandler(
@@ -443,18 +504,18 @@ class PhishinClient: NSObject
         }
     }
     
-    func saveSetlist( setlist: [ PhishSong ], forShow show: PhishShow )
-    {
-        let setlistPath = documentsPath + "setlist\( show.showID )"
-        
-        if NSKeyedArchiver.archiveRootObject( setlist, toFile: setlistPath )
-        {
-            println( "Writing a new setlist to \( setlistPath )" )
-            return
-        }
-        else
-        {
-            println( "There was an error saving the setlist to the device." )
-        }
-    }
+//    func saveSetlist( setlist: [ PhishSong ], forShow show: PhishShow )
+//    {
+//        let setlistPath = documentsPath + "setlist\( show.showID )"
+//        
+//        if NSKeyedArchiver.archiveRootObject( setlist, toFile: setlistPath )
+//        {
+//            println( "Writing a new setlist to \( setlistPath )" )
+//            return
+//        }
+//        else
+//        {
+//            println( "There was an error saving the setlist to the device." )
+//        }
+//    }
 }
