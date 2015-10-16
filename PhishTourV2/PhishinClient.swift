@@ -440,9 +440,8 @@ class PhishinClient: NSObject
                         
                         // save the setlist to the device for later retrieval
                         // TODO: when implementing Core Data, save the context here
-                        // self.saveSetlist( setlist, forShow: show )
                         show.setlist = setlist
-                        show.saveSetlist()
+                        show.save()
                         
                         // return the setlist through the completion handler
                         completionHandler(
@@ -503,19 +502,4 @@ class PhishinClient: NSObject
             println( "There was an error saving the tour to the device." )
         }
     }
-    
-//    func saveSetlist( setlist: [ PhishSong ], forShow show: PhishShow )
-//    {
-//        let setlistPath = documentsPath + "setlist\( show.showID )"
-//        
-//        if NSKeyedArchiver.archiveRootObject( setlist, toFile: setlistPath )
-//        {
-//            println( "Writing a new setlist to \( setlistPath )" )
-//            return
-//        }
-//        else
-//        {
-//            println( "There was an error saving the setlist to the device." )
-//        }
-//    }
 }

@@ -18,9 +18,7 @@ class PhishShow: NSObject,
     var city: String
     var showID: Int
     var consecutiveNights: Int = 1
-    // var imageToReuse: UIImage!
     var tour: PhishTour!  // not set yet; need to do it in the PhishTour init
-    // var setlist: [ PhishSong ]!
     var setlist: [ Int : [ PhishSong ] ]!
     
     static let fileManager: NSFileManager = NSFileManager.defaultManager()
@@ -58,7 +56,6 @@ class PhishShow: NSObject,
         // step 3:
         // set the output date format;
         // create a new string with the reformatted date
-        // dateFormatter.dateFormat = "MMM dd, yyyy"
         dateFormatter.dateFormat = "MMM dd,"
         let formattedString = dateFormatter.stringFromDate( formattedDate )
         
@@ -67,7 +64,8 @@ class PhishShow: NSObject,
         self.venue = showInfo[ "venue_name" ] as! String
         self.city = showInfo[ "location" ] as! String
         self.showID = showInfo[ "id" ] as! Int
-        self.setlistPath = PhishShow.documentsPath + "setlist" + self.date + "\( self.year )"
+        self.setlistPath = PhishShow.documentsPath + "setlist" + date
+        println( "setlistPath: \( self.setlistPath )" )
     }
     
     required init( coder aDecoder: NSCoder )
@@ -92,21 +90,15 @@ class PhishShow: NSObject,
         aCoder.encodeObject( self.setlistPath, forKey: "setlistPath" )
     }
     
-    func saveSetlist()
+    func save()
     {
-        func saveSetlist( setlist: [ PhishSong ], forShow show: PhishShow )
+        if NSKeyedArchiver.archiveRootObject( setlist, toFile: self.setlistPath )
         {
-            // let setlistPath = PhishShow.documentsPath + "setlist\( show.showID )"
-            
-            if NSKeyedArchiver.archiveRootObject( setlist, toFile: self.setlistPath )
-            {
-                println( "Writing a new setlist to \( setlistPath )" )
-                return
-            }
-            else
-            {
-                println( "There was an error saving the setlist to the device." )
-            }
+            return
+        }
+        else
+        {
+            println( "There was an error saving \( self.date ) \( self.year ) the setlist to the device." )
         }
     }
 }
