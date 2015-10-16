@@ -1564,6 +1564,16 @@ class TourMapViewController: UIViewController,
         // set the current location for the date that was selected
         currentLocation = cell.show
         
+        let setlistViewController = SetlistViewController()
+        setlistViewController.show = cell.show
+        
+        self.presentViewController(
+            setlistViewController,
+            animated: true,
+            completion: nil
+        )
+        
+        /*
         // get the shows at that location
         let currentVenue = currentLocation!.venue
         let showsAtVenue = selectedTour!.locationDictionary[ currentVenue ]!
@@ -1571,8 +1581,8 @@ class TourMapViewController: UIViewController,
         {
             // found the show, present the setlist
             let setlistViewController = SetlistViewController()
-            setlistViewController.shows = showsAtVenue
-            setlistViewController.showIndex = showIndex
+            // setlistViewController.shows = showsAtVenue
+            // setlistViewController.showIndex = showIndex
             
             self.presentViewController(
                 setlistViewController,
@@ -1585,5 +1595,6 @@ class TourMapViewController: UIViewController,
             // there was an error finding the selected show
             println( "Couldn't get the showIndex..." )
         }
+        */
     }
 }

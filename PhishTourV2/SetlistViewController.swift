@@ -8,10 +8,11 @@
 
 import UIKit
 
-class SetlistViewController: UIViewController
+class SetlistViewController: UIViewController,
+    UITableViewDataSource, UITableViewDelegate
 {
-    var shows: [ PhishShow ]!
-    var showIndex: Int!
+    var show: PhishShow!
+    var setlist: [ Int : [ PhishSong ] ]?
     
     override func viewDidLoad()
     {
@@ -21,32 +22,29 @@ class SetlistViewController: UIViewController
         
         view.backgroundColor = UIColor.whiteColor()
         
-        let currentShow: PhishShow = shows[ showIndex ]
-        // println( "Setlist for \( currentShow.date ) \( currentShow.year )" )
-        
         // create the header labels
         let dateLabel = UILabel()
         dateLabel.tag = 10
         dateLabel.font = UIFont( name: "AppleSDGothicNeo-SemiBold", size: 22 )
-        dateLabel.text = currentShow.date
+        dateLabel.text = show.date
         dateLabel.sizeToFit()
         
         let yearLabel = UILabel()
         yearLabel.tag = 11
         yearLabel.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 26 )
-        yearLabel.text = currentShow.year.description
+        yearLabel.text = show.year.description
         yearLabel.sizeToFit()
         
         let venueLabel = UILabel()
         venueLabel.tag = 12
         venueLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
-        venueLabel.text = currentShow.venue + "  --  "
+        venueLabel.text = show.venue + "  --  "
         venueLabel.sizeToFit()
         
         let cityLabel = UILabel()
         cityLabel.tag = 13
         cityLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
-        cityLabel.text = currentShow.city
+        cityLabel.text = show.city
         cityLabel.sizeToFit()
         
         dateLabel.frame = CGRect(x: 25, y: 75, width: dateLabel.frame.size.width, height: dateLabel.frame.size.height)
@@ -71,88 +69,29 @@ class SetlistViewController: UIViewController
         view.addSubview( cityLabel )
         view.addSubview( cancelButton )
         
-        PhishinClient.sharedInstance().requestSetlistForShow( currentShow )
+        let remainingHeight = view.bounds.height - (( dateLabel.frame.origin.x + dateLabel.frame.size.height ) + ( venueLabel.frame.size.height + 5 ) + ( cancelButton.frame.size.height ) + 50)
+        let setlistTableView = UITableView(frame: CGRect(x: venueLabel.frame.origin.x, y: cancelButton.frame.origin.y + cancelButton.frame.size.height + 20, width: CGRectGetMaxX(view.bounds) - 50, height: remainingHeight - 75), style: .Plain)
+        setlistTableView.tag = 600
+        setlistTableView.dataSource = self
+        view.addSubview( setlistTableView )
+        
+        PhishinClient.sharedInstance().requestSetlistForShow( show )
         {
             setlistError, setlist in
             
             if setlistError != nil
             {
-                println( "There was an error requesting the setlist for \( currentShow.date ) \( currentShow.year ): \( setlistError?.localizedDescription ) " )
+                println( "There was an error requesting the setlist for \( self.show.date ) \( self.show.year ): \( setlistError?.localizedDescription ) " )
             }
             else
-            {
-                // println( "Got the setlist: \( setlist )" )
-                // var setNumbers: [ Int ]
-                // setNumbers = Array(arrayLiteral: setlist?.keys)
-                let setNumbers = setlist!.keys.array
-                for setNumber in setNumbers
-                {
-                    let set = setlist![ setNumber ]
-                    println( "Set \( setNumber ): " )
-                    for song in set!
-                    {
-                        println( "\( song.name )  \( song.duration )" )
-                    }
-                }
+            {                
+                self.setlist = setlist!
                 
-                // set the setlist on the current show
-                // TODO: when implementing Core Data, save the context here
-                // currentShow.setlist = setlist!
-                
-                /*
-                var songNames = [ UILabel ]()
-                var songDurations = [ UILabel ]()
-                var widestLabel: CGFloat = 0
-                for song in setlist!
-                {
-                    println( "Creating a label..." )
-                    let songNameLabel = UILabel()
-                    songNameLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
-                    songNameLabel.text = song.name
-                    songNameLabel.sizeToFit()
-                    songNames.append( songNameLabel )
-                    
-                    widestLabel = ( songNameLabel.frame.size.width > widestLabel ) ? songNameLabel.frame.size.width : widestLabel
-                    
-                    let songDurationLabel = UILabel()
-                    songDurationLabel.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
-                    songDurationLabel.text = "\( song.duration )"
-                    songDurationLabel.sizeToFit()
-                    songDurations.append( songDurationLabel )
-                }
-                
-                var previousLabel = UILabel(frame: CGRect(x: venueLabel.frame.origin.x, y: cancelButton.frame.origin.y + cancelButton.frame.size.height + 15, width: 0, height: 0))
-                for ( index, label ) in enumerate( songNames )
-                {
-                    println( "Setting the frames..." )
-                    label.frame = CGRect(x: previousLabel.frame.origin.x, y: previousLabel.frame.origin.y + previousLabel.frame.size.height + 5, width: widestLabel, height: label.frame.size.height)
-                    
-                    let durationLabel = songDurations[ index ]
-                    durationLabel.frame = CGRect(x: label.frame.origin.x + label.frame.size.width + 10, y: label.frame.origin.y, width: durationLabel.frame.size.width, height: durationLabel.frame.size.height)
-                    
-                    previousLabel = label
-                }
-                
-                for ( index, song ) in enumerate( songNames )
-                {
-                    println( "Adding the labels..." )
-                    let duration = songDurations[ index ]
-                    
-                    dispatch_async( dispatch_get_main_queue() )
-                    {
-                        self.view.addSubview( song )
-                        self.view.addSubview( duration )
-                    }
-                }
-                */
-                
-                /*
                 dispatch_async( dispatch_get_main_queue() )
                 {
-                    self.view.addSubview( label )
-                    self.view.addSubview( durationLabel )
+                    let setlistTable = self.view.viewWithTag( 600 ) as! UITableView
+                    setlistTable.reloadData()
                 }
-                */
             }
         }
     }
@@ -161,15 +100,93 @@ class SetlistViewController: UIViewController
     {
         dismissViewControllerAnimated( true, completion: nil )
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    func numberOfSectionsInTableView( tableView: UITableView ) -> Int
+    {
+        if setlist != nil
+        {
+            let numberOfSets: [ Int ] = setlist!.keys.array
+        
+            return numberOfSets.count
+        }
+        else
+        {
+            return 0
+        }
     }
-    */
-
+    
+    func tableView(
+        tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int
+    {
+        if setlist != nil
+        {
+            var set: Int = section + 1
+            
+            if let songs: [ PhishSong ] = setlist![ set ]
+            {
+                return songs.count
+            }
+            else
+            {
+                set = 10
+                let songs: [ PhishSong ] = setlist![ set ]!
+                
+                return songs.count
+            }
+        }
+        else
+        {
+            return 0
+        }
+    }
+    
+    func tableView(
+        tableView: UITableView,
+        titleForHeaderInSection section: Int
+    ) -> String?
+    {
+        if section == tableView.numberOfSections() - 1
+        {
+            return "Encore"
+        }
+        else
+        {
+            return "Set \( section + 1 )"
+        }
+    }
+    
+    func tableView(
+        tableView: UITableView,
+        cellForRowAtIndexPath indexPath: NSIndexPath
+    ) -> UITableViewCell
+    {
+        let cell = UITableViewCell(style: .Default, reuseIdentifier: "songCell")
+        
+        if setlist != nil
+        {
+            var set: Int = indexPath.section + 1
+            var song: PhishSong
+            
+            if let songs: [ PhishSong ] = setlist![ set ]
+            {
+                song = songs[ indexPath.row ]
+            }
+            else
+            {
+                set = 10
+                let songs: [ PhishSong ] = setlist![ set ]!
+                song = songs[ indexPath.row ]
+            }
+            
+            cell.textLabel?.text = song.name + "  " + song.duration
+        }
+        else
+        {
+            cell.textLabel?.text = ""
+        }
+        
+        return cell
+    }
 }
