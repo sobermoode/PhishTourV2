@@ -73,8 +73,16 @@ class SetlistViewController: UIViewController,
         setlistTableView.tag = 600
         setlistTableView.dataSource = self
         setlistTableView.delegate = self
-        setlistTableView.registerClass( UITableViewCell.self, forCellReuseIdentifier: "songCell" )
-        // setlistTableView.registerClass(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "SetHeader")
+        
+        // register the table view's cell class and header class
+        setlistTableView.registerClass(
+            SongCell.self,
+            forCellReuseIdentifier: "songCell"
+        )
+        setlistTableView.registerClass(
+            UITableViewHeaderFooterView.self,
+            forHeaderFooterViewReuseIdentifier: "SetHeader"
+        )
         
         backButton.frame = CGRect(x: CGRectGetMidX( view.bounds ) - ( backButton.frame.size.width / 2 ), y: setlistTableView.frame.origin.y + setlistTableView.frame.size.height + 20, width: backButton.frame.size.width + 10, height: backButton.frame.size.height )
         backButton.addTarget(self, action: "cancel:", forControlEvents: .TouchUpInside)
@@ -157,58 +165,32 @@ class SetlistViewController: UIViewController,
         viewForHeaderInSection section: Int
     ) -> UIView?
     {
+        let headerView = tableView.dequeueReusableHeaderFooterViewWithIdentifier( "SetHeader" ) as! UITableViewHeaderFooterView
+        
         if setlist != nil
         {
-            // dequeue a header view
-            if let headerView = tableView.dequeueReusableHeaderFooterViewWithIdentifier( "SetHeader" ) as? UITableViewHeaderFooterView
+            if tableView.numberOfSections() == 1
             {
-                // the header title is the set number, or encore
-                if tableView.numberOfSections() == 1
-                {
-                    headerView.textLabel.text = ""
-                }
-                else
-                {
-                    if section == tableView.numberOfSections() - 1
-                    {
-                        headerView.textLabel.text = "Encore"
-                    }
-                    else
-                    {
-                        headerView.textLabel.text = "Set \( section + 1 )"
-                    }
-                }
-                
-                return headerView
+                headerView.textLabel.text = ""
             }
-            // create a new header view
             else
             {
-                var headerView = UITableViewHeaderFooterView( reuseIdentifier: "SetHeader" )
-                
-                if tableView.numberOfSections() == 1
+                if section == tableView.numberOfSections() - 1
                 {
-                    headerView.textLabel.text = ""
+                    headerView.textLabel.text = "Encore"
                 }
                 else
                 {
-                    if section == tableView.numberOfSections() - 1
-                    {
-                        headerView.textLabel.text = "Encore"
-                    }
-                    else
-                    {
-                        headerView.textLabel.text = "Set \( section + 1 )"
-                    }
+                    headerView.textLabel.text = "Set \( section + 1 )"
                 }
-                
-                return headerView
             }
         }
         else
         {
-            return UITableViewHeaderFooterView( reuseIdentifier: "SetHeader" )
+            headerView.textLabel.text = ""
         }
+        
+        return headerView
     }
     
     // customize the header view before it is displayed
@@ -246,71 +228,42 @@ class SetlistViewController: UIViewController,
         cellForRowAtIndexPath indexPath: NSIndexPath
     ) -> UITableViewCell
     {
-        if let cell = tableView.dequeueReusableCellWithIdentifier( "songCell", forIndexPath: indexPath ) as? UITableViewCell
+        // dequeue a cell
+        let cell = tableView.dequeueReusableCellWithIdentifier( "songCell", forIndexPath: indexPath ) as! SongCell
+        
+        // make sure the request was successful, and we have info to give to the table view
+        if setlist != nil
         {
-            println( "dequeud a cell..." )
-            if setlist != nil
+            var set: Int = indexPath.section + 1
+            var song: PhishSong
+            
+            // get the songs for the given set
+            if let songs: [ PhishSong ] = setlist![ set ]
             {
-                var set: Int = indexPath.section + 1
-                var song: PhishSong
-                
-                if let songs: [ PhishSong ] = setlist![ set ]
-                {
-                    song = songs[ indexPath.row ]
-                }
-                else
-                {
-                    set = 10
-                    let songs: [ PhishSong ] = setlist![ set ]!
-                    song = songs[ indexPath.row ]
-                }
-                
-                cell.textLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
-                cell.textLabel?.text = song.name
-                
-                cell.detailTextLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
-                cell.detailTextLabel?.text = song.duration
+                song = songs[ indexPath.row ]
             }
+            // the encore
             else
             {
-                cell.textLabel?.text = ""
+                set = 10
+                let songs: [ PhishSong ] = setlist![ set ]!
+                song = songs[ indexPath.row ]
             }
             
-            return cell
+            // set the cell properties
+            cell.textLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+            cell.textLabel?.text = song.name
+            
+            cell.detailTextLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+            cell.detailTextLabel?.text = song.duration
         }
+        // no table info yet, just keep the cell blank for the time being
         else
         {
-            println( "created a new cell..." )
-            let cell = UITableViewCell( style: .Value1, reuseIdentifier: "songCell" )
-            
-            if setlist != nil
-            {
-                var set: Int = indexPath.section + 1
-                var song: PhishSong
-                
-                if let songs: [ PhishSong ] = setlist![ set ]
-                {
-                    song = songs[ indexPath.row ]
-                }
-                else
-                {
-                    set = 10
-                    let songs: [ PhishSong ] = setlist![ set ]!
-                    song = songs[ indexPath.row ]
-                }
-                
-                cell.textLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
-                cell.textLabel?.text = song.name
-                
-                cell.detailTextLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
-                cell.detailTextLabel?.text = song.duration
-            }
-            else
-            {
-                cell.textLabel?.text = ""
-            }
-            
-            return cell
+            cell.textLabel?.text = ""
+            cell.detailTextLabel?.text = ""
         }
+        
+        return cell
     }
 }
