@@ -73,6 +73,7 @@ class SetlistViewController: UIViewController,
         setlistTableView.tag = 600
         setlistTableView.dataSource = self
         setlistTableView.delegate = self
+        setlistTableView.registerClass( UITableViewCell.self, forCellReuseIdentifier: "songCell" )
         // setlistTableView.registerClass(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "SetHeader")
         
         backButton.frame = CGRect(x: CGRectGetMidX( view.bounds ) - ( backButton.frame.size.width / 2 ), y: setlistTableView.frame.origin.y + setlistTableView.frame.size.height + 20, width: backButton.frame.size.width + 10, height: backButton.frame.size.height )
@@ -245,37 +246,71 @@ class SetlistViewController: UIViewController,
         cellForRowAtIndexPath indexPath: NSIndexPath
     ) -> UITableViewCell
     {
-        let cell = UITableViewCell( style: .Value1, reuseIdentifier: "songCell" )
-        
-        if setlist != nil
+        if let cell = tableView.dequeueReusableCellWithIdentifier( "songCell", forIndexPath: indexPath ) as? UITableViewCell
         {
-            var set: Int = indexPath.section + 1
-            var song: PhishSong
-            
-            if let songs: [ PhishSong ] = setlist![ set ]
+            println( "dequeud a cell..." )
+            if setlist != nil
             {
-                song = songs[ indexPath.row ]
+                var set: Int = indexPath.section + 1
+                var song: PhishSong
+                
+                if let songs: [ PhishSong ] = setlist![ set ]
+                {
+                    song = songs[ indexPath.row ]
+                }
+                else
+                {
+                    set = 10
+                    let songs: [ PhishSong ] = setlist![ set ]!
+                    song = songs[ indexPath.row ]
+                }
+                
+                cell.textLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+                cell.textLabel?.text = song.name
+                
+                cell.detailTextLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+                cell.detailTextLabel?.text = song.duration
             }
             else
             {
-                set = 10
-                let songs: [ PhishSong ] = setlist![ set ]!
-                song = songs[ indexPath.row ]
+                cell.textLabel?.text = ""
             }
             
-            cell.textLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
-            cell.textLabel?.text = song.name
-            
-            cell.detailTextLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
-            cell.detailTextLabel?.text = song.duration
+            return cell
         }
         else
         {
-            cell.textLabel?.text = ""
+            println( "created a new cell..." )
+            let cell = UITableViewCell( style: .Value1, reuseIdentifier: "songCell" )
+            
+            if setlist != nil
+            {
+                var set: Int = indexPath.section + 1
+                var song: PhishSong
+                
+                if let songs: [ PhishSong ] = setlist![ set ]
+                {
+                    song = songs[ indexPath.row ]
+                }
+                else
+                {
+                    set = 10
+                    let songs: [ PhishSong ] = setlist![ set ]!
+                    song = songs[ indexPath.row ]
+                }
+                
+                cell.textLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+                cell.textLabel?.text = song.name
+                
+                cell.detailTextLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
+                cell.detailTextLabel?.text = song.duration
+            }
+            else
+            {
+                cell.textLabel?.text = ""
+            }
+            
+            return cell
         }
-        
-        // cell.sizeToFit()
-        
-        return cell
     }
 }
