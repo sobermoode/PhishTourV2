@@ -64,7 +64,7 @@ class PhishShow: NSObject,
         self.venue = showInfo[ "venue_name" ] as! String
         self.city = showInfo[ "location" ] as! String
         self.showID = showInfo[ "id" ] as! Int
-        self.setlistPath = PhishShow.documentsPath + "setlist" + date
+        self.setlistPath = PhishShow.documentsPath + "setlist" + "\( showID )"
         println( "setlistPath: \( self.setlistPath )" )
     }
     
@@ -92,6 +92,7 @@ class PhishShow: NSObject,
     
     func save()
     {
+        println( "setlistPath: \( self.setlistPath )" )
         if NSKeyedArchiver.archiveRootObject( setlist, toFile: self.setlistPath )
         {
             return
