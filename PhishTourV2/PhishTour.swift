@@ -72,6 +72,15 @@ class PhishTour: NSObject,
         aCoder.encodeObject( locationDictionary, forKey: "locationDictionary" )
     }
     
+    // set the tour property on all the shows
+    func associateShows()
+    {
+        for show in self.shows
+        {
+            show.tour = self
+        }
+    }
+    
     // this creates a dictionary keyed a venue name, which retuns an array of shows played there during a tour.
     // this is how i accomplished letting the map know when a callout for an annotation at any one location
     // should display info for more than one show

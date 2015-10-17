@@ -21,6 +21,9 @@ class PhishShow: NSObject,
     var tour: PhishTour!  // not set yet; need to do it in the PhishTour init
     var setlist: [ Int : [ PhishSong ] ]!
     
+    // keeps track of shows by their ID
+    static var showDictionary = [ Int : PhishShow ]()
+    
     static let fileManager: NSFileManager = NSFileManager.defaultManager()
     static let documentsPath = NSSearchPathForDirectoriesInDomains(
         .DocumentDirectory,
@@ -88,6 +91,11 @@ class PhishShow: NSObject,
         aCoder.encodeInteger( self.showID, forKey: "showID" )
         aCoder.encodeInteger( self.consecutiveNights, forKey: "consecutiveNights" )
         aCoder.encodeObject( self.setlistPath, forKey: "setlistPath" )
+    }
+    
+    func updateShowDictionary()
+    {
+        PhishShow.showDictionary.updateValue( self, forKey: self.showID )
     }
     
     func save()
