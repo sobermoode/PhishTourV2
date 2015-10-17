@@ -251,6 +251,8 @@ class SetlistViewController: UIViewController,
             }
             
             // set the cell properties
+            cell.song = song
+            
             cell.textLabel?.font = UIFont( name: "Apple SD Gothic Neo", size: 14 )
             cell.textLabel?.text = song.name
             
@@ -265,5 +267,30 @@ class SetlistViewController: UIViewController,
         }
         
         return cell
+    }
+    
+    func tableView(
+        tableView: UITableView,
+        didSelectRowAtIndexPath indexPath: NSIndexPath
+    )
+    {
+        let cell = tableView.cellForRowAtIndexPath( indexPath ) as! SongCell
+        
+        let song: PhishSong = cell.song
+        // println( "Gonna show the history for \( song.name )" )
+        
+        PhishinClient.sharedInstance().requestHistoryForSong( song )
+        {
+            historyError, success in
+            
+            if historyError != nil
+            {
+                println( "There was an error requesting the song history: \( historyError?.localizedDescription )" )
+            }
+            else if success!
+            {
+                println( "The song was played at: \( song.history! )" )
+            }
+        }
     }
 }

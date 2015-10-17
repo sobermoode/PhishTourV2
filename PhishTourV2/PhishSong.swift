@@ -16,6 +16,7 @@ class PhishSong: NSObject,
     var set: Int
     var songID: Int
     var show: PhishShow!
+    var history: [ Int ]!
     
     init(
         songInfo: [ String : AnyObject ],

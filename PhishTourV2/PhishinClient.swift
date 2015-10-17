@@ -25,6 +25,7 @@ class PhishinClient: NSObject
         static let Years = "/years"
         static let Tours = "/tours"
         static let Shows = "/shows"
+        static let Songs = "/songs"
     }
     
     // phish has played a bunch of one-off shows that aren't part of any formal tour. phish.in gives all those shows the tour id 71.
@@ -457,6 +458,60 @@ class PhishinClient: NSObject
             }
             setlistRequestTask.resume()
         }
+    }
+    
+    func requestHistoryForSong(
+        song: PhishSong,
+        completionHandler: ( songHistoryError: NSError?, success: Bool? ) -> Void
+    )
+    {
+        let songHistoryRequestString = endpoint + Routes.Songs + "/\( song.songID )"
+        let songHistoryRequestURL = NSURL( string: songHistoryRequestString )!
+        let songHistoryRequestTask = session.dataTaskWithURL( songHistoryRequestURL )
+        {
+            songHistoryData, songHistoryResponse, songHistoryError in
+            
+            if songHistoryError != nil
+            {
+                completionHandler(
+                    songHistoryError: songHistoryError,
+                    success: nil
+                )
+            }
+            else
+            {
+                var songHistoryJSONificationError: NSErrorPointer = nil
+                if let songHistoryResults = NSJSONSerialization.JSONObjectWithData(
+                    songHistoryData,
+                    options: nil,
+                    error: songHistoryJSONificationError
+                ) as? [ String : AnyObject ]
+                {
+                    let resultsData = songHistoryResults[ "data" ] as! [ String : AnyObject ]
+                    let tracks = resultsData[ "tracks" ] as! [[ String : AnyObject ]]
+                    
+                    var showIDs = [ Int ]()
+                    for track in tracks
+                    {
+                        let showID = track[ "show_id" ] as! Int
+                        
+                        showIDs.append( showID )
+                    }
+                    
+                    song.history = showIDs
+                    
+                    completionHandler(
+                        songHistoryError: nil,
+                        success: true
+                    )
+                }
+                else
+                {
+                    println( "There was a problem parsing the song history results." )
+                }
+            }
+        }
+        songHistoryRequestTask.resume()
     }
     
     /*

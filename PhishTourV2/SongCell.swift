@@ -10,6 +10,8 @@ import UIKit
 
 class SongCell: UITableViewCell
 {
+    var song: PhishSong!
+    
     override init(
         style: UITableViewCellStyle,
         reuseIdentifier: String?
