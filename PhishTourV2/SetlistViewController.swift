@@ -276,9 +276,15 @@ class SetlistViewController: UIViewController,
     {
         let cell = tableView.cellForRowAtIndexPath( indexPath ) as! SongCell
         
-        let song: PhishSong = cell.song
+        // let song: PhishSong = cell.song
         // println( "Gonna show the history for \( song.name )" )
         
+        let songHistory = SongHistoryViewController()
+        songHistory.song = cell.song
+        
+        presentViewController( songHistory, animated: true, completion: nil )
+        
+        /*
         PhishinClient.sharedInstance().requestHistoryForSong( song )
         {
             historyError, success in
@@ -289,8 +295,14 @@ class SetlistViewController: UIViewController,
             }
             else if success!
             {
-                println( "The song was played at: \( song.history! )" )
+                // println( "The song was played at: \( song.history! )" )
+                // let songHistory = self.storyboard?.instantiateViewControllerWithIdentifier( "SongHistory" ) as! SongHistoryViewController
+                let songHistory = SongHistoryViewController()
+                songHistory.song = song
+                
+                self.presentViewController( songHistory, animated: true, completion: nil )
             }
         }
+        */
     }
 }

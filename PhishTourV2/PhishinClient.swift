@@ -137,6 +137,7 @@ class PhishinClient: NSObject
                             
                             let newShow = PhishShow( showInfo: show, andYear: year )
                             newShow.updateShowDictionary()
+                            newShow.save()
                             
                             /*
                             let showID = show[ "id "] as! Int
@@ -334,13 +335,17 @@ class PhishinClient: NSObject
     {
         // check for a saved setlist file
         // let setlistPath = documentsPath + "setlist\( show.showID )"
-        if let savedSetlist = NSKeyedUnarchiver.unarchiveObjectWithFile( show.setlistPath ) as? [ Int : [ PhishSong ] ]
+        // if let savedSetlist = NSKeyedUnarchiver.unarchiveObjectWithFile( show.setlistPath ) as? [ Int : [ PhishSong ] ]
+        if let savedShow = NSKeyedUnarchiver.unarchiveObjectWithFile( show.showPath ) as? PhishShow where savedShow.setlist != nil
         {
-            // return the saved setlist through the completion handler
-            completionHandler(
-                setlistError: nil,
-                setlist: savedSetlist
-            )
+            if let savedSetlist = savedShow.setlist
+            {
+                // return the saved setlist through the completion handler
+                completionHandler(
+                    setlistError: nil,
+                    setlist: savedSetlist
+                )
+            }
         }
         // no saved setlist, we need to request one
         else
@@ -464,56 +469,68 @@ class PhishinClient: NSObject
     
     func requestHistoryForSong(
         song: PhishSong,
-        completionHandler: ( songHistoryError: NSError?, success: Bool? ) -> Void
+        completionHandler: ( songHistoryError: NSError?, history: [ Int ]? ) -> Void
     )
     {
-        let songHistoryRequestString = endpoint + Routes.Songs + "/\( song.songID )"
-        let songHistoryRequestURL = NSURL( string: songHistoryRequestString )!
-        let songHistoryRequestTask = session.dataTaskWithURL( songHistoryRequestURL )
+        if let savedSong = NSKeyedUnarchiver.unarchiveObjectWithFile( song.songPath ) as? PhishSong where savedSong.history != nil
         {
-            songHistoryData, songHistoryResponse, songHistoryError in
-            
-            if songHistoryError != nil
+            // return the saved setlist through the completion handler
+            completionHandler(
+                songHistoryError: nil,
+                history: savedSong.history
+            )
+        }
+        else
+        {
+            let songHistoryRequestString = endpoint + Routes.Songs + "/\( song.songID )"
+            let songHistoryRequestURL = NSURL( string: songHistoryRequestString )!
+            let songHistoryRequestTask = session.dataTaskWithURL( songHistoryRequestURL )
             {
-                completionHandler(
-                    songHistoryError: songHistoryError,
-                    success: nil
-                )
-            }
-            else
-            {
-                var songHistoryJSONificationError: NSErrorPointer = nil
-                if let songHistoryResults = NSJSONSerialization.JSONObjectWithData(
-                    songHistoryData,
-                    options: nil,
-                    error: songHistoryJSONificationError
-                ) as? [ String : AnyObject ]
+                songHistoryData, songHistoryResponse, songHistoryError in
+                
+                if songHistoryError != nil
                 {
-                    let resultsData = songHistoryResults[ "data" ] as! [ String : AnyObject ]
-                    let tracks = resultsData[ "tracks" ] as! [[ String : AnyObject ]]
-                    
-                    var showIDs = [ Int ]()
-                    for track in tracks
-                    {
-                        let showID = track[ "show_id" ] as! Int
-                        
-                        showIDs.append( showID )
-                    }
-                    
-                    song.history = showIDs
-                    
                     completionHandler(
-                        songHistoryError: nil,
-                        success: true
+                        songHistoryError: songHistoryError,
+                        history: nil
                     )
                 }
                 else
                 {
-                    println( "There was a problem parsing the song history results." )
+                    var songHistoryJSONificationError: NSErrorPointer = nil
+                    if let songHistoryResults = NSJSONSerialization.JSONObjectWithData(
+                        songHistoryData,
+                        options: nil,
+                        error: songHistoryJSONificationError
+                    ) as? [ String : AnyObject ]
+                    {
+                        let resultsData = songHistoryResults[ "data" ] as! [ String : AnyObject ]
+                        let tracks = resultsData[ "tracks" ] as! [[ String : AnyObject ]]
+                        
+                        var showIDs = [ Int ]()
+                        for track in tracks
+                        {
+                            let showID = track[ "show_id" ] as! Int
+                            
+                            showIDs.append( showID )
+                        }
+                        
+                        song.history = showIDs
+                        song.save()
+                        
+                        completionHandler(
+                            songHistoryError: nil,
+                            history: showIDs
+                        )
+                    }
+                    else
+                    {
+                        println( "There was a problem parsing the song history results." )
+                    }
                 }
             }
+            songHistoryRequestTask.resume()
         }
-        songHistoryRequestTask.resume()
     }
     
     /*

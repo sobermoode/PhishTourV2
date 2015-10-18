@@ -22,6 +22,7 @@
 		8178703D1BCDFFA200B3C6C5 /* SetlistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8178703C1BCDFFA200B3C6C5 /* SetlistViewController.swift */; };
 		81A9C6A61BC8709100C72ABD /* CalloutCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A9C6A31BC8709100C72ABD /* CalloutCellView.swift */; };
 		81A9C6A71BC8709100C72ABD /* SMCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A9C6A51BC8709100C72ABD /* SMCalloutView.m */; };
+		81AFC54A1BD2DE0C00B0CE44 /* SongHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AFC5491BD2DE0C00B0CE44 /* SongHistoryViewController.swift */; };
 		81B219D11BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B219CF1BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift */; };
 		81B219D21BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81B219D01BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib */; };
 		81F6400D1BD211960067F93F /* SongCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F6400C1BD211960067F93F /* SongCell.swift */; };
@@ -59,6 +60,7 @@
 		81A9C6A41BC8709100C72ABD /* SMCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMCalloutView.h; sourceTree = "<group>"; };
 		81A9C6A51BC8709100C72ABD /* SMCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMCalloutView.m; sourceTree = "<group>"; };
 		81A9C6A81BC8713900C72ABD /* PhishTourV2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PhishTourV2-Bridging-Header.h"; sourceTree = "<group>"; };
+		81AFC5491BD2DE0C00B0CE44 /* SongHistoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongHistoryViewController.swift; sourceTree = "<group>"; };
 		81B219CF1BC4ECF600BB3E51 /* MultiRowCalloutCell2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiRowCalloutCell2.swift; sourceTree = "<group>"; };
 		81B219D01BC4ECF600BB3E51 /* MultiRowCalloutCell2.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultiRowCalloutCell2.xib; sourceTree = "<group>"; };
 		81F6400C1BD211960067F93F /* SongCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongCell.swift; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 				81A9C6A81BC8713900C72ABD /* PhishTourV2-Bridging-Header.h */,
 				8178703C1BCDFFA200B3C6C5 /* SetlistViewController.swift */,
 				81F6400C1BD211960067F93F /* SongCell.swift */,
+				81AFC5491BD2DE0C00B0CE44 /* SongHistoryViewController.swift */,
 				81755A461BBCDE5D00A16229 /* Images.xcassets */,
 				81755A481BBCDE5D00A16229 /* LaunchScreen.xib */,
 				81755A3D1BBCDE5D00A16229 /* Supporting Files */,
@@ -257,6 +260,7 @@
 				81F6400D1BD211960067F93F /* SongCell.swift in Sources */,
 				81A9C6A61BC8709100C72ABD /* CalloutCellView.swift in Sources */,
 				81755A601BBCDECF00A16229 /* PhishTour.swift in Sources */,
+				81AFC54A1BD2DE0C00B0CE44 /* SongHistoryViewController.swift in Sources */,
 				816655051BBE262A0028911E /* PhishYear.swift in Sources */,
 				81755A641BBCE13C00A16229 /* PhishSong.swift in Sources */,
 				81755A621BBCDF9E00A16229 /* PhishShow.swift in Sources */,

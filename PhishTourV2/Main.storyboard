@@ -356,7 +356,24 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mzv-k9-aF1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1113" y="450"/>
+            <point key="canvasLocation" x="1792.5" y="450"/>
+        </scene>
+        <!--Song History View Controller-->
+        <scene sceneID="9BK-jI-zVW">
+            <objects>
+                <viewController storyboardIdentifier="SongHistory" id="fmP-Rr-78f" customClass="SongHistoryViewController" customModule="PhishTourV2" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="8AV-vY-28x"/>
+                        <viewControllerLayoutGuide type="bottom" id="Obi-H4-vEm"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="zPv-0F-w5t">
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ch2-1D-uE9" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1053" y="450"/>
         </scene>
     </scenes>
 </document>

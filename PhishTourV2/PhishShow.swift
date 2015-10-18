@@ -18,19 +18,20 @@ class PhishShow: NSObject,
     var city: String
     var showID: Int
     var consecutiveNights: Int = 1
-    var tour: PhishTour!  // not set yet; need to do it in the PhishTour init
+    var tour: PhishTour!  // being set in PhishTour.associateShows()
     var setlist: [ Int : [ PhishSong ] ]!
     
     // keeps track of shows by their ID
     static var showDictionary = [ Int : PhishShow ]()
     
-    static let fileManager: NSFileManager = NSFileManager.defaultManager()
+    // static let fileManager: NSFileManager = NSFileManager.defaultManager()
     static let documentsPath = NSSearchPathForDirectoriesInDomains(
         .DocumentDirectory,
         .UserDomainMask,
         true
         )[ 0 ] as! String
-    var setlistPath: String
+    // var setlistPath: String
+    var showPath: String
     
     var showLatitude, showLongitude: Double!
     var coordinate: CLLocationCoordinate2D
@@ -67,8 +68,10 @@ class PhishShow: NSObject,
         self.venue = showInfo[ "venue_name" ] as! String
         self.city = showInfo[ "location" ] as! String
         self.showID = showInfo[ "id" ] as! Int
-        self.setlistPath = PhishShow.documentsPath + "setlist" + "\( showID )"
-        println( "setlistPath: \( self.setlistPath )" )
+        // self.setlistPath = PhishShow.documentsPath + "setlist" + "\( showID )"
+        // println( "setlistPath: \( self.setlistPath )" )
+        // self.showPath = PhishShow.documentsPath + "/shows/Phish-show-" + "\( showID )"
+        self.showPath = PhishShow.documentsPath.stringByAppendingPathComponent( "show\( self.showID )" )
     }
     
     required init( coder aDecoder: NSCoder )
@@ -79,7 +82,7 @@ class PhishShow: NSObject,
         self.city = aDecoder.decodeObjectForKey( "city" ) as! String
         self.showID = aDecoder.decodeIntegerForKey( "showID" )
         self.consecutiveNights = aDecoder.decodeIntegerForKey( "consecutiveNights" )
-        self.setlistPath = aDecoder.decodeObjectForKey( "setlistPath" ) as! String
+        self.showPath = aDecoder.decodeObjectForKey( "showPath" ) as! String
     }
     
     func encodeWithCoder( aCoder: NSCoder )
@@ -90,7 +93,7 @@ class PhishShow: NSObject,
         aCoder.encodeObject( self.city, forKey: "city" )
         aCoder.encodeInteger( self.showID, forKey: "showID" )
         aCoder.encodeInteger( self.consecutiveNights, forKey: "consecutiveNights" )
-        aCoder.encodeObject( self.setlistPath, forKey: "setlistPath" )
+        aCoder.encodeObject( self.showPath, forKey: "showPath" )
     }
     
     func updateShowDictionary()
@@ -100,14 +103,51 @@ class PhishShow: NSObject,
     
     func save()
     {
-        println( "setlistPath: \( self.setlistPath )" )
-        if NSKeyedArchiver.archiveRootObject( setlist, toFile: self.setlistPath )
+        println( "Saving show: \( self.date ) \( self.year ) to \( self.showPath )" )
+        
+        if NSFileManager.defaultManager().fileExistsAtPath( self.showPath )
         {
-            return
+            println( "Show file already exists at \( self.showPath )." )
+            
+            if NSKeyedArchiver.archiveRootObject( self, toFile: self.showPath )
+            {
+                // return
+                println( "Replaced \( self.date ) \( self.year )." )
+            }
+            else
+            {
+                println( "There was an error replacing \( self.date ) \( self.year )." )
+            }
+            
+            /*
+            // var showURL = NSURL(string: self.showPath)
+            var showURL = NSURL(fileURLWithPath: self.showPath)
+            let tempShowPath = self.showPath + "temp"
+            // let tempShowURL = NSURL(string: tempShowPath)!
+            let tempShowURL = NSURL(fileURLWithPath: tempShowPath)!
+            var resultingURL: NSURL?
+            var showReplacementError: NSErrorPointer = nil
+            // var showReplacementError: NSError? = nil
+            if NSFileManager.defaultManager().replaceItemAtURL(showURL!, withItemAtURL: tempShowURL, backupItemName: nil, options: NSFileManagerItemReplacementOptions.UsingNewMetadataOnly, resultingItemURL: &showURL, error: showReplacementError)
+            {
+                println( "Successfully replaced the show at \( self.showPath )" )
+            }
+            else
+            {
+                println( "Could not replace the show at \( self.showPath )" )
+            }
+            */
         }
         else
         {
-            println( "There was an error saving \( self.date ) \( self.year ) the setlist to the device." )
+            if NSKeyedArchiver.archiveRootObject( self, toFile: self.showPath )
+            {
+                return
+            }
+            else
+            {
+                println( "There was an error saving \( self.date ) \( self.year ) to the device." )
+            }
         }
     }
 }

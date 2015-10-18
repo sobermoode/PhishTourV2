@@ -18,6 +18,14 @@ class PhishSong: NSObject,
     var show: PhishShow!
     var history: [ Int ]!
     
+    static let documentsPath = NSSearchPathForDirectoriesInDomains(
+        .DocumentDirectory,
+        .UserDomainMask,
+        true
+        )[ 0 ] as! String
+    // var setlistPath: String
+    var songPath: String
+    
     init(
         songInfo: [ String : AnyObject ],
         forShow show: PhishShow
@@ -54,6 +62,8 @@ class PhishSong: NSObject,
         self.songID = songIDs.first!
         
         self.show = show
+        
+        self.songPath = PhishSong.documentsPath.stringByAppendingPathComponent( "song\( self.songID )" )
     }
     
     required init( coder aDecoder: NSCoder )
@@ -63,6 +73,7 @@ class PhishSong: NSObject,
         self.set = aDecoder.decodeIntegerForKey( "set" )
         self.songID = aDecoder.decodeIntegerForKey( "songID" )
         self.show = aDecoder.decodeObjectForKey( "show" ) as! PhishShow
+        self.songPath = aDecoder.decodeObjectForKey( "songPath" ) as! String
     }
     
     func encodeWithCoder( aCoder: NSCoder )
@@ -72,5 +83,37 @@ class PhishSong: NSObject,
         aCoder.encodeInteger( self.set, forKey: "set" )
         aCoder.encodeInteger( self.songID, forKey: "songID" )
         aCoder.encodeObject( self.show, forKey: "show" )
+        aCoder.encodeObject( self.songPath, forKey: "songPath" )
+    }
+    
+    func save()
+    {
+        println( "Saving song: \( self.name ) to \( self.songPath )" )
+        
+        if NSFileManager.defaultManager().fileExistsAtPath( self.songPath )
+        {
+            println( "Show file already exists at \( self.songPath )." )
+            
+            if NSKeyedArchiver.archiveRootObject( self, toFile: self.songPath )
+            {
+                // return
+                println( "Replaced \( self.name )." )
+            }
+            else
+            {
+                println( "There was an error replacing \( self.name )." )
+            }
+        }
+        else
+        {
+            if NSKeyedArchiver.archiveRootObject( self, toFile: self.songPath )
+            {
+                return
+            }
+            else
+            {
+                println( "There was an error saving \( self.name ) to the device." )
+            }
+        }
     }
 }
