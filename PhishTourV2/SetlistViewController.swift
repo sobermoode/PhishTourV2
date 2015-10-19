@@ -102,6 +102,9 @@ class SetlistViewController: UIViewController,
             {                
                 self.setlist = setlist!
                 
+                // self.show.setlist = setlist!
+                // self.show.save()
+                
                 dispatch_async( dispatch_get_main_queue() )
                 {
                     let setlistTable = self.view.viewWithTag( 600 ) as! UITableView

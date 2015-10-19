@@ -22,7 +22,7 @@ class PhishSong: NSObject,
         .DocumentDirectory,
         .UserDomainMask,
         true
-        )[ 0 ] as! String
+    )[ 0 ] as! String
     // var setlistPath: String
     var songPath: String
     
@@ -57,7 +57,7 @@ class PhishSong: NSObject,
         }
         
         // some songs have more than one ID...
-        // (i dunno, the property comes back as an array)
+        // (i dunno, the value comes back as an array)
         let songIDs = songInfo[ "song_ids" ] as! [ Int ]
         self.songID = songIDs.first!
         
@@ -73,6 +73,7 @@ class PhishSong: NSObject,
         self.set = aDecoder.decodeIntegerForKey( "set" )
         self.songID = aDecoder.decodeIntegerForKey( "songID" )
         self.show = aDecoder.decodeObjectForKey( "show" ) as! PhishShow
+        self.history = aDecoder.decodeObjectForKey( "history" ) as? [ Int ]
         self.songPath = aDecoder.decodeObjectForKey( "songPath" ) as! String
     }
     
@@ -83,6 +84,7 @@ class PhishSong: NSObject,
         aCoder.encodeInteger( self.set, forKey: "set" )
         aCoder.encodeInteger( self.songID, forKey: "songID" )
         aCoder.encodeObject( self.show, forKey: "show" )
+        aCoder.encodeObject( self.history, forKey: "history" )
         aCoder.encodeObject( self.songPath, forKey: "songPath" )
     }
     
@@ -92,7 +94,7 @@ class PhishSong: NSObject,
         
         if NSFileManager.defaultManager().fileExistsAtPath( self.songPath )
         {
-            println( "Show file already exists at \( self.songPath )." )
+            println( "Song file already exists at \( self.songPath )." )
             
             if NSKeyedArchiver.archiveRootObject( self, toFile: self.songPath )
             {

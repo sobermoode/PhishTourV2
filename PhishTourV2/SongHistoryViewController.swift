@@ -22,6 +22,7 @@ class SongHistoryViewController: UIViewController
         
         createTitle()
         createHistory()
+        addBackButton()
     }
     
     func createTitle()
@@ -51,9 +52,47 @@ class SongHistoryViewController: UIViewController
             }
             else
             {
-                println( "The song was played at: \( history! )" )
+                // self.song.history = history!
+                // self.song.save()
+                
+                // println( "The song was played at: \( history! )" )
+                /*
+                for showID in history!
+                {
+                    println( "showID: \( showID )" )
+                    
+                    
+                    
+                    /*
+                    let show = PhishShow.showDictionary[ showID ]!
+                    let tour = show.tour
+                    println( "\( self.song.name ) was played on \( show.date ) \( show.year ), \( tour.name )" )
+                    */
+                }
+                */
             }
         }
+    }
+    
+    func addBackButton()
+    {
+        let backButton = UIButton()
+        backButton.layer.cornerRadius = 8
+        backButton.backgroundColor = UIColor.redColor()
+        backButton.titleLabel?.textColor = UIColor.whiteColor()
+        backButton.titleLabel?.font = UIFont( name: "AppleSDGothicNeo-Bold", size: 14 )
+        backButton.setTitle( "Back", forState: .Normal )
+        backButton.titleLabel?.sizeToFit()
+        backButton.sizeToFit()
+        
+        backButton.addTarget(self, action: "cancel:", forControlEvents: .TouchUpInside)
+        
+        view.addSubview( backButton )
+    }
+    
+    func cancel( sender: UIButton )
+    {
+        dismissViewControllerAnimated( true, completion: nil )
     }
 
     override func didReceiveMemoryWarning() {

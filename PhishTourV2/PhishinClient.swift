@@ -334,18 +334,13 @@ class PhishinClient: NSObject
     )
     {
         // check for a saved setlist file
-        // let setlistPath = documentsPath + "setlist\( show.showID )"
-        // if let savedSetlist = NSKeyedUnarchiver.unarchiveObjectWithFile( show.setlistPath ) as? [ Int : [ PhishSong ] ]
         if let savedShow = NSKeyedUnarchiver.unarchiveObjectWithFile( show.showPath ) as? PhishShow where savedShow.setlist != nil
         {
-            if let savedSetlist = savedShow.setlist
-            {
-                // return the saved setlist through the completion handler
-                completionHandler(
-                    setlistError: nil,
-                    setlist: savedSetlist
-                )
-            }
+            // return the saved setlist through the completion handler
+            completionHandler(
+                setlistError: nil,
+                setlist: savedShow.setlist
+            )
         }
         // no saved setlist, we need to request one
         else
@@ -446,7 +441,7 @@ class PhishinClient: NSObject
                             }
                         }
                         
-                        // save the setlist to the device for later retrieval
+                        // set the show's setlist and save the setlist to the device for later retrieval
                         // TODO: when implementing Core Data, save the context here
                         show.setlist = setlist
                         show.save()
@@ -472,22 +467,26 @@ class PhishinClient: NSObject
         completionHandler: ( songHistoryError: NSError?, history: [ Int ]? ) -> Void
     )
     {
+        // check for a saved song history
         if let savedSong = NSKeyedUnarchiver.unarchiveObjectWithFile( song.songPath ) as? PhishSong where savedSong.history != nil
         {
-            // return the saved setlist through the completion handler
+            // return the saved history through the completion handler
             completionHandler(
                 songHistoryError: nil,
                 history: savedSong.history
             )
         }
+        // no saved history, we need to request one
         else
         {
+            // construct the request URL and start a task
             let songHistoryRequestString = endpoint + Routes.Songs + "/\( song.songID )"
             let songHistoryRequestURL = NSURL( string: songHistoryRequestString )!
             let songHistoryRequestTask = session.dataTaskWithURL( songHistoryRequestURL )
             {
                 songHistoryData, songHistoryResponse, songHistoryError in
                 
+                // an error occurred
                 if songHistoryError != nil
                 {
                     completionHandler(
@@ -497,6 +496,7 @@ class PhishinClient: NSObject
                 }
                 else
                 {
+                    // turn the received data into a JSON object
                     var songHistoryJSONificationError: NSErrorPointer = nil
                     if let songHistoryResults = NSJSONSerialization.JSONObjectWithData(
                         songHistoryData,
@@ -504,9 +504,11 @@ class PhishinClient: NSObject
                         error: songHistoryJSONificationError
                     ) as? [ String : AnyObject ]
                     {
+                        // get the info for every instance of the song being played
                         let resultsData = songHistoryResults[ "data" ] as! [ String : AnyObject ]
                         let tracks = resultsData[ "tracks" ] as! [[ String : AnyObject ]]
                         
+                        // save the show id of all the shows where the song was played
                         var showIDs = [ Int ]()
                         for track in tracks
                         {
@@ -515,9 +517,11 @@ class PhishinClient: NSObject
                             showIDs.append( showID )
                         }
                         
+                        // set the song's history and save it to the device
                         song.history = showIDs
                         song.save()
                         
+                        // return the history through the completion handler
                         completionHandler(
                             songHistoryError: nil,
                             history: showIDs

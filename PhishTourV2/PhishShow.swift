@@ -18,8 +18,8 @@ class PhishShow: NSObject,
     var city: String
     var showID: Int
     var consecutiveNights: Int = 1
-    var tour: PhishTour!  // being set in PhishTour.associateShows()
-    var setlist: [ Int : [ PhishSong ] ]!
+    var tour: PhishTour?  // being set in PhishTour.associateShows()
+    var setlist: [ Int : [ PhishSong ] ]?
     
     // keeps track of shows by their ID
     static var showDictionary = [ Int : PhishShow ]()
@@ -29,7 +29,7 @@ class PhishShow: NSObject,
         .DocumentDirectory,
         .UserDomainMask,
         true
-        )[ 0 ] as! String
+    )[ 0 ] as! String
     // var setlistPath: String
     var showPath: String
     
@@ -82,6 +82,9 @@ class PhishShow: NSObject,
         self.city = aDecoder.decodeObjectForKey( "city" ) as! String
         self.showID = aDecoder.decodeIntegerForKey( "showID" )
         self.consecutiveNights = aDecoder.decodeIntegerForKey( "consecutiveNights" )
+        self.tour = aDecoder.decodeObjectForKey( "tour" ) as? PhishTour
+        self.setlist = aDecoder.decodeObjectForKey( "setlist" ) as? [ Int : [ PhishSong ] ]
+        // PhishShow.showDictionary = aDecoder.decodeObjectForKey( "showDictionary" ) as! [ Int : PhishShow ]
         self.showPath = aDecoder.decodeObjectForKey( "showPath" ) as! String
     }
     
@@ -93,6 +96,9 @@ class PhishShow: NSObject,
         aCoder.encodeObject( self.city, forKey: "city" )
         aCoder.encodeInteger( self.showID, forKey: "showID" )
         aCoder.encodeInteger( self.consecutiveNights, forKey: "consecutiveNights" )
+        aCoder.encodeObject( self.tour, forKey: "tour" )
+        aCoder.encodeObject( self.setlist, forKey: "setlist" )
+        // aCoder.encodeObject( PhishShow.showDictionary, forKey: "showDictionary" )
         aCoder.encodeObject( self.showPath, forKey: "showPath" )
     }
     
