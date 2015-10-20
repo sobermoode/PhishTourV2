@@ -656,8 +656,8 @@ class TourMapViewController: UIViewController,
             tourMap.setRegion(
                 MKCoordinateRegion(
                     center: CLLocationCoordinate2D(
-                        latitude: currentLocation!.showLatitude,
-                        longitude: currentLocation!.showLongitude
+                        latitude: currentLocation!.showLatitude!,
+                        longitude: currentLocation!.showLongitude!
                     ),
                     span: MKCoordinateSpan(
                         latitudeDelta: 50.0,
@@ -1521,8 +1521,8 @@ class TourMapViewController: UIViewController,
                 tourMap.setRegion(
                     MKCoordinateRegion(
                         center: CLLocationCoordinate2D(
-                            latitude: currentLocation!.showLatitude,
-                            longitude: currentLocation!.showLongitude
+                            latitude: currentLocation!.showLatitude!,
+                            longitude: currentLocation!.showLongitude!
                         ),
                         span: MKCoordinateSpan(
                             latitudeDelta: 50.0,

@@ -70,6 +70,7 @@ class SetlistViewController: UIViewController,
         
         let remainingHeight = view.bounds.height - (( dateLabel.frame.origin.x + dateLabel.frame.size.height ) + ( venueLabel.frame.size.height + 5 ) + ( backButton.frame.size.height ) + 50)
         let setlistTableView = UITableView(frame: CGRect(x: venueLabel.frame.origin.x, y: venueLabel.frame.origin.y + venueLabel.frame.size.height + 20, width: CGRectGetMaxX(view.bounds) - 50, height: remainingHeight - 75), style: .Plain)
+        setlistTableView.separatorStyle = .None
         setlistTableView.tag = 600
         setlistTableView.dataSource = self
         setlistTableView.delegate = self
@@ -86,29 +87,49 @@ class SetlistViewController: UIViewController,
         
         backButton.frame = CGRect(x: CGRectGetMidX( view.bounds ) - ( backButton.frame.size.width / 2 ), y: setlistTableView.frame.origin.y + setlistTableView.frame.size.height + 20, width: backButton.frame.size.width + 10, height: backButton.frame.size.height )
         backButton.addTarget(self, action: "cancel:", forControlEvents: .TouchUpInside)
-        setlistTableView.separatorStyle = .None
+        
         view.addSubview( setlistTableView )
         view.addSubview( backButton )
         
-        PhishinClient.sharedInstance().requestSetlistForShow( show )
+        /*
+        if let savedShow = NSKeyedUnarchiver.unarchiveObjectWithFile( show.showPath ) as? PhishShow where savedShow.setlist != nil
         {
-            setlistError, setlist in
-            
-            if setlistError != nil
+            println( "Got a saved show for \( savedShow.date ) \( savedShow.year )" )
+            if savedShow.setlist != nil
             {
-                println( "There was an error requesting the setlist for \( self.show.date ) \( self.show.year ): \( setlistError?.localizedDescription ) " )
+                println( "Got a saved setlist!!!" )
+                setlist = savedShow.setlist
+                setlistTableView.reloadData()
             }
-            else
-            {                
-                self.setlist = setlist!
+        }
+        */
+        if show.setlist != nil
+        {
+            setlist = show.setlist
+            setlistTableView.reloadData()
+        }
+        else
+        {
+            PhishinClient.sharedInstance().requestSetlistForShow( show )
+            {
+                setlistError, setlist in
                 
-                // self.show.setlist = setlist!
-                // self.show.save()
-                
-                dispatch_async( dispatch_get_main_queue() )
+                if setlistError != nil
                 {
-                    let setlistTable = self.view.viewWithTag( 600 ) as! UITableView
-                    setlistTable.reloadData()
+                    println( "There was an error requesting the setlist for \( self.show.date ) \( self.show.year ): \( setlistError?.localizedDescription ) " )
+                }
+                else
+                {                
+                    self.setlist = setlist!
+                    
+                    // self.show.setlist = setlist!
+                    // self.show.save()
+                    
+                    dispatch_async( dispatch_get_main_queue() )
+                    {
+                        let setlistTable = self.view.viewWithTag( 600 ) as! UITableView
+                        setlistTable.reloadData()
+                    }
                 }
             }
         }

@@ -18,7 +18,7 @@ class PhishSong: NSObject,
     var show: PhishShow!
     var history: [ Int ]!
     
-    static let documentsPath = NSSearchPathForDirectoriesInDomains(
+    let documentsPath = NSSearchPathForDirectoriesInDomains(
         .DocumentDirectory,
         .UserDomainMask,
         true
@@ -63,7 +63,7 @@ class PhishSong: NSObject,
         
         self.show = show
         
-        self.songPath = PhishSong.documentsPath.stringByAppendingPathComponent( "song\( self.songID )" )
+        self.songPath = self.documentsPath.stringByAppendingPathComponent( "song\( self.songID )" )
     }
     
     required init( coder aDecoder: NSCoder )

@@ -22,10 +22,10 @@ class PhishShow: NSObject,
     var setlist: [ Int : [ PhishSong ] ]?
     
     // keeps track of shows by their ID
-    static var showDictionary = [ Int : PhishShow ]()
+    // static var showDictionary = [ Int : PhishShow ]()
     
     // static let fileManager: NSFileManager = NSFileManager.defaultManager()
-    static let documentsPath = NSSearchPathForDirectoriesInDomains(
+    let documentsPath = NSSearchPathForDirectoriesInDomains(
         .DocumentDirectory,
         .UserDomainMask,
         true
@@ -33,12 +33,12 @@ class PhishShow: NSObject,
     // var setlistPath: String
     var showPath: String
     
-    var showLatitude, showLongitude: Double!
+    var showLatitude, showLongitude: Double?
     var coordinate: CLLocationCoordinate2D
     {
         return CLLocationCoordinate2D(
-            latitude: showLatitude,
-            longitude: showLongitude
+            latitude: showLatitude!,
+            longitude: showLongitude!
         )
     }
     
@@ -71,7 +71,7 @@ class PhishShow: NSObject,
         // self.setlistPath = PhishShow.documentsPath + "setlist" + "\( showID )"
         // println( "setlistPath: \( self.setlistPath )" )
         // self.showPath = PhishShow.documentsPath + "/shows/Phish-show-" + "\( showID )"
-        self.showPath = PhishShow.documentsPath.stringByAppendingPathComponent( "show\( self.showID )" )
+        self.showPath = self.documentsPath.stringByAppendingPathComponent( "show\( self.showID )" )
     }
     
     required init( coder aDecoder: NSCoder )
@@ -86,6 +86,8 @@ class PhishShow: NSObject,
         self.setlist = aDecoder.decodeObjectForKey( "setlist" ) as? [ Int : [ PhishSong ] ]
         // PhishShow.showDictionary = aDecoder.decodeObjectForKey( "showDictionary" ) as! [ Int : PhishShow ]
         self.showPath = aDecoder.decodeObjectForKey( "showPath" ) as! String
+        self.showLatitude = aDecoder.decodeObjectForKey( "latitude" ) as? Double
+        self.showLongitude = aDecoder.decodeObjectForKey( "longitude" ) as? Double
     }
     
     func encodeWithCoder( aCoder: NSCoder )
@@ -100,13 +102,49 @@ class PhishShow: NSObject,
         aCoder.encodeObject( self.setlist, forKey: "setlist" )
         // aCoder.encodeObject( PhishShow.showDictionary, forKey: "showDictionary" )
         aCoder.encodeObject( self.showPath, forKey: "showPath" )
+        aCoder.encodeObject( self.showLatitude, forKey: "latitude" )
+        aCoder.encodeObject( self.showLongitude, forKey: "longitude" )
     }
     
+    /*
     func updateShowDictionary()
     {
         PhishShow.showDictionary.updateValue( self, forKey: self.showID )
     }
+    */
     
+    func save()
+    {
+        println( "Saving \( self.date ) \( self.year ) to \( self.showPath )" )
+        
+        if NSFileManager.defaultManager().fileExistsAtPath( self.showPath )
+        {
+            println( "Show file already exists at \( self.showPath )." )
+            
+            if NSKeyedArchiver.archiveRootObject( self, toFile: self.showPath )
+            {
+                // return
+                println( "( self.date ) \( self.year )." )
+            }
+            else
+            {
+                println( "There was an error replacing ( self.date ) \( self.year )." )
+            }
+        }
+        else
+        {
+            if NSKeyedArchiver.archiveRootObject( self, toFile: self.showPath )
+            {
+                return
+            }
+            else
+            {
+                println( "There was an error saving ( self.date ) \( self.year ) to the device." )
+            }
+        }
+    }
+    
+    /*
     func save()
     {
         println( "Saving show: \( self.date ) \( self.year ) to \( self.showPath )" )
@@ -156,4 +194,5 @@ class PhishShow: NSObject,
             }
         }
     }
+    */
 }

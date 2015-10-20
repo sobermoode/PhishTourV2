@@ -136,7 +136,7 @@ class PhishinClient: NSObject
                             // shows.append( PhishShow( showInfo: show, andYear: year ) )
                             
                             let newShow = PhishShow( showInfo: show, andYear: year )
-                            newShow.updateShowDictionary()
+                            // newShow.updateShowDictionary()
                             newShow.save()
                             
                             /*
@@ -333,6 +333,8 @@ class PhishinClient: NSObject
         completionHandler: ( setlistError: NSError?, setlist: [ Int : [ PhishSong ] ]? ) -> Void
     )
     {
+        println( "requestSetlistForShow..." )
+        /*
         // check for a saved setlist file
         if let savedShow = NSKeyedUnarchiver.unarchiveObjectWithFile( show.showPath ) as? PhishShow where savedShow.setlist != nil
         {
@@ -345,6 +347,7 @@ class PhishinClient: NSObject
         // no saved setlist, we need to request one
         else
         {
+        */
             // construct a URL to the setlist and start a task
             let setlistRequestString = endpoint + Routes.Shows + "/\( show.showID )"
             let setlistRequestURL = NSURL( string: setlistRequestString )!
@@ -459,7 +462,7 @@ class PhishinClient: NSObject
                 }
             }
             setlistRequestTask.resume()
-        }
+        // }
     }
     
     func requestHistoryForSong(
