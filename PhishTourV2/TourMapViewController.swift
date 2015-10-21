@@ -22,8 +22,10 @@ class TourMapViewController: UIViewController,
     
     // MARK: actually using these
     var firstTime: Bool = true
-    var years: [ String ]?
-    var selectedYear: String?
+    // var years: [ String ]?
+    var years: [ Int ]?
+    // var selectedYear: String?
+    var selectedYear: Int?
     var tours: [ PhishTour ]?
     var selectedTour: PhishTour?
     var currentShow: PhishShow? // TODO: not sure this is used anymore; now using currentLocation
@@ -172,7 +174,8 @@ class TourMapViewController: UIViewController,
                 }
                 else
                 {
-                    self.years = years.reverse()
+                    // self.years = years.reverse()
+                    self.years = years
                     self.selectedYear = self.years?.first
                     
                     dispatch_async( dispatch_get_main_queue() )
@@ -180,7 +183,7 @@ class TourMapViewController: UIViewController,
                         self.yearPicker.reloadAllComponents()
                     }
                     
-                    PhishinClient.sharedInstance().requestToursForYear( self.selectedYear!.toInt()! )
+                    PhishinClient.sharedInstance().requestToursForYear( self.selectedYear! )
                     {
                         tourRequestError, tours in
                         
@@ -1333,7 +1336,8 @@ class TourMapViewController: UIViewController,
                 if let theYears = years
                 {
                     label?.font = UIFont(name: "Apple SD Gothic Neo", size: 20)
-                    label?.text = theYears[ row ]
+                    // label?.text = theYears[ row ]
+                    label?.text = "\( theYears[ row ] )"
                 }
                 else
                 {
@@ -1400,7 +1404,8 @@ class TourMapViewController: UIViewController,
                 }
                 else
                 {
-                    if let theYear = years?[ row ].toInt()!
+                    // if let theYear = years?[ row ].toInt()!
+                    if let theYear = years?[ row ]
                     {
                         PhishinClient.sharedInstance().requestToursForYear( theYear )
                         {

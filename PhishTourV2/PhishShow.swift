@@ -71,7 +71,7 @@ class PhishShow: NSObject,
         // self.setlistPath = PhishShow.documentsPath + "setlist" + "\( showID )"
         // println( "setlistPath: \( self.setlistPath )" )
         // self.showPath = PhishShow.documentsPath + "/shows/Phish-show-" + "\( showID )"
-        self.showPath = self.documentsPath.stringByAppendingPathComponent( "show\( self.showID )" )
+        self.showPath = self.documentsPath.stringByAppendingPathComponent( "show\( self.showID ).show" )
     }
     
     required init( coder aDecoder: NSCoder )
@@ -139,7 +139,7 @@ class PhishShow: NSObject,
             }
             else
             {
-                println( "There was an error saving ( self.date ) \( self.year ) to the device." )
+                println( "There was an error saving \( self.date ) \( self.year ) to the device." )
             }
         }
     }

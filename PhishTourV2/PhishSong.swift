@@ -63,7 +63,7 @@ class PhishSong: NSObject,
         
         self.show = show
         
-        self.songPath = self.documentsPath.stringByAppendingPathComponent( "song\( self.songID )" )
+        self.songPath = self.documentsPath.stringByAppendingPathComponent( "song\( self.songID ).song" )
     }
     
     required init( coder aDecoder: NSCoder )

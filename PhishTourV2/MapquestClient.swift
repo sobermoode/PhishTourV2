@@ -69,6 +69,28 @@ class MapquestClient: NSObject
         completionHandler: ( geocodingError: NSError!, success: Bool! ) -> Void
     )
     {
+        var counter: Int = 0
+        for ( index, show ) in enumerate( tour.shows )
+        {
+            if show.showLatitude != nil && show.showLongitude != nil
+            {
+                counter++
+                
+                if counter == tour.shows.count - 1
+                {
+                    println( "Don't need to geocode the locations!!!" )
+                    completionHandler(geocodingError: nil, success: true)
+                }
+                else
+                {
+                    continue
+                }
+            }
+            else
+            {
+                println( "\( show.city ) needs to be geocoded." )
+            }
+        }
         // construct the request URL;
         // starting with the base
         var mapquestRequestString = mapquestBaseURL + Services.Geocoding.GeocodingURL + type.rawValue
@@ -119,14 +141,20 @@ class MapquestClient: NSObject
                     var counter = 0
                     for result in geocodeResults
                     {
+                        let currentShow = tour.shows[ counter ]
+                        
                         let locations = result[ "locations" ] as! [ AnyObject ]
                         let innerLocations = locations[ 0 ] as! [ String : AnyObject ]
                         let latLong = innerLocations[ "latLng" ] as! [ String : Double ]
                         let geocodedLatitude = latLong[ "lat" ]!
                         let geocodedLongitude = latLong[ "lng" ]!
                         
-                        tour.shows[ counter ].showLatitude = geocodedLatitude
-                        tour.shows[ counter ].showLongitude = geocodedLongitude
+                        // tour.shows[ counter ].showLatitude = geocodedLatitude
+                        // tour.shows[ counter ].showLongitude = geocodedLongitude
+                        currentShow.showLatitude = geocodedLatitude
+                        currentShow.showLongitude = geocodedLongitude
+                        currentShow.save()
+                        currentShow.tour?.save()
                         
                         // println( "\( tour.shows[ counter ].city ): \( geocodedLatitude ), \( geocodedLongitude )" )
                         

@@ -12,7 +12,8 @@ import MapKit
 class PhishTour: NSObject,
     NSCoding
 {
-    var year: Int
+    // var year: Int
+    var year: PhishYear
     var name: String
     var tourID: Int
     var shows: [ PhishShow ]
@@ -29,13 +30,23 @@ class PhishTour: NSObject,
         
         return coordinates
     }
+    
+    let documentsPath = NSSearchPathForDirectoriesInDomains(
+        .DocumentDirectory,
+        .UserDomainMask,
+        true
+    )[ 0 ] as! String
+    var tourPath: String
+    /*
     var filePath: String
     {
         return "\( year )"
     }
+    */
     
     init(
-        year: Int,
+        // year: Int,
+        year: PhishYear,
         name: String,
         tourID: Int,
         shows: [ PhishShow ]
@@ -47,29 +58,32 @@ class PhishTour: NSObject,
         self.shows = shows
         self.uniqueLocations = [ PhishShow ]()
         self.locationDictionary = [ String : [ PhishShow ] ]()
+        self.tourPath = self.documentsPath.stringByAppendingPathComponent( "tour\( self.tourID ).tour" )
     }
     
     required init( coder aDecoder: NSCoder )
     {
         // super.init()
         
-        self.year = aDecoder.decodeIntegerForKey( "year" )
+        self.year = aDecoder.decodeObjectForKey( "year" ) as! PhishYear
         self.name = aDecoder.decodeObjectForKey( "name" ) as! String
         self.tourID = aDecoder.decodeIntegerForKey( "tourID" )
         self.shows = aDecoder.decodeObjectForKey( "shows" ) as! [ PhishShow ]
         self.uniqueLocations = aDecoder.decodeObjectForKey( "uniqueLocations" ) as! [ PhishShow ]
         self.locationDictionary = aDecoder.decodeObjectForKey( "locationDictionary" ) as! [ String : [ PhishShow ] ]
+        self.tourPath = aDecoder.decodeObjectForKey( "tourPath" ) as! String
     }
     
     func encodeWithCoder( aCoder: NSCoder )
     {
         // TODO: add self. to the properties
-        aCoder.encodeInteger( year, forKey: "year" )
+        aCoder.encodeObject( year, forKey: "year" )
         aCoder.encodeObject( name, forKey: "name" )
         aCoder.encodeInteger( tourID, forKey: "tourID" )
         aCoder.encodeObject( shows, forKey: "shows" )
         aCoder.encodeObject( uniqueLocations, forKey: "uniqueLocations" )
         aCoder.encodeObject( locationDictionary, forKey: "locationDictionary" )
+        aCoder.encodeObject( tourPath, forKey: "tourPath" )
     }
     
     // set the tour property on all the shows
@@ -78,6 +92,7 @@ class PhishTour: NSObject,
         for show in self.shows
         {
             show.tour = self
+            show.save()
         }
     }
     
@@ -187,5 +202,19 @@ class PhishTour: NSObject,
         let scrollToIndex = ( highlightIndex == 0 ) ? highlightIndex : highlightIndex + ( showsAtVenue.count - 1 )
         
         return ( highlightIndex, scrollToIndex )
+    }
+    
+    func save()
+    {
+        println( "Saving tour: \( self.name ) to \( self.tourPath )" )
+        
+        if NSKeyedArchiver.archiveRootObject( self, toFile: self.tourPath )
+        {
+            return
+        }
+        else
+        {
+            println( "There was an error saving \( self.name ) to the device." )
+        }
     }
 }

@@ -11,12 +11,12 @@ import UIKit
 class PhishinClient: NSObject
 {
     let session: NSURLSession = NSURLSession.sharedSession()
-    let fileManager: NSFileManager = NSFileManager.defaultManager()
-    let documentsPath = NSSearchPathForDirectoriesInDomains(
-        .DocumentDirectory,
-        .UserDomainMask,
-        true
-    )[ 0 ] as! String
+    // let fileManager: NSFileManager = NSFileManager.defaultManager()
+//    let documentsPath = NSSearchPathForDirectoriesInDomains(
+//        .DocumentDirectory,
+//        .UserDomainMask,
+//        true
+//    )[ 0 ] as! String
     
     // to construct request URLs
     let endpoint: String = "http://phish.in/api/v1"
@@ -42,65 +42,204 @@ class PhishinClient: NSObject
         return Singleton.sharedInstance
     }
     
-    func requestYears( completionHandler: ( yearsRequestError: NSError!, years: [ String ]! ) -> Void )
+    func requestYears( completionHandler: ( yearsRequestError: NSError!, years: [ Int ]? ) -> Void )
     {
-        let yearsRequestString = endpoint + Routes.Years
-        let yearsRequestURL = NSURL( string: yearsRequestString )!
-        let yearsRequestTask = session.dataTaskWithURL( yearsRequestURL )
+        let documentsPath = NSSearchPathForDirectoriesInDomains(
+            .DocumentDirectory,
+            .UserDomainMask,
+            true
+        )[ 0 ] as! String
+        let phishYearsFilePath = documentsPath.stringByAppendingPathComponent( "phishYears.plist" )
+        
+        if let savedPhishYears = NSKeyedUnarchiver.unarchiveObjectWithFile( phishYearsFilePath ) as? [ PhishYear ]
         {
-            yearsData, yearsResponse, yearsError in
-            
-            if yearsError != nil
+            println( "Got the saved phishYears!!!" )
+            var intPhishYears = [ Int ]()
+            for phishYear in savedPhishYears
             {
-                completionHandler(
-                    yearsRequestError: yearsError,
-                    years: nil
-                )
+                intPhishYears.append( phishYear.year )
             }
-            else
+            
+            completionHandler(yearsRequestError: nil, years: intPhishYears)
+        }
+        else
+        {
+            println( "Requesting new phishYears..." )
+        
+            // create the URL and start the task
+            let yearsRequestString = endpoint + Routes.Years
+            let yearsRequestURL = NSURL( string: yearsRequestString )!
+            let yearsRequestTask = session.dataTaskWithURL( yearsRequestURL )
             {
-                var yearsJSONificationError: NSErrorPointer = nil
-                if let yearsResults = NSJSONSerialization.JSONObjectWithData(
-                    yearsData,
-                    options: nil,
-                    error: yearsJSONificationError
-                ) as? [ String : AnyObject ]
+                yearsData, yearsResponse, yearsError in
+                
+                if yearsError != nil
                 {
-                    // TODO: this was the fix for removing 2002 from the list?
-                    let theYears = yearsResults[ "data" ] as! NSArray
-                    
-                    let theYearsMutable: AnyObject = theYears.mutableCopy()
-                    theYearsMutable.removeObjectAtIndex( 14 )
-                    
-                    let years = NSArray( array: theYearsMutable as! [ AnyObject ] ) as! [ String ]
-                    
                     completionHandler(
-                        yearsRequestError: nil,
-                        years: years
+                        yearsRequestError: yearsError,
+                        years: nil
                     )
                 }
                 else
                 {
-                    println( "There was a problem processing the years results: \( yearsJSONificationError )" )
+                    var yearsJSONificationError: NSErrorPointer = nil
+                    if let yearsResults = NSJSONSerialization.JSONObjectWithData(
+                        yearsData,
+                        options: nil,
+                        error: yearsJSONificationError
+                    ) as? [ String : AnyObject ]
+                    {
+                        // all three shows from 2002 are "category 71," so i'm removing from 2002 from the list of searchable years;
+                        // this requires creating a mutable NSArray, removing the specified year, and then casting it back to a [ String ] array
+                        let theYears = yearsResults[ "data" ] as! NSArray
+                        
+                        let theYearsMutable: AnyObject = theYears.mutableCopy()
+                        theYearsMutable.removeObjectAtIndex( 14 )
+                        
+                        let years = NSArray( array: theYearsMutable as! [ AnyObject ] ) as! [ String ]
+                        
+                        // years.reverse()
+                        
+                        var intYears = [ Int ]()
+                        var phishYears = [ PhishYear ]()
+                        for year in years
+                        {
+                            println( "year: \( year )" )
+                            if let intYear = year.toInt()
+                            {
+                                intYears.append( intYear )
+                            
+                                let newYear = PhishYear( year: intYear )
+                                newYear.save()
+                                
+                                phishYears.append( newYear )
+                            }
+                        }
+                        
+                        // let phishYearsFilePath = documentsPath.stringByAppendingPathComponent( "phishYears.year" )
+                        if NSKeyedArchiver.archiveRootObject( phishYears, toFile: phishYearsFilePath )
+                        {
+                            // break
+                        }
+                        else
+                        {
+                            println( "There was an error saving the phishYears to the device." )
+                        }
+                        
+                        // send it back through the completion handler
+                        completionHandler(
+                            yearsRequestError: nil,
+                            years: intYears
+                        )
+                    }
+                    else
+                    {
+                        println( "There was a problem processing the years results: \( yearsJSONificationError )" )
+                    }
                 }
             }
+            yearsRequestTask.resume()
         }
-        yearsRequestTask.resume()
+        
     }
     
+    // this request has two parts:
+    // the first request returns all the shows played in that year and creates arrays for each set of shows in a particular tour,
+    // the second request gets a name for each unique tour ID,
+    // once all the tour info is collected, a [ PhishTour ] array is returned through the completion handler
     func requestToursForYear(
         year: Int,
         completionHandler: ( toursRequestError: NSError!, tours: [ PhishTour ]! ) -> Void
     )
     {
-        let yearFilePath = documentsPath + "\( year )"
+        // let yearFilePath = documentsPath + "\( year )"
         // println( "Attempting to get saved year at \( yearFilePath )" )
+        let documentsPath = NSSearchPathForDirectoriesInDomains(
+            .DocumentDirectory,
+            .UserDomainMask,
+            true
+        )[ 0 ] as! String
+        let yearFilePath = documentsPath.stringByAppendingPathComponent( "year\( year ).plist" )
         
-        if let savedYear = NSKeyedUnarchiver.unarchiveObjectWithFile( yearFilePath ) as? PhishYear
+        if let savedYear = NSKeyedUnarchiver.unarchiveObjectWithFile( yearFilePath ) as? PhishYear // where savedYear.tours != nil
         {
-            // println( "savedTours: \( savedYear.tours )" )
-            completionHandler(toursRequestError: nil, tours: savedYear.tours)
+            println( "Got a saved year: \( savedYear.year )" )
+            
+            if savedYear.tours != nil
+            {
+                println( "\( savedYear.year ) already had tours!!!" )
+                completionHandler(toursRequestError: nil, tours: savedYear.tours)
+            }
+            else
+            {
+                println( "\( savedYear.year ) didn't have tours, requesting..." )
+                let toursRequestString = endpoint + Routes.Years + "/\( year )"
+                let toursRequestURL = NSURL( string: toursRequestString )!
+                let toursRequestTask = session.dataTaskWithURL( toursRequestURL )
+                {
+                    toursData, toursResponse, toursError in
+                    
+                    if toursError != nil
+                    {
+                        completionHandler(
+                            toursRequestError: toursError,
+                            tours: nil
+                        )
+                    }
+                    else
+                    {
+                        var toursJSONificationError: NSErrorPointer = nil
+                        if let toursResults = NSJSONSerialization.JSONObjectWithData(
+                            toursData,
+                            options: nil,
+                            error: toursJSONificationError
+                            ) as? [ String : AnyObject ]
+                        {
+                            let showsForTheYear = toursResults[ "data" ] as! [[ String : AnyObject ]]
+                            
+                            var tourIDs = [ Int ]()
+                            var showsForID = [ Int : [ PhishShow ] ]()
+                            var shows = [ PhishShow ]()
+                            for show in showsForTheYear
+                            {
+                                let newShow = PhishShow( showInfo: show, andYear: year )
+                                // newShow.updateShowDictionary()
+                                newShow.save()
+                                
+                                let tourID = show[ "tour_id" ] as! Int
+                                if !contains( tourIDs, tourID ) && tourID != self.notPartOfATour
+                                {
+                                    tourIDs.append( tourID )
+                                    showsForID.updateValue( [ PhishShow ](), forKey: tourID )
+                                }
+                                
+                                showsForID[ tourID ]?.append( newShow )
+                            }
+                            
+                            self.requestTourNamesForIDs( tourIDs, year: savedYear, showsForID: showsForID )
+                            {
+                                tourNamesRequestError, tours in
+                                
+                                if tourNamesRequestError != nil
+                                {
+                                    completionHandler(toursRequestError: tourNamesRequestError, tours: nil)
+                                }
+                                else
+                                {
+                                    completionHandler(toursRequestError: nil, tours: tours)
+                                }
+                            }
+                        }
+                        else
+                        {
+                            println( "There was a problem processing the tours results: \( toursJSONificationError )" )
+                        }
+                    }
+                }
+                toursRequestTask.resume()
+            }
         }
+        /*
         else
         {
             let toursRequestString = endpoint + Routes.Years + "/\( year )"
@@ -130,32 +269,11 @@ class PhishinClient: NSObject
                         var tourIDs = [ Int ]()
                         var showsForID = [ Int : [ PhishShow ] ]()
                         var shows = [ PhishShow ]()
-                        // var tourInfo = [ Int : String ]()
                         for show in showsForTheYear
                         {
-                            // shows.append( PhishShow( showInfo: show, andYear: year ) )
-                            
                             let newShow = PhishShow( showInfo: show, andYear: year )
                             // newShow.updateShowDictionary()
                             newShow.save()
-                            
-                            /*
-                            let showID = show[ "id "] as! Int
-                            let date = show[ "date" ] as! String
-                            let tourID = show[ "tour_id" ] as! Int
-                            let venue = show[ "venue_name" ] as! String
-                            let city = show[ "location" ] as! String
-                            let year = year
-                            
-                            var showInfo = [ String : AnyObject ]()
-                            showInfo.updateValue( showID, forKey: "showID" )
-                            showInfo.updateValue( date, forKey: "date" )
-                            showInfo.updateValue( tourID, forKey: "tourID" )
-                            showInfo.updateValue( venue, forKey: "venue" )
-                            showInfo.updateValue( city, forKey: "city" )
-                            showInfo.updateValue( year, forKey: "year" )
-                            let newShow = PhishShow( showInfo: showInfo )
-                            */
                             
                             let tourID = show[ "tour_id" ] as! Int
                             if !contains( tourIDs, tourID ) && tourID != self.notPartOfATour
@@ -167,7 +285,6 @@ class PhishinClient: NSObject
                             showsForID[ tourID ]?.append( newShow )
                         }
                         
-                        // self.requestTourNamesForIDs( tourIDs, year: year, shows: shows )
                         self.requestTourNamesForIDs( tourIDs, year: year, showsForID: showsForID )
                         {
                             tourNamesRequestError, tours in
@@ -190,6 +307,7 @@ class PhishinClient: NSObject
             }
             toursRequestTask.resume()
         }
+        */
     }
     
     func requestToursForYears(
@@ -236,12 +354,14 @@ class PhishinClient: NSObject
     
     func requestTourNamesForIDs(
         tourIDs: [ Int ],
-        year: Int,
+        // year: Int,
+        year: PhishYear,
         showsForID: [ Int : [ PhishShow ] ],
         completionHandler: ( tourNamesRequestError: NSError!, tours: [ PhishTour ]! ) -> Void
     )
     {
         // var tourInfo = [ Int : String ]()
+        println( "Requesting tour names for tours in \( year.year )" )
         var tours = [ PhishTour ]()
         
         for tourID in tourIDs
@@ -294,6 +414,8 @@ class PhishinClient: NSObject
                         let newTour = PhishTour(year: year, name: tourName, tourID: tourID, shows: showsForID[ tourID ]! )
                         newTour.associateShows()
                         newTour.createLocationDictionary()
+                        newTour.save()
+                        // year.save()
                         // println( "newTour.locationDictionary: \( newTour.locationDictionary )" )
                         tours.append( newTour )
 //                        tours.append( PhishTour(
@@ -318,8 +440,12 @@ class PhishinClient: NSObject
                     tour1.tourID < tour2.tourID
                 }
                 
-                let newYear = PhishYear( year: year, tours: tours)
-                self.saveYearWithTours( newYear, tours: tours )
+                year.tours = tours
+                year.save()
+                
+                // let newYear = PhishYear( year: year, tours: tours)
+                // newYear.save()
+                // self.saveYearWithTours( newYear, tours: tours )
                 
                 completionHandler(tourNamesRequestError: nil, tours: tours)
             }
@@ -334,7 +460,6 @@ class PhishinClient: NSObject
     )
     {
         println( "requestSetlistForShow..." )
-        /*
         // check for a saved setlist file
         if let savedShow = NSKeyedUnarchiver.unarchiveObjectWithFile( show.showPath ) as? PhishShow where savedShow.setlist != nil
         {
@@ -347,7 +472,6 @@ class PhishinClient: NSObject
         // no saved setlist, we need to request one
         else
         {
-        */
             // construct a URL to the setlist and start a task
             let setlistRequestString = endpoint + Routes.Shows + "/\( show.showID )"
             let setlistRequestURL = NSURL( string: setlistRequestString )!
@@ -448,6 +572,7 @@ class PhishinClient: NSObject
                         // TODO: when implementing Core Data, save the context here
                         show.setlist = setlist
                         show.save()
+                        show.tour?.save()
                         
                         // return the setlist through the completion handler
                         completionHandler(
@@ -462,7 +587,7 @@ class PhishinClient: NSObject
                 }
             }
             setlistRequestTask.resume()
-        // }
+         }
     }
     
     func requestHistoryForSong(
@@ -523,6 +648,8 @@ class PhishinClient: NSObject
                         // set the song's history and save it to the device
                         song.history = showIDs
                         song.save()
+                        song.show.save()
+                        song.show.tour?.save()
                         
                         // return the history through the completion handler
                         completionHandler(
